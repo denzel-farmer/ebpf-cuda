@@ -29,7 +29,7 @@ ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
 APP = cudamem
 
 # List of additional cpp files that APP depends on
-APP_CPP_FILES := SymUtils.cpp ProcUtils.cpp
+APP_CPP_FILES := SymUtils.cpp ProcUtils.cpp MemoryHeatmap.cpp
 
 CARGO ?= $(shell which cargo)
 ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt

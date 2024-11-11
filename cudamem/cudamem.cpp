@@ -11,6 +11,7 @@
 
 #include "SymUtils.h"
 #include "Guard.h"
+#include "MemoryHeatmap.h"
 
 #include "cudamem.skel.h"
 #include "cudamem.h"
@@ -23,16 +24,54 @@ using namespace std;
 
 static const string kCudaMemcpyName = "cudaMemcpy";
 
+
 void handle_sigint(int /* sig */)
 {
 	exiting = 1;
 }
 
+struct EventHandlerCtx {
+	SymUtils *symUtils;
+	MemoryHeatmap *HostHeatmap;
+	MemoryHeatmap *DeviceHeatmap;
+};
+
+// Called each time event polled from ring buffer
 static int handle_event(void *ctx, void *data, size_t /* data_sz */)
 {
-	auto *d = static_cast<data_t *>(data);
-	std::cout << "cudaMemcpy called: dst=" << d->dst << ", src=" << d->src
-		  << ", count=" << d->count << ", kind=" << d->kind << std::endl;
+	auto *transferEvent = static_cast<CudaTransferEvent *>(data);
+	auto *context = static_cast<EventHandlerCtx *>(ctx);
+
+	unsigned long src_addr = reinterpret_cast<unsigned long>(transferEvent->source);
+	unsigned long dst_addr = reinterpret_cast<unsigned long>(transferEvent->destination);
+
+	switch (transferEvent->direction) {
+	case cudaMemcpyKind::cudaMemcpyHostToHost:
+		context->HostHeatmap->RecordAccess(src_addr, transferEvent->size);
+		context->HostHeatmap->RecordAccess(dst_addr, transferEvent->size);
+		break;
+	case cudaMemcpyKind::cudaMemcpyHostToDevice:
+		context->HostHeatmap->RecordAccess(src_addr, transferEvent->size);
+		context->DeviceHeatmap->RecordAccess(dst_addr, transferEvent->size);
+		break;
+	case cudaMemcpyKind::cudaMemcpyDeviceToHost:
+		context->DeviceHeatmap->RecordAccess(src_addr, transferEvent->size);
+		context->HostHeatmap->RecordAccess(dst_addr, transferEvent->size);
+		break;
+	case cudaMemcpyKind::cudaMemcpyDeviceToDevice:
+		context->DeviceHeatmap->RecordAccess(src_addr, transferEvent->size);
+		context->DeviceHeatmap->RecordAccess(dst_addr, transferEvent->size);
+		break;
+	case cudaMemcpyKind::cudaMemcpyDefault:
+		// TODO handle unified memory
+		break;
+	}
+
+	cout << "cudaMemcpy called: dst=" << transferEvent->destination
+	     << ", src=" << transferEvent->source
+	     << ", count=" << transferEvent->size
+	     << ", kind=" << transferEvent->direction
+	     << endl;
 	return 0;
 }
 
@@ -54,6 +93,13 @@ int main(int argc, char **argv)
 	}
 
 	SymUtils symUtils(target_pid);
+	
+	// Set up memory heatmaps
+	MemoryHeatmap HostHeatmap;
+	MemoryHeatmap DeviceHeatmap;
+
+	EventHandlerCtx eventHandlerCtx = {&symUtils, &HostHeatmap, &DeviceHeatmap};
+
 	vector<bpf_link *> links;
 	struct ring_buffer *rb = nullptr;
 
@@ -79,6 +125,7 @@ int main(int argc, char **argv)
 		fmt::print(stderr, "Failed to find symbol {}\n", kCudaMemcpyName);
 		return -1;
 	}
+
 	for (auto &offset : offsets) {
 		auto link = bpf_program__attach_uprobe(skel->progs.handle_cudaMemcpy,
 						       false /* retprobe */, target_pid,
@@ -88,18 +135,11 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (!skel->links.handle_cudaMemcpy) {
-		std::cerr << "Failed to attach uprobe: " << strerror(errno) << std::endl;
-	}
-
-	// std::cout << "Attached uprobe to cudaMemcpy at address 0x"
-	//           << std::hex << symbol_address << " in process " << std::dec << target_pid << std::endl;
-
 	// Set up ring buffer
-	rb = ring_buffer__new(bpf_map__fd(skel->maps.ringbuf), handle_event, nullptr, nullptr);
+	rb = ring_buffer__new(bpf_map__fd(skel->maps.ringbuf), handle_event, &eventHandlerCtx, nullptr);
 	if (!rb) {
 		std::cerr << "Failed to create ring buffer" << std::endl;
-		goto cleanup;
+		return 1;
 	}
 
 	signal(SIGINT, handle_sigint);
@@ -115,8 +155,11 @@ int main(int argc, char **argv)
 		}
 	}
 
-cleanup:
-	ring_buffer__free(rb);
-	cudamem_bpf__destroy(skel);
+	if (err == 0 || err == -EINTR){
+		cout << "Host Memory Heatmap:" << endl;
+		HostHeatmap.PrintHeatmap(32);
+		cout << "Device Memory Heatmap:" << endl;
+		DeviceHeatmap.PrintHeatmap(32);
+	}
 	return -err;
 }
