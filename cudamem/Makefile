@@ -22,7 +22,8 @@ VMLINUX := ../vmlinux.h/include/$(ARCH)/vmlinux.h
 # libbpf to avoid dependency on system-wide headers, which could be missing or
 # outdated
 INCLUDES := -I$(OUTPUT) -I../libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC)
-CFLAGS := -g -Wall
+#CFLAGS := -g -Wall
+CXXFLAGS := -g -Wall -std=c++17
 ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
 
 APP = cudamem
@@ -127,7 +128,7 @@ $(patsubst %,$(OUTPUT)/%.o,$(APP)): %.o: %.skel.h
 
 $(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
 	$(call msg,CXX,$@)
-	$(Q)$(CXX) $(CFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
 
 # $(patsubst %,$(OUTPUT)/%.o,$(BZS_APPS)): $(LIBBLAZESYM_OBJ)
 
@@ -143,7 +144,7 @@ $(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
 
 $(APP): $(OUTPUT)/cudamem.o $(LIBBPF_OBJ) $(LIBBLAZESYM_OBJ) | $(OUTPUT)
 	$(call msg,BINARY,$@)
-	$(Q)$(CXX) $(CFLAGS) $^ $(ALL_LDFLAGS) -lelf -lz -lstdc++ -o $@
+	$(Q)$(CXX) $(CXXFLAGS) $^ $(ALL_LDFLAGS) -lelf -lz -lstdc++ -o $@
 
 
 # # Build application binary

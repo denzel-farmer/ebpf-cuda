@@ -201,12 +201,12 @@ bool findSymbolOffsetInFile(const std::string &elfPath, const std::string &symbo
 	if (fd < 0) {
 		return false;
 	}
-	// auto guard = Guard([&] {
-	// 	if (elf) {
-	// 		elf_end(elf);
-	// 	}
-	// 	close(fd);
-	// });
+	auto guard = Guard([&] {
+		if (elf) {
+			elf_end(elf);
+		}
+		close(fd);
+	});
 
 	elf = elf_begin(fd, ELF_C_READ, nullptr);
 	if (!elf) {
