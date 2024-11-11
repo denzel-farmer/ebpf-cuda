@@ -28,16 +28,10 @@ ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
 
 APP = cudamem
 
-# APPS = minimal minimal_legacy minimal_ns bootstrap uprobe kprobe fentry \
-#        usdt sockfilter tc ksyscall task_iter lsm cudamem gpuevent_snoop
+# List of additional cpp files that APP depends on
+APP_CPP_FILES := SymUtils.cpp ProcUtils.cpp
 
 CARGO ?= $(shell which cargo)
-# ifeq ($(strip $(CARGO)),)
-# BZS_APPS :=
-# else
-# BZS_APPS := profile
-# APPS += $(BZS_APPS)
-# Required by libblazesym
 ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt
 # endif
 
@@ -122,35 +116,23 @@ $(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(BPFTOOL)
 # Build user-space code
 $(patsubst %,$(OUTPUT)/%.o,$(APP)): %.o: %.skel.h
 
-# $(OUTPUT)/%.o: %.c $(wildcard %.h) | $(OUTPUT)
-# 	$(call msg,CC,$@)
-# 	$(Q)$(CC) $(CFLAGS) $(INCLUDES) -c $(filter %.c,$^) -o $@
+# Convert cpp files to object files
+APP_OBJ_FILES := $(patsubst %.cpp,$(OUTPUT)/%.o,$(APP_CPP_FILES))
 
 $(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
 	$(call msg,CXX,$@)
 	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
 
-# $(patsubst %,$(OUTPUT)/%.o,$(BZS_APPS)): $(LIBBLAZESYM_OBJ)
 
-# $(BZS_APPS): $(LIBBLAZESYM_OBJ)
-
-# $(OUTPUT)/symutils.o: symutils.cpp $(wildcard symutils.hpp) | $(OUTPUT)
-# 	$(call msg,CXX,$@)
-# 	$(Q)$(CXX) $(CFLAGS) $(INCLUDES) -c symutils.cpp -o $@
-
-# $(OUTPUT)/cudamem.o: cudamem.cpp SymUtils.cpp $(wildcard cudamem.h symutils.h) | $(OUTPUT)
-# 	$(call msg,CXX,$@)
-# 	$(Q)$(CXX) $(CFLAGS) $(INCLUDES) -c cudamem.cpp -o $@
-
-$(APP): $(OUTPUT)/cudamem.o $(LIBBPF_OBJ) $(LIBBLAZESYM_OBJ) | $(OUTPUT)
+$(APP): $(OUTPUT)/$(APP).o $(APP_OBJ_FILES) $(LIBBPF_OBJ) $(LIBBLAZESYM_OBJ) | $(OUTPUT)
 	$(call msg,BINARY,$@)
 	$(Q)$(CXX) $(CXXFLAGS) $^ $(ALL_LDFLAGS) -lelf -lz -lstdc++ -o $@
 
+# Build additional cpp files
+$(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
+	$(call msg,CXX,$@)
+	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
 
-# # Build application binary
-# $(APPS): %: $(OUTPUT)/%.o $(LIBBPF_OBJ) | $(OUTPUT)
-# 	$(call msg,BINARY,$@)
-# 	$(Q)$(CXX) $(CFLAGS) $^ $(ALL_LDFLAGS) -lelf -lz -o $@
 
 # delete failed targets
 .DELETE_ON_ERROR:
