@@ -1,6 +1,4 @@
-*.i
-*.ii
-*.gpu
-*.ptx
-*.cubin
-*.fatbin
+/build
+/examples/c/build
+/examples/c/.xmake
+/.idea
