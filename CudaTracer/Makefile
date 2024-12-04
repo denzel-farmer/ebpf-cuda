@@ -14,7 +14,7 @@ TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OBJDIR)/test_%.o, $(TEST_SRC))
 TARGET = $(TARGET_NAME)
 
 # Hardcoded headers
-HEADERS = $(SRCDIR)/MemHistory.h
+HEADERS = $(SRCDIR)/MemHistory.h $(SRCDIR)/AllocationHistory.h
 
 # Rules
 .PHONY: all clean
