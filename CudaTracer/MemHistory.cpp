@@ -3,6 +3,11 @@
 #include <iostream>
 #include <unordered_map>
 
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+
 using namespace std;
 
 export module MemHistory;
@@ -41,7 +46,7 @@ export struct AllocationEvent {
 export enum class AllocationState { ALLOCATED, FREED, UNKOWN };
 
 // Tracks the history of a single allocation
-// Current implementation is naive multiset of events
+// Current implementation is naive multiset of events (hotspot/coldspot optimization happens in the outer class)
 class AllocationHistory {
     public:
 	AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event)
@@ -54,11 +59,13 @@ class AllocationHistory {
         SubmitEvent(initial_event);
     }
 
-    // Accessors
-	unsigned long GetTransferCount() const
-	{
-		return transfer_count;
-	}
+    unsigned long GetTransferCount() const {
+        return transfer_count;
+    }
+
+    unsigned long GetStartAddress() const {
+        return alloc_info.start;
+    }
 
 	AllocationState GetState() const
 	{
@@ -98,7 +105,7 @@ class AllocationHistory {
         }
     }
 
-    private:
+    public:
     AllocationInfo alloc_info;
 
     AllocationState state;
@@ -108,26 +115,62 @@ class AllocationHistory {
 	multiset<EventInfo> events;
 };
 
+using namespace boost::multi_index;
+
+struct by_start_address {};
+struct by_transfer_count {};
+
+typedef multi_index_container<
+    AllocationHistory,
+    indexed_by<
+        // Primary key is start address, used for fast lookup
+        ordered_unique<
+            tag<by_start_address>,
+            const_mem_fun<AllocationHistory, unsigned long, &AllocationHistory::GetStartAddress>
+        >,
+
+        // Secondary key is transfer count, used for hotspot/coldspot optimization
+        ordered_non_unique<
+            tag<by_transfer_count>,
+            const_mem_fun<AllocationHistory, unsigned long, &AllocationHistory::GetTransferCount>,
+            std::greater<unsigned long>
+        >
+    >
+> AllocationHistoryContainer;
+
 // Tracks the history of memory events
 export class MemHistory {
 
     public:
     MemHistory() {
-        allocations = map<unsigned long, AllocationHistory>();
     }
 
     // Record a new memory event
     void RecordEvent(AllocationEvent event) {
-        auto alloc_info = event.allocation_info;
-        auto event_info = event.event_info;
-
-        if (allocations.find(alloc_info.start) == allocations.end()) {
-            allocations[alloc_info.start] = AllocationHistory(alloc_info, event_info);
-        }
-
-        allocations[alloc_info.start].SubmitEvent(event_info);
+        UpdateHistories(event.allocation_info, event.event_info);
     }
 
+
+
     private:
-    map<unsigned long, AllocationHistory> allocations;
+    void UpdateHistories(AllocationInfo alloc_info, EventInfo event_info) {
+        // If no allocation in container, create a new one 
+        auto &index_by_start = histories.get<by_start_address>();
+        auto it = index_by_start.find(alloc_info.start);
+
+        if (it == index_by_start.end()) {
+            // Allocation does not exist, create a new one
+            AllocationHistory new_alloc(alloc_info, event_info);
+            histories.insert(move(new_alloc));
+        } else {
+            // Allocation exists, update safely 
+            index_by_start.modify(it, [&](AllocationHistory &alloc) {
+                alloc.SubmitEvent(event_info);
+            });
+        }
+
+    }
+    
+    private:
+    AllocationHistoryContainer histories;
 };
