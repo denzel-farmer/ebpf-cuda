@@ -2,6 +2,7 @@
 
 #include <set>
 #include <string>
+#include <boost/property_tree/ptree.hpp>
 
 using namespace std;
 
@@ -16,6 +17,8 @@ struct AllocationInfo {
     AllocationInfo(unsigned long s, unsigned long sz, unsigned long id) : start(s), size(sz), identifier(id) {}
 
     bool operator<(const AllocationInfo &other) const;
+
+    boost::property_tree::ptree PtreeSerialize() const;
     string ToString() const;
 };
 
@@ -50,6 +53,7 @@ struct EventInfo {
 
     bool operator<(const EventInfo &other) const;
     bool operator>(const EventInfo &other) const;
+    boost::property_tree::ptree PtreeSerialize() const;
     string ToString() const;
 };
 
@@ -61,6 +65,7 @@ struct AllocationEvent {
     AllocationEvent(unsigned long start, unsigned long size, unsigned long identifier, unsigned long timestamp, EventType type) : allocation_info(start, size, identifier), event_info(timestamp, type) {}
 
     bool operator<(const AllocationEvent &other) const;
+    boost::property_tree::ptree PtreeSerialize() const;
     string ToString() const;
     
 };
@@ -95,6 +100,8 @@ public:
     const EventInfo& GetLatestEvent() const;
 
     void SubmitEvent(EventInfo event);
+
+    boost::property_tree::ptree PtreeSerialize(bool verbose) const;
 
     string ToString() const {
         return ToString(false);
