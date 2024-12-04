@@ -1,4 +1,5 @@
 #include "MemHistory.h"
+#include <fstream>
 
 
 void AddSimpleHistory(MemHistory& memHistory, unsigned long start, unsigned long size){
@@ -63,6 +64,11 @@ int main() {
     for (const auto& coldspot : coldspots) {
         cout << coldspot->ToString() << endl;
     }
+
+    // Write to alloc-log.json
+    ofstream out("alloc-log.json");
+    memHistory.JSONSerialize(out, true);
+    out.close();
 
 
 
