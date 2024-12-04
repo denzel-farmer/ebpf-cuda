@@ -11,11 +11,11 @@ SDK_INSTALL_PATH := /usr/local/cuda
 NVCC=$(SDK_INSTALL_PATH)/bin/nvcc
 LIB       :=  -L$(SDK_INSTALL_PATH)/lib64 -L$(SDK_INSTALL_PATH)/samples/common/lib/linux/x86_64
 #INCLUDES  :=  -I$(SDK_INSTALL_PATH)/include -I$(SDK_INSTALL_PATH)/samples/common/inc
-OPTIONS   :=  -O3 
+OPTIONS   :=  -O2
 #--maxrregcount=100 --ptxas-options -v 
 
 TAR_FILE_NAME  := YourNameCUDA1.tar
-EXECS :=  vecadd00 matmult00 vecadd01 matmult01 arraysum-q1 pages_demo
+EXECS :=  vecadd00 matmult00 vecadd01 matmult01 pages_demo large_pinned_transfer
 all:$(EXECS)
 
 #######################################################################
@@ -65,5 +65,8 @@ matmult01 : matmult.cu  matmultKernel.h matmultKernel01.o timer.o
 
 
 pages_demo : pages_demo.cu
+	${NVCC} $< -o $@ $(OPTIONS)
+
+large_pinned_transfer : large_pinned_transfer.cu
 	${NVCC} $< -o $@ $(OPTIONS)
 
