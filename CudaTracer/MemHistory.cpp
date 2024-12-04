@@ -1,4 +1,8 @@
 #include <set>
+#include <map>
+#include <iostream>
+#include <unordered_map>
+
 using namespace std;
 
 export module MemHistory;
@@ -37,7 +41,7 @@ export struct AllocationEvent {
 export enum class AllocationState { ALLOCATED, FREED, UNKOWN };
 
 // Tracks the history of a single allocation
-// Current implementation is naive vector of events
+// Current implementation is naive multiset of events
 class AllocationHistory {
     public:
 	AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event)
@@ -50,7 +54,7 @@ class AllocationHistory {
         SubmitEvent(initial_event);
     }
 
-    // Helpers
+    // Accessors
 	unsigned long GetTransferCount() const
 	{
 		return transfer_count;
@@ -65,10 +69,14 @@ class AllocationHistory {
         return *events.rbegin();
     }
 
+
     void SubmitEvent(EventInfo event) {
         events.insert(event);
-    
-        state = CalculateNextState(event.type);
+
+        // Only update state if event is the latest
+        if (event.timestamp > GetLatestEvent().timestamp) {
+            state = CalculateNextState(event.type);
+        }
 
         if (event.type == EventType::DEVICE_TRANSFER) {
             transfer_count++;
@@ -96,8 +104,30 @@ class AllocationHistory {
     AllocationState state;
 	unsigned long transfer_count;
 
+    // Events in chronological order
 	multiset<EventInfo> events;
 };
 
 // Tracks the history of memory events
-export class MemHistory {};
+export class MemHistory {
+
+    public:
+    MemHistory() {
+        allocations = map<unsigned long, AllocationHistory>();
+    }
+
+    // Record a new memory event
+    void RecordEvent(AllocationEvent event) {
+        auto alloc_info = event.allocation_info;
+        auto event_info = event.event_info;
+
+        if (allocations.find(alloc_info.start) == allocations.end()) {
+            allocations[alloc_info.start] = AllocationHistory(alloc_info, event_info);
+        }
+
+        allocations[alloc_info.start].SubmitEvent(event_info);
+    }
+
+    private:
+    map<unsigned long, AllocationHistory> allocations;
+};
