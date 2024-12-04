@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cuda_runtime.h>
 #include <unistd.h> // For getpid()
+#include <sys/mman.h>
 
 #define PAGE_SIZE 4096
 
@@ -27,8 +28,12 @@ void largeTransfer(size_t size) {
     std::cout << "[largeTransfer] Allocating " << size << " bytes of pinned memory." << std::endl;
     waitForUser();
 
-    checkCudaError(cudaHostAlloc(&h_src, size, cudaHostAllocDefault), "cudaHostAlloc h_src");
-
+   checkCudaError(cudaHostAlloc(&h_src, size, cudaHostAllocDefault), "cudaHostAlloc h_src");
+    // h_src = (char*)mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
+    // if (h_src == MAP_FAILED) {
+    //     std::cerr << "Error: Unable to allocate host memory using mmap." << std::endl;
+    //     exit(EXIT_FAILURE);
+    // }
     // Wait for user input
     std::cout << "[largeTransfer] memory allocated but not used" << std::endl;
     waitForUser();
