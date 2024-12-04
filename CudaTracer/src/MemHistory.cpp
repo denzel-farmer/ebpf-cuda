@@ -12,64 +12,64 @@ using namespace std;
 
 #include "MemHistory.h"
 
-// Tracks the history of a single allocation
-AllocationHistory::AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event)
-{
-    this->alloc_info = alloc_info;
-    transfer_count = 0;
-    state = AllocationState::UNKOWN;
-    SubmitEvent(initial_event);
-}
+// // Tracks the history of a single allocation
+// AllocationHistory::AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event)
+// {
+//     this->alloc_info = alloc_info;
+//     transfer_count = 0;
+//     state = AllocationState::UNKOWN;
+//     SubmitEvent(initial_event);
+// }
 
-unsigned long AllocationHistory::GetTransferCount() const {
-    return transfer_count;
-}
+// unsigned long AllocationHistory::GetTransferCount() const {
+//     return transfer_count;
+// }
 
-unsigned long AllocationHistory::GetStartAddress() const {
-    return alloc_info.start;
-}
+// unsigned long AllocationHistory::GetStartAddress() const {
+//     return alloc_info.start;
+// }
 
-AllocationState AllocationHistory::GetState() const {
-    return state;
-}
+// AllocationState AllocationHistory::GetState() const {
+//     return state;
+// }
 
-const EventInfo& AllocationHistory::GetLatestEvent() const {
-    return *events.rbegin();
-}
+// const EventInfo& AllocationHistory::GetLatestEvent() const {
+//     return *events.rbegin();
+// }
 
-void AllocationHistory::SubmitEvent(EventInfo event) {
+// void AllocationHistory::SubmitEvent(EventInfo event) {
 
-    // Only update state if event is the latest
-    if (IsLatestEvent(event)) {
-        state = CalculateNextState(event.type);
-    }
+//     // Only update state if event is the latest
+//     if (IsLatestEvent(event)) {
+//         state = CalculateNextState(event.type);
+//     }
 
-    if (event.type == EventType::DEVICE_TRANSFER) {
-        transfer_count++;
-    }
+//     if (event.type == EventType::DEVICE_TRANSFER) {
+//         transfer_count++;
+//     }
     
-    events.insert(event);
-    cout << "Event submitted: " << event.ToString() << endl;
+//     events.insert(event);
+//     cout << "Event submitted: " << event.ToString() << endl;
 
-}
+// }
 
-AllocationState AllocationHistory::CalculateNextState(EventType new_type) {
-    switch (new_type) {
-        case EventType::ALLOC:
-            assert(state != AllocationState::ALLOCATED && "Memory already allocated");
-            return AllocationState::ALLOCATED;
-            break;
-        case EventType::FREE:
-            return AllocationState::FREED;
-            break;
-        default:
-            return state;
-    }
-}
+// AllocationState AllocationHistory::CalculateNextState(EventType new_type) {
+//     switch (new_type) {
+//         case EventType::ALLOC:
+//             assert(state != AllocationState::ALLOCATED && "Memory already allocated");
+//             return AllocationState::ALLOCATED;
+//             break;
+//         case EventType::FREE:
+//             return AllocationState::FREED;
+//             break;
+//         default:
+//             return state;
+//     }
+// }
 
-bool AllocationHistory::IsLatestEvent(const EventInfo& event) const {
-    return events.empty() || (event > GetLatestEvent());
-}
+// bool AllocationHistory::IsLatestEvent(const EventInfo& event) const {
+//     return events.empty() || (event > GetLatestEvent());
+// }
 
 // Tracks the history of memory events
 MemHistory::MemHistory() {
