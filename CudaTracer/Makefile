@@ -1,36 +1,40 @@
-# Compiler and Flags
+# Variables
+SRCDIR = src
+OBJDIR = obj
+TESTDIR = test
+
 CXX = g++
-CXXFLAGS = -std=c++20 -Wall -fmodules-ts -I./src
+CXXFLAGS = -Wall -Wextra -O2 -std=c++20 -I$(SRCDIR)
+LDFLAGS = 
+TARGET_NAME = TestMemHistory
+SRC = $(wildcard $(SRCDIR)/*.cpp)
+TEST_SRC = $(wildcard $(TESTDIR)/*.cpp)
+SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
+TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OBJDIR)/test_%.o, $(TEST_SRC))
+TARGET = $(TARGET_NAME)
 
-# Directories
-SRC_DIR = src
-TEST_DIR = tests
-BUILD_DIR = build
+# Hardcoded headers
+HEADERS = $(SRCDIR)/MemHistory.h
 
-# Source Files
-SRC_MODULE_INTERFACE = $(SRC_DIR)/MemHistory.ixx
-SRC_MODULE_IMPL = $(SRC_DIR)/MemHistory.cpp
-TEST_FILE = $(TEST_DIR)/TestMemHistory.cpp
+# Rules
+.PHONY: all clean
 
-# Output Files
-MODULE_IFACE_UNIT = $(BUILD_DIR)/MemHistory.o
-TEST_EXE = $(BUILD_DIR)/TestMemHistory
+all: $(TARGET)
 
-# Default Target
-all: $(TEST_EXE)
+$(TARGET): $(SRC_OBJ) $(TEST_OBJ) | $(TESTDIR)
+	$(CXX) $(LDFLAGS) -o $@ $^
 
-# Build Module Interface Unit
-$(MODULE_IFACE_UNIT): $(SRC_MODULE_INTERFACE)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(HEADERS) | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Build Test Executable
-$(TEST_EXE): $(MODULE_IFACE_UNIT) $(SRC_MODULE_IMPL) $(TEST_FILE) | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) $(SRC_MODULE_IMPL) $(TEST_FILE) $(MODULE_IFACE_UNIT) -o $@
+$(OBJDIR)/test_%.o: $(TESTDIR)/%.cpp $(HEADERS) | $(OBJDIR)
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-# Create Build Directory
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
+$(OBJDIR):
+	mkdir -p $(OBJDIR)
 
-# Clean Build Files
+$(TESTDIR):
+	mkdir -p $(TESTDIR)
+
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(OBJDIR) $(TARGET)
