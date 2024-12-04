@@ -7,162 +7,165 @@
 #include <vector>
 #include <sstream>
 
+
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 
-using namespace std;
+#include "AllocationHistory.h"
 
-// Uniquely describes an allocation for its entire lifetime
-struct AllocationInfo {
-	unsigned long start;
-	unsigned long size;
-	// Currently unused
-	unsigned long identifier;
+// using namespace std;
 
-    AllocationInfo() : start(0), size(0), identifier(0) {}
-    AllocationInfo(unsigned long s, unsigned long sz, unsigned long id) : start(s), size(sz), identifier(id) {}
+// // Uniquely describes an allocation for its entire lifetime
+// struct AllocationInfo {
+// 	unsigned long start;
+// 	unsigned long size;
+// 	// Currently unused
+// 	unsigned long identifier;
 
-    bool operator<(const AllocationInfo &other) const {
-        return start < other.start;
-    }
+//     AllocationInfo() : start(0), size(0), identifier(0) {}
+//     AllocationInfo(unsigned long s, unsigned long sz, unsigned long id) : start(s), size(sz), identifier(id) {}
 
-    string ToString() const {
-        stringstream ss;
-        ss << "Start: " << start << ", Size: " << size << ", Identifier: " << identifier;
-        return ss.str();
-    }
-};
+//     bool operator<(const AllocationInfo &other) const {
+//         return start < other.start;
+//     }
 
-enum class EventType {
-	ALLOC, // Allocation event, creates a new allocation
-	HOST_TRANSFER, // Transfer event, moves data to another allocation on the host (e.g pinning)
-	DEVICE_TRANSFER, // Transfer event, moves data to the device
-	FREE // Free event, deallocates an allocation
-};
+//     string ToString() const {
+//         stringstream ss;
+//         ss << "Start: " << start << ", Size: " << size << ", Identifier: " << identifier;
+//         return ss.str();
+//     }
+// };
 
-constexpr const char* EventTypeToString(EventType type) {
-    switch (type) {
-        case EventType::ALLOC:
-            return "ALLOC";
-        case EventType::HOST_TRANSFER:
-            return "HOST_TRANSFER";
-        case EventType::DEVICE_TRANSFER:
-            return "DEVICE_TRANSFER";
-        case EventType::FREE:
-            return "FREE";
-        default:
-            return "UNKNOWN";
-    }
-}
+// enum class EventType {
+// 	ALLOC, // Allocation event, creates a new allocation
+// 	HOST_TRANSFER, // Transfer event, moves data to another allocation on the host (e.g pinning)
+// 	DEVICE_TRANSFER, // Transfer event, moves data to the device
+// 	FREE // Free event, deallocates an allocation
+// };
 
-struct EventInfo {
-    unsigned long timestamp;
-    EventType type;
+// constexpr const char* EventTypeToString(EventType type) {
+//     switch (type) {
+//         case EventType::ALLOC:
+//             return "ALLOC";
+//         case EventType::HOST_TRANSFER:
+//             return "HOST_TRANSFER";
+//         case EventType::DEVICE_TRANSFER:
+//             return "DEVICE_TRANSFER";
+//         case EventType::FREE:
+//             return "FREE";
+//         default:
+//             return "UNKNOWN";
+//     }
+// }
 
-    EventInfo(unsigned long ts, EventType et) : timestamp(ts), type(et) {}
+// struct EventInfo {
+//     unsigned long timestamp;
+//     EventType type;
 
-    bool operator<(const EventInfo &other) const
-    {
-        return timestamp < other.timestamp; // Order by timestamp
-    }
-    bool operator>(const EventInfo &other) const
-    {
-        return timestamp > other.timestamp; // Order by timestamp
-    }
+//     EventInfo(unsigned long ts, EventType et) : timestamp(ts), type(et) {}
 
-    string ToString() const {
-        stringstream ss;
-        ss << "Timestamp: " << timestamp << ", EventType: ";
-        ss << EventTypeToString(type);
+//     bool operator<(const EventInfo &other) const
+//     {
+//         return timestamp < other.timestamp; // Order by timestamp
+//     }
+//     bool operator>(const EventInfo &other) const
+//     {
+//         return timestamp > other.timestamp; // Order by timestamp
+//     }
 
-        return ss.str();
-    }
-};
+//     string ToString() const {
+//         stringstream ss;
+//         ss << "Timestamp: " << timestamp << ", EventType: ";
+//         ss << EventTypeToString(type);
 
-struct AllocationEvent {
-	AllocationInfo allocation_info;
-    EventInfo event_info;
+//         return ss.str();
+//     }
+// };
 
-    AllocationEvent(AllocationInfo alloc_info, EventInfo event_info) : allocation_info(alloc_info), event_info(event_info) {}
-    AllocationEvent(unsigned long start, unsigned long size, unsigned long identifier, unsigned long timestamp, EventType type) : allocation_info(start, size, identifier), event_info(timestamp, type) {}
+// struct AllocationEvent {
+// 	AllocationInfo allocation_info;
+//     EventInfo event_info;
+
+//     AllocationEvent(AllocationInfo alloc_info, EventInfo event_info) : allocation_info(alloc_info), event_info(event_info) {}
+//     AllocationEvent(unsigned long start, unsigned long size, unsigned long identifier, unsigned long timestamp, EventType type) : allocation_info(start, size, identifier), event_info(timestamp, type) {}
 
 
-	bool operator<(const AllocationEvent &other) const
-	{
-		return event_info.timestamp < other.event_info.timestamp; // Order by timestamp
-	}
+// 	bool operator<(const AllocationEvent &other) const
+// 	{
+// 		return event_info.timestamp < other.event_info.timestamp; // Order by timestamp
+// 	}
 
-    string ToString() const {
-        stringstream ss;
-        ss << "AllocationInfo: " << allocation_info.ToString() << ", EventInfo: " << event_info.ToString();
-        return ss.str();
-    }
+//     string ToString() const {
+//         stringstream ss;
+//         ss << "AllocationInfo: " << allocation_info.ToString() << ", EventInfo: " << event_info.ToString();
+//         return ss.str();
+//     }
     
-};
+// };
 
-// Should eventually have more states
-enum class AllocationState { ALLOCATED, FREED, UNKOWN };
-constexpr const char* AllocationStateToString(AllocationState state) {
-    switch (state) {
-        case AllocationState::ALLOCATED:
-            return "ALLOCATED";
-        case AllocationState::FREED:
-            return "FREED";
-        case AllocationState::UNKOWN:
-            return "UNKNOWN";
-        default:
-            return "UNKNOWN";
-    }
-}
+// // Should eventually have more states
+// enum class AllocationState { ALLOCATED, FREED, UNKOWN };
+// constexpr const char* AllocationStateToString(AllocationState state) {
+//     switch (state) {
+//         case AllocationState::ALLOCATED:
+//             return "ALLOCATED";
+//         case AllocationState::FREED:
+//             return "FREED";
+//         case AllocationState::UNKOWN:
+//             return "UNKNOWN";
+//         default:
+//             return "UNKNOWN";
+//     }
+// }
 
-// Tracks the history of a single allocation
-// Current implementation is naive multiset of events (hotspot/coldspot optimization happens in the outer class)
-class AllocationHistory {
-public:
-    AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event);
+// // Tracks the history of a single allocation
+// // Current implementation is naive multiset of events (hotspot/coldspot optimization happens in the outer class)
+// class AllocationHistory {
+// public:
+//     AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event);
 
-    unsigned long GetTransferCount() const;
+//     unsigned long GetTransferCount() const;
 
-    unsigned long GetStartAddress() const;
+//     unsigned long GetStartAddress() const;
 
-    AllocationState GetState() const;
+//     AllocationState GetState() const;
 
-    const EventInfo& GetLatestEvent() const;
+//     const EventInfo& GetLatestEvent() const;
 
-    void SubmitEvent(EventInfo event);
+//     void SubmitEvent(EventInfo event);
 
-    string ToString() const {
-        return ToString(false);
-    }
+//     string ToString() const {
+//         return ToString(false);
+//     }
 
-    string ToString(bool verbose) const {
-        stringstream ss;
-        ss << "AllocationInfo: " << alloc_info.ToString() << ", State: ";
-        ss << AllocationStateToString(state);
-        ss << ", TransferCount: " << transfer_count; 
-        if (verbose) {
-            ss << ", Events: [";
-            for (const auto& event : events) {
-                ss << "(" << event.ToString() << "), ";
-            }
-            ss << "]";
-        }
+//     string ToString(bool verbose) const {
+//         stringstream ss;
+//         ss << "AllocationInfo: " << alloc_info.ToString() << ", State: ";
+//         ss << AllocationStateToString(state);
+//         ss << ", TransferCount: " << transfer_count; 
+//         if (verbose) {
+//             ss << ", Events: [";
+//             for (const auto& event : events) {
+//                 ss << "(" << event.ToString() << "), ";
+//             }
+//             ss << "]";
+//         }
      
-        return ss.str();
-    }
+//         return ss.str();
+//     }
 
-private:
-    AllocationState CalculateNextState(EventType new_type);
-    bool IsLatestEvent(const EventInfo& event) const;
+// private:
+//     AllocationState CalculateNextState(EventType new_type);
+//     bool IsLatestEvent(const EventInfo& event) const;
 
-private:
-    AllocationInfo alloc_info;
-    AllocationState state;
-    unsigned long transfer_count;
-    multiset<EventInfo> events;
-};
+// private:
+//     AllocationInfo alloc_info;
+//     AllocationState state;
+//     unsigned long transfer_count;
+//     multiset<EventInfo> events;
+// };
 
 // Optimized container for tracking allocation history
 using namespace boost::multi_index;
