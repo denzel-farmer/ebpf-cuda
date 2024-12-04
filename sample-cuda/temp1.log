@@ -1,0 +1,156 @@
+(base) root@james23-1:/sys/kernel/tracing# cat /proc/meminfo
+MemTotal:       15360244 kB
+MemFree:        10428612 kB
+MemAvailable:   13717072 kB
+Buffers:          131908 kB
+Cached:          3261480 kB
+SwapCached:            0 kB
+Active:          2197928 kB
+Inactive:        2307120 kB
+Active(anon):        384 kB
+Inactive(anon):  1111580 kB
+Active(file):    2197544 kB
+Inactive(file):  1195540 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:                32 kB
+Writeback:             0 kB
+AnonPages:       1097896 kB
+Mapped:           305272 kB
+Shmem:               420 kB
+KReclaimable:     229336 kB
+Slab:             270892 kB
+SReclaimable:     229336 kB
+SUnreclaim:        41556 kB
+KernelStack:        4096 kB
+PageTables:        17996 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     7680120 kB
+Committed_AS:    1698468 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:       69596 kB
+VmallocChunk:          0 kB
+Percpu:             2848 kB
+AnonHugePages:    354304 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:      451384 kB
+DirectMap2M:     8982528 kB
+DirectMap1G:     8388608 kB
+
+(base) root@james23-1:/sys/kernel/tracing# cat /proc/meminfo
+MemTotal:       15360244 kB
+MemFree:         9738932 kB
+MemAvailable:   13028528 kB
+Buffers:          131956 kB
+Cached:          3796036 kB
+SwapCached:            0 kB
+Active:          2197992 kB
+Inactive:        2850568 kB
+Active(anon):        392 kB
+Inactive(anon):  1655008 kB
+Active(file):    2197600 kB
+Inactive(file):  1195560 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:               380 kB
+Writeback:             0 kB
+AnonPages:       1106828 kB
+Mapped:           922228 kB
+Shmem:            534948 kB
+KReclaimable:     230396 kB
+Slab:             289484 kB
+SReclaimable:     230396 kB
+SUnreclaim:        59088 kB
+KernelStack:        4304 kB
+PageTables:        19288 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     7680120 kB
+Committed_AS:    2266192 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:       79936 kB
+VmallocChunk:          0 kB
+Percpu:             2848 kB
+AnonHugePages:    354304 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:      451384 kB
+DirectMap2M:     8982528 kB
+DirectMap1G:     8388608 kB
+
+(base) root@james23-1:/sys/kernel/tracing# cat /proc/meminfo
+MemTotal:       15360244 kB
+MemFree:         9739012 kB
+MemAvailable:   13028696 kB
+Buffers:          132044 kB
+Cached:          3796036 kB
+SwapCached:            0 kB
+Active:          2198080 kB
+Inactive:        2850992 kB
+Active(anon):        392 kB
+Inactive(anon):  1655432 kB
+Active(file):    2197688 kB
+Inactive(file):  1195560 kB
+Unevictable:           0 kB
+Mlocked:               0 kB
+SwapTotal:             0 kB
+SwapFree:              0 kB
+Dirty:               184 kB
+Writeback:             0 kB
+AnonPages:       1107208 kB
+Mapped:           922264 kB
+Shmem:            534948 kB
+KReclaimable:     230396 kB
+Slab:             289472 kB
+SReclaimable:     230396 kB
+SUnreclaim:        59076 kB
+KernelStack:        4320 kB
+PageTables:        19340 kB
+NFS_Unstable:          0 kB
+Bounce:                0 kB
+WritebackTmp:          0 kB
+CommitLimit:     7680120 kB
+Committed_AS:    2266192 kB
+VmallocTotal:   34359738367 kB
+VmallocUsed:       79952 kB
+VmallocChunk:          0 kB
+Percpu:             2848 kB
+AnonHugePages:    354304 kB
+ShmemHugePages:        0 kB
+ShmemPmdMapped:        0 kB
+FileHugePages:         0 kB
+FilePmdMapped:         0 kB
+HugePages_Total:       0
+HugePages_Free:        0
+HugePages_Rsvd:        0
+HugePages_Surp:        0
+Hugepagesize:       2048 kB
+Hugetlb:               0 kB
+DirectMap4k:      451384 kB
+DirectMap2M:     8982528 kB
+DirectMap1G:     8388608 kB
+(base) root@james23-1:/sys/kernel/tracing# 
