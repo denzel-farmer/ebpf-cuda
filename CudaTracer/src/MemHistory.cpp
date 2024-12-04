@@ -8,68 +8,12 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/mem_fun.hpp>
 
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
 using namespace std;
 
 #include "MemHistory.h"
-
-// // Tracks the history of a single allocation
-// AllocationHistory::AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event)
-// {
-//     this->alloc_info = alloc_info;
-//     transfer_count = 0;
-//     state = AllocationState::UNKOWN;
-//     SubmitEvent(initial_event);
-// }
-
-// unsigned long AllocationHistory::GetTransferCount() const {
-//     return transfer_count;
-// }
-
-// unsigned long AllocationHistory::GetStartAddress() const {
-//     return alloc_info.start;
-// }
-
-// AllocationState AllocationHistory::GetState() const {
-//     return state;
-// }
-
-// const EventInfo& AllocationHistory::GetLatestEvent() const {
-//     return *events.rbegin();
-// }
-
-// void AllocationHistory::SubmitEvent(EventInfo event) {
-
-//     // Only update state if event is the latest
-//     if (IsLatestEvent(event)) {
-//         state = CalculateNextState(event.type);
-//     }
-
-//     if (event.type == EventType::DEVICE_TRANSFER) {
-//         transfer_count++;
-//     }
-    
-//     events.insert(event);
-//     cout << "Event submitted: " << event.ToString() << endl;
-
-// }
-
-// AllocationState AllocationHistory::CalculateNextState(EventType new_type) {
-//     switch (new_type) {
-//         case EventType::ALLOC:
-//             assert(state != AllocationState::ALLOCATED && "Memory already allocated");
-//             return AllocationState::ALLOCATED;
-//             break;
-//         case EventType::FREE:
-//             return AllocationState::FREED;
-//             break;
-//         default:
-//             return state;
-//     }
-// }
-
-// bool AllocationHistory::IsLatestEvent(const EventInfo& event) const {
-//     return events.empty() || (event > GetLatestEvent());
-// }
 
 // Tracks the history of memory events
 MemHistory::MemHistory() {
@@ -137,3 +81,26 @@ void MemHistory::UpdateHistories(AllocationInfo alloc_info, EventInfo event_info
         });
     }
 }
+
+ boost::property_tree::ptree MemHistory::PtreeSerialize(bool verbose) const {
+    boost::property_tree::ptree root;
+    for (const auto& history : histories) {
+        root.push_back(std::make_pair("", history.PtreeSerialize(verbose)));
+    }
+    return root;
+ }
+
+ void MemHistory::JSONSerialize(ostream& out, bool verbose) const {
+    boost::property_tree::ptree root = PtreeSerialize(verbose);
+    boost::property_tree::write_json(out, root);
+ }
+
+
+string MemHistory::ToString(bool verbose) const {
+    stringstream ss;
+    for (const auto& history : histories) {
+        ss << history.ToString(verbose) << "\n";
+    }
+    return ss.str();
+}
+
