@@ -12,6 +12,14 @@ using namespace std;
 bool AllocationInfo::operator<(const AllocationInfo &other) const {
     return start < other.start;
 }
+boost::property_tree::ptree AllocationInfo::PtreeSerialize() const {
+    boost::property_tree::ptree root;
+    root.put("start", start);
+    root.put("size", size);
+    root.put("identifier", identifier);
+
+    return root;
+}
 
 string AllocationInfo::ToString() const {
     stringstream ss;
@@ -29,6 +37,13 @@ bool EventInfo::operator>(const EventInfo &other) const {
     return timestamp > other.timestamp; // Order by timestamp
 }
 
+boost::property_tree::ptree EventInfo::PtreeSerialize() const {
+    boost::property_tree::ptree root;
+    root.put("timestamp", timestamp);
+    root.put("type", EventTypeToString(type));
+
+    return root;
+}
 string EventInfo::ToString() const {
     stringstream ss;
     ss << "Timestamp: " << timestamp << ", EventType: ";
@@ -43,6 +58,15 @@ string EventInfo::ToString() const {
 
 bool AllocationEvent::operator<(const AllocationEvent &other) const {
     return event_info.timestamp < other.event_info.timestamp; // Order by timestamp
+}
+
+boost::property_tree::ptree AllocationEvent::PtreeSerialize() const {
+    boost::property_tree::ptree root;
+
+    root.add_child("AllocationInfo", allocation_info.PtreeSerialize());
+    root.add_child("EventInfo", event_info.PtreeSerialize());
+
+    return root;
 }
 
 string AllocationEvent::ToString() const {
@@ -113,6 +137,28 @@ bool AllocationHistory::IsLatestEvent(const EventInfo& event) const {
     return events.empty() || (event > GetLatestEvent());
 }
 
+
+// JSON Serialization
+boost::property_tree::ptree AllocationHistory::PtreeSerialize(bool verbose) const {
+    boost::property_tree::ptree root;
+
+    // Make a node for AllocationInfo
+    root.add_child("AllocationInfo", alloc_info.PtreeSerialize());    
+    root.put("final_state", AllocationStateToString(state));
+    root.put("transfer_count", transfer_count);
+
+    if (verbose) {
+        // Add a single list of events to root
+        boost::property_tree::ptree events_node;
+        for (const auto& event : events) {
+            boost::property_tree::ptree event_node;
+            event_node.put("Event", event.ToString());
+            events_node.push_back(make_pair("", event_node));
+        }
+    }
+
+    return root;
+}
 
 string AllocationHistory::ToString(bool verbose) const {
     stringstream ss;
