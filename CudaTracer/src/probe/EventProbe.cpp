@@ -19,7 +19,7 @@ void EventProbe::LaunchProbe()
 {
     globalLogger.log_info("EventProbe launched (fake events)");
 
-    AllocationEvent event = AllocationEvent(0, 0, 0, 0, EventType::ALLOC);
+    AllocationEvent event = AllocationEvent(0, 0, 0, EventType::ALLOC);
     event_queue.enqueue(event);
 
     while (!CheckStop()) {
@@ -38,7 +38,7 @@ void EventProbe::Terminate()
 }
 
 optional<AllocationEvent> EventProbe::PollEvent() {
-    return AllocationEvent(0, 0, 0, 0, EventType::DEVICE_TRANSFER);
+    return AllocationEvent(0, 0, 0, EventType::DEVICE_TRANSFER);
 }
 
 void EventProbe::Configure() {

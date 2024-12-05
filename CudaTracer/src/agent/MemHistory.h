@@ -59,7 +59,7 @@ public:
     void JSONSerialize(ostream& out, bool verbose) const;
 
 private:
-    void UpdateHistories(AllocationInfo alloc_info, EventInfo event_info);
+    void UpdateHistories(AllocationRange alloc_info, EventInfo event_info);
 
 private:
     AllocationHistoryContainer histories;

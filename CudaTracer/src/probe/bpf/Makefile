@@ -1,11 +1,9 @@
-### Paths and variables
+# SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
 CLANG ?= clang
-ROOT := $(abspath ..)
+ROOT := $(abspath ../../../../)
 # OUTPUT := .output
 OUTPUT := $(ROOT)/CudaTracer/obj
-SRCDIR = src
-TESTDIR = test
 LIBBPF_SRC := $(abspath $(ROOT)/libbpf/src)
 BPFTOOL_SRC := $(abspath $(ROOT)/bpftool/src)
 # LIBBPF_SRC := $(abspath ../../../../libbpf/src)
@@ -26,94 +24,22 @@ ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
 # VMLINUX := ../vmlinux.h/include/$(ARCH)/vmlinux.h
 VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
 
-CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -Wpedantic -O2 -std=c++20
-LDFLAGS = -lpthread
-
 # Use our own libbpf API headers and Linux UAPI headers distributed with
 # libbpf to avoid dependency on system-wide headers, which could be missing or
 # outdated
-INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
-INCLUDES := $(addprefix -I,$(INCLUDE_DIRS)) -I$(OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC)
+INCLUDES := -I$(OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC)
 #CFLAGS := -g -Wall
+CXXFLAGS := -g -Wall -std=c++20
 ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
-ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt
 
-# Find all source files under src
-SRC = $(shell find $(SRCDIR) -type f -name '*.cpp')
+# APP = cudamem
 
-# Find all test source files
-TEST_SRC = $(wildcard $(TESTDIR)/*.cpp)
-
-# Generate list of object files, mirroring directory structure
-SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OUTPUT)/%.o, $(SRC))
-
-# Generate list of test object files
-TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OUTPUT)/test_%.o, $(TEST_SRC))
-
-# Include directories under src for headers
-# INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
-# CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
-
-# Generate list of test executables
-TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
-
-
-## Executable/Object File Rules
-
-# Rule to build each test executable
-$(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
-	$(CXX) -o $@ $^ $(LDFLAGS)
-
-# Compile source files into object files
-$(OUTPUT)/%.o: $(SRCDIR)/%.cpp
-	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
-
-# Compile test source files into object files
-$(OUTPUT)/test_%.o: $(TESTDIR)/%.cpp
-	@mkdir -p $(OUTPUT)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
-
-# Specific dependencies between eBPFProbe object and BPF code
-$(OUTPUT)/probe/eBPFProbe.o: $(LIBBPF_OBJ) $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o $(OUTPUT)/probe/bpf/CudaMemcpyProbe.skel.h
-
-# Build BPF code (bpf.c -> bpf.o)
-$(OUTPUT)/%.bpf.o: $(SRCDIR)/%.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | $(OUTPUT) $(BPFTOOL)
-	$(call msg,BPF,$@)
-	@mkdir -p $(dir $@)
-	$(Q)$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH)		      \
-		     $(INCLUDES) $(CLANG_BPF_SYS_INCLUDES)		      \
-		     -c $(filter %.c,$^) -o $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
-	$(Q)$(BPFTOOL) gen object $@ $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
-
-# Generate BPF skeletons
-$(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(BPFTOOL)
-	$(call msg,GEN-SKEL,$@)
-	$(Q)$(BPFTOOL) gen skeleton $< > $@
-
-# Build user-space code
-$(patsubst %,$(OUTPUT)/%.o,$(APP)): %.o: %.skel.h
-
-# From cudemem Makefile:
-# # Convert cpp files to object files
-# APP_OBJ_FILES := $(patsubst %.cpp,$(OUTPUT)/%.o,$(APP_CPP_FILES))
-
-# $(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
-# 	$(call msg,CXX,$@)
-# 	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
-
-
-
-## Build submodule dependencies: libbpf, bpftool, libblazesym
-
-# Directories
-
-$(OUTPUT) $(OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
-	$(call msg,MKDIR,$@)
-	$(Q)mkdir -p $@
+# # List of additional cpp files that APP depends on
+# APP_CPP_FILES := SymUtils.cpp ProcUtils.cpp MemoryHeatmap.cpp
 
 CARGO ?= $(shell which cargo)
+ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt
+# endif
 
 # Get Clang's default includes on this system. We'll explicitly add these dirs
 # to the includes list when compiling with `-target bpf` because otherwise some
@@ -147,6 +73,17 @@ endef
 $(call allow-override,CC,$(CROSS_COMPILE)cc)
 $(call allow-override,LD,$(CROSS_COMPILE)ld)
 
+# .PHONY: all
+# all: $(APP)
+
+.PHONY: clean
+clean:
+	$(call msg,CLEAN)
+	$(Q)sudo rm -rf $(OUTPUT) $(APP)
+
+$(OUTPUT) $(OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
+	$(call msg,MKDIR,$@)
+	$(Q)mkdir -p $@
 
 # Build libbpf
 $(LIBBPF_OBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)/libbpf
@@ -161,7 +98,7 @@ $(BPFTOOL): | $(BPFTOOL_OUTPUT)
 	$(call msg,BPFTOOL,$@)
 	$(Q)$(MAKE) ARCH= CROSS_COMPILE= OUTPUT=$(BPFTOOL_OUTPUT)/ -C $(BPFTOOL_SRC) bootstrap
 
-# Build libblazesym
+
 $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a::
 	$(Q)cd $(LIBBLAZESYM_SRC) && $(CARGO) build --package=blazesym-c --release
 
@@ -169,15 +106,42 @@ $(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(OUTPUT
 	$(call msg,LIB, $@)
 	$(Q)sudo cp $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a $@
 
+# Build BPF code
+$(OUTPUT)/%.bpf.o: %.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | $(OUTPUT) $(BPFTOOL)
+	$(call msg,BPF,$@)
+	$(Q)$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH)		      \
+		     $(INCLUDES) $(CLANG_BPF_SYS_INCLUDES)		      \
+		     -c $(filter %.c,$^) -o $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
+	$(Q)$(BPFTOOL) gen object $@ $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
 
-clean:
-	rm -rf $(OUTPUT) $(TESTS)
+# Generate BPF skeletons
+$(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(BPFTOOL)
+	$(call msg,GEN-SKEL,$@)
+	$(Q)$(BPFTOOL) gen skeleton $< > $@
 
-# TODO add cleanall vs clean
+# Build user-space code
+$(patsubst %,$(OUTPUT)/%.o,$(APP)): %.o: %.skel.h
 
-# Rules
-.PHONY: clean
+# Convert cpp files to object files
+APP_OBJ_FILES := $(patsubst %.cpp,$(OUTPUT)/%.o,$(APP_CPP_FILES))
 
-# # Build all test executables
-# all: $(OUTPUT)/probe/EventProbe.o
-# # all: $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o 
+$(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
+	$(call msg,CXX,$@)
+	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
+
+
+# $(APP): $(OUTPUT)/$(APP).o $(APP_OBJ_FILES) $(LIBBPF_OBJ) $(LIBBLAZESYM_OBJ) | $(OUTPUT)
+# 	$(call msg,BINARY,$@)
+# 	$(Q)$(CXX) $(CXXFLAGS) $^ $(ALL_LDFLAGS) -lelf -lz -lstdc++ -o $@
+
+# # Build additional cpp files
+# $(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
+# 	$(call msg,CXX,$@)
+# 	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
+
+
+# delete failed targets
+.DELETE_ON_ERROR:
+
+# keep intermediate (.skel.h, .bpf.o, etc) targets
+.SECONDARY:

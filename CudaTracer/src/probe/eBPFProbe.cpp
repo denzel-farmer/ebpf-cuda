@@ -14,8 +14,8 @@
 #include <thread>
 #include <iostream>
 
-
+#include "eBPFProbe.h"
 
 optional<AllocationEvent> eBPFProbe::PollEvent() {
-        return AllocationEvent(0, 0, 0, 0, EventType::DEVICE_TRANSFER);
+        return AllocationEvent(0, 0, 0, EventType::DEVICE_TRANSFER);
 }

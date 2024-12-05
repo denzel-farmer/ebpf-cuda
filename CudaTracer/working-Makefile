@@ -1,40 +1,77 @@
 # Variables
+
+
+
+CLANG ?= clang
+ROOT := $(abspath ..)
+# OUTPUT := .output
+OUTPUT := $(ROOT)/CudaTracer/obj
 SRCDIR = src
-OBJDIR = obj
 TESTDIR = test
 
-CXX = g++
-CXXFLAGS = -Wall -Wextra -O2 -std=c++20 -I$(SRCDIR)
-LDFLAGS = 
-TARGET_NAME = TestMemHistory
-SRC = $(wildcard $(SRCDIR)/*.cpp)
-TEST_SRC = $(wildcard $(TESTDIR)/*.cpp)
-SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
-TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OBJDIR)/test_%.o, $(TEST_SRC))
-TARGET = $(TARGET_NAME)
 
-# Hardcoded headers
-HEADERS = $(SRCDIR)/MemHistory.h $(SRCDIR)/AllocationHistory.h
+LIBBPF_SRC := $(abspath $(ROOT)/libbpf/src)
+BPFTOOL_SRC := $(abspath $(ROOT)/bpftool/src)
+# LIBBPF_SRC := $(abspath ../../../../libbpf/src)
+# BPFTOOL_SRC := $(abspath ../../../../bpftool/src)
+LIBBPF_OBJ := $(abspath $(OUTPUT)/libbpf.a)
+BPFTOOL_OUTPUT ?= $(abspath $(OUTPUT)/bpftool)
+BPFTOOL ?= $(BPFTOOL_OUTPUT)/bootstrap/bpftool
+LIBBLAZESYM_SRC := $(abspath ../blazesym/)
+LIBBLAZESYM_INC := $(abspath $(LIBBLAZESYM_SRC)/capi/include)
+LIBBLAZESYM_OBJ := $(abspath $(OUTPUT)/libblazesym_c.a)
+ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
+			 | sed 's/arm.*/arm/' \
+			 | sed 's/aarch64/arm64/' \
+			 | sed 's/ppc64le/powerpc/' \
+			 | sed 's/mips.*/mips/' \
+			 | sed 's/riscv64/riscv/' \
+			 | sed 's/loongarch64/loongarch/')
+# VMLINUX := ../vmlinux.h/include/$(ARCH)/vmlinux.h
+VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
+
+CXX = g++
+CXXFLAGS = -Wall -Wextra -Werror -Wpedantic -O2 -std=c++20
+LDFLAGS = -lpthread
+
+# Find all source files under src
+SRC = $(shell find $(SRCDIR) -type f -name '*.cpp')
+
+# Find all test source files
+TEST_SRC = $(wildcard $(TESTDIR)/*.cpp)
+
+# Generate list of object files, mirroring directory structure
+SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
+
+# Generate list of test object files
+TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OBJDIR)/test_%.o, $(TEST_SRC))
+
+# Include directories under src for headers
+INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
+CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
+
+# Generate list of test executables
+TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
 
 # Rules
 .PHONY: all clean
 
-all: $(TARGET)
+# Build all test executables
+all: $(TESTS)
 
-$(TARGET): $(SRC_OBJ) $(TEST_OBJ) | $(TESTDIR)
-	$(CXX) $(LDFLAGS) -o $@ $^
+# Rule to build each test executable
+$(TESTS): %: $(OBJDIR)/test_%.o $(SRC_OBJ)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(HEADERS) | $(OBJDIR)
+# Compile source files into object files
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(OBJDIR)/test_%.o: $(TESTDIR)/%.cpp $(HEADERS) | $(OBJDIR)
+# Compile test source files into object files
+$(OBJDIR)/test_%.o: $(TESTDIR)/%.cpp
+	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
-
-$(TESTDIR):
-	mkdir -p $(TESTDIR)
 
 clean:
-	rm -rf $(OBJDIR) $(TARGET)
+	rm -rf $(OBJDIR) $(TESTS)

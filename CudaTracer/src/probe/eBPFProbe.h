@@ -5,13 +5,9 @@
 #include "SyncUtils.h"
 #include "MemHistory.h"
 
-struct CudaMemcpyEvent {
-    void *source;
-    void *destination;
-    size_t size;
-    cudaMemcpyKind direction;
-    CudaProcessInfo processInfo;
-};
+// 16 MB ring buffers
+constexpr unsigned long probe_ringbuf_size = 1 << 24;
+
 
 // eBPF EventProbe implementation
 class eBPFProbe : public EventProbe {

@@ -1,5 +1,6 @@
-#pragma once
-#include <sys/types.h>
+
+#ifndef CUDA_EVENTS_H
+#define CUDA_EVENTS_H
 
 enum cudaMemcpyKind {
     cudaMemcpyHostToHost = 0,
@@ -13,18 +14,20 @@ struct CudaProcessInfo {
     pid_t pid;
 };
 
-struct CudaTransferEvent {
-    void *destination;
-    const void *source;
+// struct CudaTransferEvent {
+//     void *destination;
+//     const void *source;
+//     size_t size;
+//     enum cudaMemcpyKind direction;
+//     struct CudaProcessInfo processInfo;
+// };
+
+struct CudaMemcpyEvent {
+    unsigned long source;
+    unsigned long destination;
     size_t size;
     enum cudaMemcpyKind direction;
     struct CudaProcessInfo processInfo;
 };
 
-struct CudaMemcpyEvent {
-    void *source;
-    const void *destination;
-    size_t size;
-    cudaMemcpyKind direction;
-    CudaProcessInfo processInfo;
-};
+#endif // CUDA_EVENTS_H

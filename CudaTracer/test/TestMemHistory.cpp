@@ -5,22 +5,22 @@
 void AddSimpleHistory(MemHistory& memHistory, unsigned long start, unsigned long size){
     // Create AllocationEvent
     EventInfo eventInfo = EventInfo(0, EventType::ALLOC);
-    AllocationInfo allocInfo = AllocationInfo(start, size, 0);
+    AllocationRange allocInfo = AllocationRange(start, size);
     AllocationEvent allocEvent = AllocationEvent(allocInfo, eventInfo);
 
     // Record an event
     memHistory.RecordEvent(allocEvent);
     cout << memHistory.ToString(true) << endl;
 
-    AllocationEvent hostTransfer = AllocationEvent(start, size, 0, 9, EventType::HOST_TRANSFER);
+    AllocationEvent hostTransfer = AllocationEvent(start, size, 9, EventType::HOST_TRANSFER);
     memHistory.RecordEvent(hostTransfer);
     cout << memHistory.ToString(true) << endl;
 
-    AllocationEvent deviceTransfer = AllocationEvent(start, size, 0, 18, EventType::DEVICE_TRANSFER);
+    AllocationEvent deviceTransfer = AllocationEvent(start, size, 18, EventType::DEVICE_TRANSFER);
     memHistory.RecordEvent(deviceTransfer);
     cout << memHistory.ToString(true) << endl;
 
-    hostTransfer = AllocationEvent(start, size, 0, 11, EventType::HOST_TRANSFER);
+    hostTransfer = AllocationEvent(start, size, 11, EventType::HOST_TRANSFER);
     memHistory.RecordEvent(hostTransfer);
     cout << memHistory.ToString(true) << endl;
 
@@ -28,11 +28,11 @@ void AddSimpleHistory(MemHistory& memHistory, unsigned long start, unsigned long
 
 void AddNumTransfersHistory(MemHistory& memHistory, unsigned long start, unsigned long size, unsigned long transfers) {
 
-    AllocationEvent allocEvent = AllocationEvent(start, size, 0, 0, EventType::ALLOC);
+    AllocationEvent allocEvent = AllocationEvent(start, size, 0, EventType::ALLOC);
     memHistory.RecordEvent(allocEvent);
 
     for (unsigned long i = 0; i < transfers; i++) {
-        AllocationEvent deviceTransfer = AllocationEvent(start, size, 0, i, EventType::DEVICE_TRANSFER);
+        AllocationEvent deviceTransfer = AllocationEvent(start, size, i, EventType::DEVICE_TRANSFER);
         memHistory.RecordEvent(deviceTransfer);
     }
 

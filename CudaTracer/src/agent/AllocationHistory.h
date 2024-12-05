@@ -23,7 +23,7 @@ struct AllocationRange {
     // unsigned long identifier;
 
     AllocationRange() : start(0), size(0) {}
-    AllocationRange(unsigned long s, unsigned long sz, unsigned long id) : start(s), size(sz) {}
+    AllocationRange(unsigned long s, unsigned long sz) : start(s), size(sz) {}
 
     bool operator<(const AllocationRange &other) const;
 
@@ -72,7 +72,7 @@ struct AllocationEvent {
     EventInfo event_info;
 
     AllocationEvent(AllocationRange alloc_info, EventInfo event_info) : allocation_info(alloc_info), event_info(event_info) {}
-    AllocationEvent(unsigned long start, unsigned long size, unsigned long identifier, unsigned long timestamp, EventType type) : allocation_info(start, size, identifier), event_info(timestamp, type) {}
+    AllocationEvent(unsigned long start, unsigned long size, unsigned long timestamp, EventType type) : allocation_info(start, size), event_info(timestamp, type) {}
 
     bool operator<(const AllocationEvent &other) const;
     boost::property_tree::ptree PtreeSerialize() const;

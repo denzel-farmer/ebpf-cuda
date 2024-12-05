@@ -65,7 +65,7 @@ vector <const AllocationHistory*> MemHistory::GetAllocationHistories() const {
     return all_histories;
 }
 
-void MemHistory::UpdateHistories(AllocationInfo alloc_info, EventInfo event_info) {
+void MemHistory::UpdateHistories(AllocationRange alloc_info, EventInfo event_info) {
     // If no allocation in container, create a new one 
     auto &index_by_start = histories.get<by_start_address>();
     auto it = index_by_start.find(alloc_info.start);
