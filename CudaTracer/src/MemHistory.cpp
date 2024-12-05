@@ -84,9 +84,13 @@ void MemHistory::UpdateHistories(AllocationInfo alloc_info, EventInfo event_info
 
  boost::property_tree::ptree MemHistory::PtreeSerialize(bool verbose) const {
     boost::property_tree::ptree root;
+
+    boost::property_tree::ptree allocationsNode;
     for (const auto& history : histories) {
-        root.push_back(std::make_pair("", history.PtreeSerialize(verbose)));
+        allocationsNode.push_back(std::make_pair("", history.PtreeSerialize(verbose)));
+        //root.add_child("AllocationHistory", history.PtreeSerialize(verbose));
     }
+    root.add_child("Allocations", allocationsNode);
     return root;
  }
 
