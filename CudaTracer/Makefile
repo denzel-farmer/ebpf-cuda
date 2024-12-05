@@ -4,37 +4,47 @@ OBJDIR = obj
 TESTDIR = test
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -O2 -std=c++20 -I$(SRCDIR)
-LDFLAGS = 
-TARGET_NAME = TestMemHistory
-SRC = $(wildcard $(SRCDIR)/*.cpp)
-TEST_SRC = $(wildcard $(TESTDIR)/*.cpp)
-SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
-TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OBJDIR)/test_%.o, $(TEST_SRC))
-TARGET = $(TARGET_NAME)
+CXXFLAGS = -Wall -Wextra -Werror -Wpedantic -O2 -std=c++20
+LDFLAGS = -lpthread
 
-# Hardcoded headers
-HEADERS = $(SRCDIR)/MemHistory.h $(SRCDIR)/AllocationHistory.h
+# Find all source files under src
+SRC = $(shell find $(SRCDIR) -type f -name '*.cpp')
+
+# Find all test source files
+TEST_SRC = $(wildcard $(TESTDIR)/*.cpp)
+
+# Generate list of object files, mirroring directory structure
+SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRC))
+
+# Generate list of test object files
+TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OBJDIR)/test_%.o, $(TEST_SRC))
+
+# Include directories under src for headers
+INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
+CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
+
+# Generate list of test executables
+TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
 
 # Rules
 .PHONY: all clean
 
-all: $(TARGET)
+# Build all test executables
+all: $(TESTS)
 
-$(TARGET): $(SRC_OBJ) $(TEST_OBJ) | $(TESTDIR)
-	$(CXX) $(LDFLAGS) -o $@ $^
+# Rule to build each test executable
+$(TESTS): %: $(OBJDIR)/test_%.o $(SRC_OBJ)
+	$(CXX) -o $@ $^ $(LDFLAGS)
 
-$(OBJDIR)/%.o: $(SRCDIR)/%.cpp $(HEADERS) | $(OBJDIR)
+# Compile source files into object files
+$(OBJDIR)/%.o: $(SRCDIR)/%.cpp
+	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-$(OBJDIR)/test_%.o: $(TESTDIR)/%.cpp $(HEADERS) | $(OBJDIR)
+# Compile test source files into object files
+$(OBJDIR)/test_%.o: $(TESTDIR)/%.cpp
+	@mkdir -p $(OBJDIR)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
-
-$(OBJDIR):
-	mkdir -p $(OBJDIR)
-
-$(TESTDIR):
-	mkdir -p $(TESTDIR)
 
 clean:
-	rm -rf $(OBJDIR) $(TARGET)
+	rm -rf $(OBJDIR) $(TESTS)
