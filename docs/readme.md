@@ -131,3 +131,13 @@ period known to have repeat allocations)
 # Problems
 - Can allocations merge? 
 - How do we handle read only / copy on write
+
+
+# random dependencies
+
+- libelf-dev
+- clang
+- libfmt-dev
+- cargo (no apt option?)
+
+ TODO: put demo into docker container

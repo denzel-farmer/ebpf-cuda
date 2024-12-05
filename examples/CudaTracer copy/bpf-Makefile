@@ -73,7 +73,7 @@ all: $(APP)
 .PHONY: clean
 clean:
 	$(call msg,CLEAN)
-	$(Q)sudo rm -rf $(OUTPUT) $(APP)
+	$(Q)rm -rf $(OUTPUT) $(APP)
 
 $(OUTPUT) $(OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
 	$(call msg,MKDIR,$@)
@@ -98,7 +98,7 @@ $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a::
 
 $(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(OUTPUT)
 	$(call msg,LIB, $@)
-	$(Q)sudo cp $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a $@
+	$(Q)cp $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a $@
 
 # Build BPF code
 $(OUTPUT)/%.bpf.o: %.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | $(OUTPUT) $(BPFTOOL)

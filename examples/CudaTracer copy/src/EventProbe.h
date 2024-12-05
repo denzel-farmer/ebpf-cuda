@@ -15,7 +15,6 @@
 #include <thread>
 #include <iostream>
 
-
 // Abstract EventProbe class
 class EventProbe {
     public:
@@ -23,9 +22,9 @@ class EventProbe {
 	EventProbe(ThreadSafeQueue<AllocationEvent> &queue)
 		: event_queue(queue)
 	{
-		globalLogger.log_info("EventProbe created");
+		Logger::log_info("EventProbe created");
 	}
-	virtual void Configure();
+
 	virtual void LaunchProbe();
 	void Terminate();
 
@@ -41,10 +40,21 @@ class EventProbe {
     }
 
     public:
-	thread probe_thread;
+	thread thread;
 
     private:
 	atomic<bool> stop_flag{ false };
 	ThreadSafeQueue<AllocationEvent> &event_queue;
 };
 
+// eBPF EventProbe implementation
+class eBPFEventProbe : public EventProbe {
+    public:
+	eBPFEventProbe(ThreadSafeQueue<AllocationEvent> &queue)
+		: EventProbe(queue)
+	{
+	}
+
+    private:
+	optional<AllocationEvent> PollEvent();
+};

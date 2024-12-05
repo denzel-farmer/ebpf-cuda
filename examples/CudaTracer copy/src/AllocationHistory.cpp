@@ -7,22 +7,23 @@
 using namespace std;
 
 
-// AllocationRange Implementations
+// AllocationInfo Implementations
 
-bool AllocationRange::operator<(const AllocationRange &other) const {
+bool AllocationInfo::operator<(const AllocationInfo &other) const {
     return start < other.start;
 }
-boost::property_tree::ptree AllocationRange::PtreeSerialize() const {
+boost::property_tree::ptree AllocationInfo::PtreeSerialize() const {
     boost::property_tree::ptree root;
     root.put("start", start);
     root.put("size", size);
+    root.put("identifier", identifier);
 
     return root;
 }
 
-string AllocationRange::ToString() const {
+string AllocationInfo::ToString() const {
     stringstream ss;
-    ss << "Start: " << start << ", Size: " << size;
+    ss << "Start: " << start << ", Size: " << size << ", Identifier: " << identifier;
     return ss.str();
 }
 
@@ -62,7 +63,7 @@ bool AllocationEvent::operator<(const AllocationEvent &other) const {
 boost::property_tree::ptree AllocationEvent::PtreeSerialize() const {
     boost::property_tree::ptree root;
 
-    root.add_child("AllocationRange", allocation_info.PtreeSerialize());
+    root.add_child("AllocationInfo", allocation_info.PtreeSerialize());
     root.add_child("EventInfo", event_info.PtreeSerialize());
 
     return root;
@@ -70,7 +71,7 @@ boost::property_tree::ptree AllocationEvent::PtreeSerialize() const {
 
 string AllocationEvent::ToString() const {
     stringstream ss;
-    ss << "AllocationRange: " << allocation_info.ToString() << ", EventInfo: " << event_info.ToString();
+    ss << "AllocationInfo: " << allocation_info.ToString() << ", EventInfo: " << event_info.ToString();
     return ss.str();
 }
 
@@ -78,7 +79,7 @@ string AllocationEvent::ToString() const {
 // AllocationHistory Implementations: tracks the history of a single allocation
 
 
-AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initial_event)
+AllocationHistory::AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event)
 {
     this->alloc_info = alloc_info;
     transfer_count = 0;
@@ -141,8 +142,8 @@ bool AllocationHistory::IsLatestEvent(const EventInfo& event) const {
 boost::property_tree::ptree AllocationHistory::PtreeSerialize(bool verbose) const {
     boost::property_tree::ptree root;
 
-    // Make a node for AllocationRange
-    root.add_child("AllocationRange", alloc_info.PtreeSerialize());    
+    // Make a node for AllocationInfo
+    root.add_child("AllocationInfo", alloc_info.PtreeSerialize());    
     root.put("final_state", AllocationStateToString(state));
     root.put("transfer_count", transfer_count);
 
@@ -161,7 +162,7 @@ boost::property_tree::ptree AllocationHistory::PtreeSerialize(bool verbose) cons
 
 string AllocationHistory::ToString(bool verbose) const {
     stringstream ss;
-    ss << "AllocationRange: " << alloc_info.ToString() << ", State: ";
+    ss << "AllocationInfo: " << alloc_info.ToString() << ", State: ";
     ss << AllocationStateToString(state);
     ss << ", TransferCount: " << transfer_count; 
     if (verbose) {

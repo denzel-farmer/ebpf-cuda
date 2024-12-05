@@ -5,6 +5,8 @@
 #include "MemHistory.h"
 #include "EventProbe.h"
 
+using namespace std;
+
 // Class that manages launching probes and collecting their events
 
 // TracerAgent class
@@ -29,10 +31,10 @@ class TracerAgent {
     const char *dump_filename = "history.json";
     bool verbose = false;
 
-    std::shared_mutex history_mutex;
+    shared_mutex history_mutex;
     MemHistory mem_history;
 
-    std::set<std::unique_ptr<EventProbe>> probes;
+    set<unique_ptr<EventProbe>> probes;
     ThreadSafeQueue<AllocationEvent> event_queue;
-    std::thread event_processing_thread;
+    thread event_processing_thread;
 };

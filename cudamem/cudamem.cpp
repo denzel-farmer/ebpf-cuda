@@ -16,6 +16,8 @@
 #include "cudamem.skel.h"
 #include "cudamem.h"
 
+using namespace std;
+
 static volatile sig_atomic_t exiting = 0;
 
 static const int64_t RINGBUF_MAX_ENTRIES = 64 * 1024 * 1024;
@@ -23,7 +25,6 @@ static const int64_t RINGBUF_MAX_ENTRIES = 64 * 1024 * 1024;
 using namespace std;
 
 static const string kCudaMemcpyName = "cudaMemcpy";
-
 
 void handle_sigint(int /* sig */)
 {

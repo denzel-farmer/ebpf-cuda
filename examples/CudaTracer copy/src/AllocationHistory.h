@@ -6,26 +6,17 @@
 
 using namespace std;
 
-struct AllocationIdentifier {
-    unsigned long call_site;
-    unsigned long call_no;
-
-    AllocationIdentifier() : call_site(0), call_no(0) {}
-    AllocationIdentifier(unsigned long site, unsigned long no) : call_site(site), call_no(no) {}
-};
-
-
 // Uniquely describes an allocation for its entire lifetime
-struct AllocationRange {
+struct AllocationInfo {
     unsigned long start;
     unsigned long size;
-    // // Currently unused
-    // unsigned long identifier;
+    // Currently unused
+    unsigned long identifier;
 
-    AllocationRange() : start(0), size(0) {}
-    AllocationRange(unsigned long s, unsigned long sz, unsigned long id) : start(s), size(sz) {}
+    AllocationInfo() : start(0), size(0), identifier(0) {}
+    AllocationInfo(unsigned long s, unsigned long sz, unsigned long id) : start(s), size(sz), identifier(id) {}
 
-    bool operator<(const AllocationRange &other) const;
+    bool operator<(const AllocationInfo &other) const;
 
     boost::property_tree::ptree PtreeSerialize() const;
     string ToString() const;
@@ -66,12 +57,11 @@ struct EventInfo {
     string ToString() const;
 };
 
-// Even not associated with identifier
 struct AllocationEvent {
-	AllocationRange allocation_info;
+	AllocationInfo allocation_info;
     EventInfo event_info;
 
-    AllocationEvent(AllocationRange alloc_info, EventInfo event_info) : allocation_info(alloc_info), event_info(event_info) {}
+    AllocationEvent(AllocationInfo alloc_info, EventInfo event_info) : allocation_info(alloc_info), event_info(event_info) {}
     AllocationEvent(unsigned long start, unsigned long size, unsigned long identifier, unsigned long timestamp, EventType type) : allocation_info(start, size, identifier), event_info(timestamp, type) {}
 
     bool operator<(const AllocationEvent &other) const;
@@ -99,7 +89,7 @@ constexpr const char* AllocationStateToString(AllocationState state) {
 // Current implementation is naive multiset of events (hotspot/coldspot optimization happens in the outer class)
 class AllocationHistory {
 public:
-    AllocationHistory(AllocationRange alloc_info, EventInfo initial_event);
+    AllocationHistory(AllocationInfo alloc_info, EventInfo initial_event);
 
     unsigned long GetTransferCount() const;
 
@@ -124,8 +114,7 @@ private:
     bool IsLatestEvent(const EventInfo& event) const;
 
 private:
-    AllocationRange alloc_info;
-    AllocationIdentifier identifier;
+    AllocationInfo alloc_info;
     AllocationState state;
     unsigned long transfer_count;
     multiset<EventInfo> events;
