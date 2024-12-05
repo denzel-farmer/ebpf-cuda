@@ -4,18 +4,19 @@ CLANG ?= clang
 ROOT := $(abspath ..)
 # OUTPUT := .output
 OUTPUT := $(ROOT)/CudaTracer/obj
+SUBMOD_OUTPUT := $(ROOT)/CudaTracer/submodules_obj
 SRCDIR = src
 TESTDIR = test
 LIBBPF_SRC := $(abspath $(ROOT)/libbpf/src)
 BPFTOOL_SRC := $(abspath $(ROOT)/bpftool/src)
 # LIBBPF_SRC := $(abspath ../../../../libbpf/src)
 # BPFTOOL_SRC := $(abspath ../../../../bpftool/src)
-LIBBPF_OBJ := $(abspath $(OUTPUT)/libbpf.a)
-BPFTOOL_OUTPUT ?= $(abspath $(OUTPUT)/bpftool)
+LIBBPF_OBJ := $(abspath $(SUBMOD_OUTPUT)/libbpf.a)
+BPFTOOL_OUTPUT ?= $(abspath $(SUBMOD_OUTPUT)/bpftool)
 BPFTOOL ?= $(BPFTOOL_OUTPUT)/bootstrap/bpftool
 LIBBLAZESYM_SRC := $(abspath ../blazesym/)
 LIBBLAZESYM_INC := $(abspath $(LIBBLAZESYM_SRC)/capi/include)
-LIBBLAZESYM_OBJ := $(abspath $(OUTPUT)/libblazesym_c.a)
+LIBBLAZESYM_OBJ := $(abspath $(SUBMOD_OUTPUT)/libblazesym_c.a)
 ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
 			 | sed 's/arm.*/arm/' \
 			 | sed 's/aarch64/arm64/' \
@@ -34,7 +35,7 @@ LDFLAGS = -lpthread
 # libbpf to avoid dependency on system-wide headers, which could be missing or
 # outdated
 INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
-INCLUDES := $(addprefix -I,$(INCLUDE_DIRS)) -I$(OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC)
+INCLUDES := $(addprefix -I,$(INCLUDE_DIRS)) -I$(OUTPUT) -I$(SUBMOD_OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC)
 #CFLAGS := -g -Wall
 ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
 ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt
@@ -79,7 +80,7 @@ $(OUTPUT)/test_%.o: $(TESTDIR)/%.cpp
 $(OUTPUT)/probe/eBPFProbe.o: $(LIBBPF_OBJ) $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o $(OUTPUT)/probe/bpf/CudaMemcpyProbe.skel.h
 
 # Build BPF code (bpf.c -> bpf.o)
-$(OUTPUT)/%.bpf.o: $(SRCDIR)/%.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | $(OUTPUT) $(BPFTOOL)
+$(OUTPUT)/%.bpf.o: $(SRCDIR)/%.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
 	$(call msg,BPF,$@)
 	@mkdir -p $(dir $@)
 	$(Q)$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH)		      \
@@ -88,7 +89,7 @@ $(OUTPUT)/%.bpf.o: $(SRCDIR)/%.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | 
 	$(Q)$(BPFTOOL) gen object $@ $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
 
 # Generate BPF skeletons
-$(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(BPFTOOL)
+$(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
 	$(call msg,GEN-SKEL,$@)
 	$(Q)$(BPFTOOL) gen skeleton $< > $@
 
@@ -109,9 +110,13 @@ $(patsubst %,$(OUTPUT)/%.o,$(APP)): %.o: %.skel.h
 
 # Directories
 
-$(OUTPUT) $(OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
+$(OUTPUT) $(SUBMOD_OUTPUT) $(SUBMOD_OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
 	$(call msg,MKDIR,$@)
 	$(Q)mkdir -p $@
+
+# $(SUBMOD_OUTPUT) $(SUBMOD_OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
+# 	$(call msg,MKDIR,$@)
+# 	$(Q)mkdir -p $@
 
 CARGO ?= $(shell which cargo)
 
@@ -149,7 +154,7 @@ $(call allow-override,LD,$(CROSS_COMPILE)ld)
 
 
 # Build libbpf
-$(LIBBPF_OBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(OUTPUT)/libbpf
+$(LIBBPF_OBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(SUBMOD_OUTPUT)/libbpf
 	$(call msg,LIB,$@)
 	$(Q)$(MAKE) -C $(LIBBPF_SRC) BUILD_STATIC_ONLY=1		      \
 		    OBJDIR=$(dir $@)/libbpf DESTDIR=$(dir $@)		      \
@@ -165,18 +170,23 @@ $(BPFTOOL): | $(BPFTOOL_OUTPUT)
 $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a::
 	$(Q)cd $(LIBBLAZESYM_SRC) && $(CARGO) build --package=blazesym-c --release
 
-$(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(OUTPUT)
+$(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(SUBMOD_OUTPUT)
 	$(call msg,LIB, $@)
 	$(Q)sudo cp $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a $@
 
-
+# Clean files generated from our code
 clean:
-	rm -rf $(OUTPUT) $(TESTS)
+	rm -rf $(OUTPUT)
 
+# Clean all files generated from our code and submodules
+cleanall:
+	rm -rf $(OUTPUT) $(SUBMOD_OUTPUT)
 # TODO add cleanall vs clean
 
+all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
+#all: $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o
 # Rules
-.PHONY: clean
+.PHONY: clean all
 
 # # Build all test executables
 # all: $(OUTPUT)/probe/EventProbe.o
