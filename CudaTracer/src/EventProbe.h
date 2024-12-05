@@ -1,14 +1,60 @@
 #pragma once
 
+#include "AllocationHistory.h"
+#include "SyncUtils.h"
+#include "MemHistory.h"
+#include "Logger.h"
 
-// Abstract class representing one probe that will be ijected into proccess 
+#include <atomic>
+#include <condition_variable>
+#include <mutex>
+#include <queue>
+#include <optional>
+#include <set>
+#include <shared_mutex>
+#include <thread>
+#include <iostream>
+
+// Abstract EventProbe class
 class EventProbe {
+    public:
+	// Constructor that includes queue reference
+	EventProbe(ThreadSafeQueue<AllocationEvent> &queue)
+		: event_queue(queue)
+	{
+		Logger::log_info("EventProbe created");
+	}
+
+	virtual void LaunchProbe();
+	void Terminate();
+
+    private:
+	virtual optional<AllocationEvent> PollEvent();
     
+    inline bool CheckStop() {
+        return stop_flag.load(memory_order_acquire);
+    }
+
+    inline void SetStop() {
+        stop_flag.store(true, memory_order_release);
+    }
+
+    public:
+	thread thread;
+
+    private:
+	atomic<bool> stop_flag{ false };
+	ThreadSafeQueue<AllocationEvent> &event_queue;
 };
 
+// eBPF EventProbe implementation
+class eBPFEventProbe : public EventProbe {
+    public:
+	eBPFEventProbe(ThreadSafeQueue<AllocationEvent> &queue)
+		: EventProbe(queue)
+	{
+	}
 
-
-// Implementationf of an eBPF probe
-class BPFProbe : public EventProbe {
-    
+    private:
+	optional<AllocationEvent> PollEvent();
 };

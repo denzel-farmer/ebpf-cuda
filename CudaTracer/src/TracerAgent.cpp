@@ -17,56 +17,56 @@
 #include <thread>
 #include <iostream>
 
-// EventProbe class
-class EventProbe {
-    public:
-    // Constructor that includes queue reference
-    EventProbe(ThreadSafeQueue<AllocationEvent> &queue)
-        : event_queue(queue)
-    {
+// // EventProbe class
+// class EventProbe {
+//     public:
+//     // Constructor that includes queue reference
+//     EventProbe(ThreadSafeQueue<AllocationEvent> &queue)
+//         : event_queue(queue)
+//     {
 
-        Logger::log_info("EventProbe created");
-    }
+//         Logger::log_info("EventProbe created");
+//     }
 
-	void LaunchProbe()
-	{
-        Logger::log_info("EventProbe launched");
+// 	void LaunchProbe()
+// 	{
+//         Logger::log_info("EventProbe launched");
 
-        AllocationEvent event = AllocationEvent(0, 0, 0, 0, EventType::ALLOC);
-        event_queue.enqueue(event);
+//         AllocationEvent event = AllocationEvent(0, 0, 0, 0, EventType::ALLOC);
+//         event_queue.enqueue(event);
 
-		while (!CheckStop()) {
-			auto event = PollEvent();
-            if (event.has_value()) {
-                event_queue.enqueue(event.value());
-            }
+// 		while (!CheckStop()) {
+// 			auto event = PollEvent();
+//             if (event.has_value()) {
+//                 event_queue.enqueue(event.value());
+//             }
     
-			this_thread::sleep_for(chrono::milliseconds(100));
-		}
-	}
+// 			this_thread::sleep_for(chrono::milliseconds(100));
+// 		}
+// 	}
 
-	void Terminate()
-	{
-		stop_flag.store(true, memory_order_release);
-	}
+// 	void Terminate()
+// 	{
+// 		stop_flag.store(true, memory_order_release);
+// 	}
 
-    private:
-    optional<AllocationEvent> PollEvent() {
-        return AllocationEvent(0, 0, 0, 0, EventType::DEVICE_TRANSFER);
-    }
+//     private:
+//     optional<AllocationEvent> PollEvent() {
+//         return AllocationEvent(0, 0, 0, 0, EventType::DEVICE_TRANSFER);
+//     }
 
 
-    inline bool CheckStop() {
-        return stop_flag.load(memory_order_acquire);
-    }
+//     inline bool CheckStop() {
+//         return stop_flag.load(memory_order_acquire);
+//     }
 
-    public:
-	thread thread;
+//     public:
+// 	thread thread;
 
-    private:
-	atomic<bool> stop_flag{ false };
-    ThreadSafeQueue<AllocationEvent> &event_queue;
-};
+//     private:
+// 	atomic<bool> stop_flag{ false };
+//     ThreadSafeQueue<AllocationEvent> &event_queue;
+// };
 
 // TracerAgent class
 class TracerAgent {
