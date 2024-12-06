@@ -28,7 +28,7 @@ private:
 
 template <typename T>
 void ThreadSafeQueue<T>::enqueue(T value) {
-    cerr << "enqueue" << endl;
+   // cerr << "enqueue" << endl;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_queue.push(std::move(value));
@@ -38,7 +38,7 @@ void ThreadSafeQueue<T>::enqueue(T value) {
 
 template <typename T>
 std::optional<T> ThreadSafeQueue<T>::dequeue_wait() {
-    cerr << "dequeue_wait" << endl;
+   // cerr << "dequeue_wait" << endl;
     std::unique_lock<std::mutex> lock(m_mutex);
     m_cond_var.wait(lock, [this]() { return !m_queue.empty() || m_done; });
     if (!m_queue.empty()) {
@@ -52,7 +52,7 @@ std::optional<T> ThreadSafeQueue<T>::dequeue_wait() {
 template <typename T>
 void ThreadSafeQueue<T>::terminate() {
     {
-        cerr << "terminate" << endl;
+     //   cerr << "terminate" << endl;
         std::lock_guard<std::mutex> lock(m_mutex);
         m_done = true;
     }

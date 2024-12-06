@@ -33,7 +33,7 @@ private:
         auto now = chrono::system_clock::now();
         auto now_time_t = chrono::system_clock::to_time_t(now);
         ostringstream oss;
-        oss << put_time(localtime(&now_time_t), "%Y-%m-%d %H:%M:%S");
+        oss << put_time(localtime(&now_time_t), "%H:%M:%S");
         return oss.str();
     }
 
@@ -148,16 +148,20 @@ public:
             return;
         }
 
+        // ostringstream logEntry;
+        // logEntry << "[" << getCurrentTime() << "] "
+        //          << "[" << getFunctionName() << "] "
+        //          << "[Thread " << this_thread::get_id() << "] "
+        //          << message;
         ostringstream logEntry;
         logEntry << "[" << getCurrentTime() << "] "
-                 << "[" << getFunctionName() << "] "
-                 << "[Thread " << this_thread::get_id() << "] "
                  << message;
+
 
         {
             lock_guard<mutex> lock(logMutex);
             // Print to standard error
-            cerr << logEntry.str() << endl;
+            // cerr << logEntry.str() << endl;
 
             // Append to log file
             ofstream logFile(logFileName, ios::app);
