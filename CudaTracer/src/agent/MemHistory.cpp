@@ -22,10 +22,10 @@ MemHistory::MemHistory() {
 
 void MemHistory::RecordEvent(AllocationEvent event, AllocationIdentifier identifier) {
     // TODO do edge case testing here (ex no overlapping duplicate allocs, no double frees)
-
+	cerr << "MemHistory Event call site: " << std::hex << identifier.call_site << ", call no: " << std::dec << identifier.call_no << endl;
     // TODO do merging/splitting here
 
-    UpdateHistories(event.allocation_info, event.event_info);
+    UpdateHistories(event.allocation_info, event.event_info, identifier);
 }
 
 // Record a new memory event
@@ -74,6 +74,7 @@ vector <const AllocationHistory*> MemHistory::GetAllocationHistories() const {
     return all_histories;
 }
 
+// TODO merge
 void MemHistory::UpdateHistories(AllocationRange alloc_info, EventInfo event_info) {
     // If no allocation in container, create a new one 
     auto &index_by_start = histories.get<by_start_address>();
@@ -82,6 +83,23 @@ void MemHistory::UpdateHistories(AllocationRange alloc_info, EventInfo event_inf
     if (it == index_by_start.end()) {
         // Allocation does not exist, create a new one
         AllocationHistory new_alloc(alloc_info, event_info);
+        histories.insert(move(new_alloc));
+    } else {
+        // Allocation exists, update safely 
+        index_by_start.modify(it, [&](AllocationHistory &alloc) {
+            alloc.SubmitEvent(event_info);
+        });
+    }
+}
+
+void MemHistory::UpdateHistories(AllocationRange alloc_info, EventInfo event_info, AllocationIdentifier identifier) {
+    // If no allocation in container, create a new one 
+    auto &index_by_start = histories.get<by_start_address>();
+    auto it = index_by_start.find(alloc_info.start);
+
+    if (it == index_by_start.end()) {
+        // Allocation does not exist, create a new one
+        AllocationHistory new_alloc(alloc_info, event_info, identifier);
         histories.insert(move(new_alloc));
     } else {
         // Allocation exists, update safely 

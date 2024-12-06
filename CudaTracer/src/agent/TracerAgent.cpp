@@ -95,6 +95,7 @@ void TracerAgent::HandleEvent(AllocationEvent event) {
 
 // Identifier event
 void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identifier) {
+	cerr << "Event call site: " << std::hex << identifier.call_site << ", call no: " << std::dec << identifier.call_no << endl;
 	// Process the event, locking as a writer
 	globalLogger.log_info("Handling event");
 	lock_guard<shared_mutex> lock(history_mutex);
