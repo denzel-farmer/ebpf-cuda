@@ -7,6 +7,14 @@
 using namespace std;
 
 
+boost::property_tree::ptree AllocationIdentifier::PtreeSerialize() const {
+    boost::property_tree::ptree root;
+    root.put("call_site", call_site);
+    root.put("call_no", call_no);
+
+    return root;
+}
+
 // AllocationRange Implementations
 
 bool AllocationRange::operator<(const AllocationRange &other) const {
@@ -156,7 +164,8 @@ boost::property_tree::ptree AllocationHistory::PtreeSerialize(bool verbose) cons
     boost::property_tree::ptree root;
 
     // Make a node for AllocationRange
-    root.add_child("AllocationRange", alloc_info.PtreeSerialize());    
+    root.add_child("AllocationRange", alloc_info.PtreeSerialize());   
+    root.add_child("AllocTag", alloc_tag->PtreeSerialize()); 
     root.put("final_state", AllocationStateToString(state));
     root.put("transfer_count", transfer_count);
 

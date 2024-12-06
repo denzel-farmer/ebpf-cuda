@@ -12,6 +12,9 @@ struct AllocationIdentifier {
 
     AllocationIdentifier() : call_site(0), call_no(0) {}
     AllocationIdentifier(unsigned long site, unsigned long no) : call_site(site), call_no(no) {}
+
+    boost::property_tree::ptree PtreeSerialize() const;
+
 };
 
 
