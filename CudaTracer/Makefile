@@ -28,8 +28,8 @@ ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
 VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
 
 CXX = g++
-CXXFLAGS = -Wall -Wextra -Werror -Wpedantic -O2 -std=c++20
-LDFLAGS = -lpthread
+CXXFLAGS = -Wall -O2 -std=c++20
+LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl
 
 # Use our own libbpf API headers and Linux UAPI headers distributed with
 # libbpf to avoid dependency on system-wide headers, which could be missing or
@@ -37,8 +37,8 @@ LDFLAGS = -lpthread
 INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
 INCLUDES := $(addprefix -I,$(INCLUDE_DIRS)) -I$(OUTPUT) -I$(SUBMOD_OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC)
 #CFLAGS := -g -Wall
-ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
-ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt
+# ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
+# ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt 
 
 # Find all source files under src
 SRC = $(shell find $(SRCDIR) -type f -name '*.cpp')
@@ -77,7 +77,8 @@ $(OUTPUT)/test_%.o: $(TESTDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 # Specific dependencies between eBPFProbe object and BPF code
-$(OUTPUT)/probe/eBPFProbe.o: $(LIBBPF_OBJ) $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o $(OUTPUT)/probe/bpf/CudaMemcpyProbe.skel.h
+# TODO just make list of probes
+$(OUTPUT)/probe/eBPFProbes.o: $(LIBBPF_OBJ) $(OUTPUT)/probe/CudaTracerProbe.bpf.o $(SRCDIR)/probe/CudaTracerProbe.skel.h
 
 # Build BPF code (bpf.c -> bpf.o)
 $(OUTPUT)/%.bpf.o: $(SRCDIR)/%.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
@@ -89,7 +90,7 @@ $(OUTPUT)/%.bpf.o: $(SRCDIR)/%.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | 
 	$(Q)$(BPFTOOL) gen object $@ $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
 
 # Generate BPF skeletons
-$(OUTPUT)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
+$(SRCDIR)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
 	$(call msg,GEN-SKEL,$@)
 	$(Q)$(BPFTOOL) gen skeleton $< > $@
 
@@ -181,6 +182,7 @@ clean:
 # Clean all files generated from our code and submodules
 cleanall:
 	rm -rf $(OUTPUT) $(SUBMOD_OUTPUT)
+	find $(SRCDIR) -name '*skel.h' -delete
 # TODO add cleanall vs clean
 
 all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
