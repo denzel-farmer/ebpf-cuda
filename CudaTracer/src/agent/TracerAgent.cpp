@@ -67,7 +67,7 @@ void TracerAgent::DumpHistory(const char *filename, bool verbose) {
 	// Lock history as a writer, and dump the history to a file
 	lock_guard<shared_mutex> lock(history_mutex);
 	globalLogger.log_info("Dumping history to file");
-	ofstream dump_file(dump_filename);
+	ofstream dump_file(filename);
 	if (dump_file.is_open()) {
 		mem_history.JSONSerialize(dump_file, verbose);
 		dump_file.close();

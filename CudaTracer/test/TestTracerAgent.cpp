@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
     std::cout << "Agent started. Press Enter to dump history and exit..." << std::endl;
     std::cin.get();
 
-    agent.dumpHistory("history_dump.json");
+    agent.DumpHistory("/home/denzelgfarmer/ebpf-cuda/CudaTracer/history_dump.json");
     std::cout << "History dumped to history_dump.json" << std::endl;
 
     return 0;

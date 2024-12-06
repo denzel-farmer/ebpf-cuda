@@ -1,0 +1,148 @@
+[2024-12-06 01:39:01] [ERROR] [./TestTracerAgent(+0x5f20b) [0x5555555b320b]] [Thread 140737347946496] Failed to open and load BPF skeleton
+[2024-12-06 01:39:29] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:39:29] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:41:28] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:41:28] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:42:34] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:42:34] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:44:46] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:44:46] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:47:18] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:47:18] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:49:38] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:49:38] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:51:42] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:51:42] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:54:20] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:54:20] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:58:01] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:58:01] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:58:40] [INFO] [./TestTracerAgent(+0x60144) [0x5555555b4144]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 01:58:40] [INFO] [./TestTracerAgent(+0x6069d) [0x5555555b469d]] [Thread 140737347946496] Attaching probe at offset: 456352 target: cudaMemcpy
+[2024-12-06 01:59:33] [./TestTracerAgent(+0x3a815) [0x55555558e815]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+
+[2024-12-06 01:59:33] [./TestTracerAgent(+0x3a815) [0x55555558e815]] [Thread 140737347946496] Getting program
+
+[2024-12-06 01:59:33] [./TestTracerAgent(+0x3a815) [0x55555558e815]] [Thread 140737347946496] Finding symbols
+
+[2024-12-06 01:59:33] [./TestTracerAgent(+0x3a815) [0x55555558e815]] [Thread 140737347946496] Attaching probe at offset: 456352
+
+[2024-12-06 02:02:22] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:02:22] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:02:22] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:02:22] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe at offset: 456352
+[2024-12-06 02:07:33] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:07:33] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:07:33] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:07:33] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe at offset: 456352
+[2024-12-06 02:14:42] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:14:42] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:14:42] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:14:42] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe to /home/denzelgfarmer/ebpf-cuda/sample-cuda/large_pinned_transfer456352
+[2024-12-06 02:15:39] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:15:39] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:15:39] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:15:39] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe to /home/denzelgfarmer/ebpf-cuda/sample-cuda/large_pinned_transfer456352
+[2024-12-06 02:16:38] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:16:38] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:16:38] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:16:38] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe to /home/denzelgfarmer/ebpf-cuda/sample-cuda/large_pinned_transfer at 456352
+[2024-12-06 02:18:24] [./TestTracerAgent(+0x3a893) [0x55555558e893]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:18:24] [./TestTracerAgent(+0x3a893) [0x55555558e893]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:18:24] [./TestTracerAgent(+0x3a893) [0x55555558e893]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:19:11] [./TestTracerAgent(+0x3a893) [0x55555558e893]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:19:11] [./TestTracerAgent(+0x3a893) [0x55555558e893]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:19:11] [./TestTracerAgent(+0x3a893) [0x55555558e893]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:23:36] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:23:36] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:23:36] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:25:03] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:25:03] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:25:03] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:25:35] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:25:35] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:25:35] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:27:13] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:27:13] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:27:13] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:27:43] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:27:43] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:27:43] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:33:06] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 534407 target: cudaMemcpy
+[2024-12-06 02:33:06] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:33:06] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:33:06] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:33:06] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:33:06] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:33:06] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:33:15] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 152708677513382, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:33:20] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:33:20] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:33:20] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:33:21] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:33:21] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:33:21] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:35:01] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 552654 target: cudaMemcpy
+[2024-12-06 02:35:01] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:35:01] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:35:01] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:35:01] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:35:01] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:35:01] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:35:12] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 152826304708601, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:35:34] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Attaching probe for pid: 552930 target: cudaMemcpy
+[2024-12-06 02:35:34] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:35:34] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:35:34] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:35:34] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:35:34] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:35:34] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:35:39] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 152853579836697, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:35:42] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:35:42] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:35:42] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:35:43] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:35:43] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:35:43] [./TestTracerAgent(+0x3a883) [0x55555558e883]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:37:47] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Attaching probe for pid: 553404 target: cudaMemcpy
+[2024-12-06 02:37:47] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:37:47] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:37:47] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:37:47] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:37:47] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:37:47] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:37:48] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 152982491725526, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Cleanup complete

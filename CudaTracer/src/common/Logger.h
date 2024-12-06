@@ -9,6 +9,7 @@
 #include <chrono>
 #include <iomanip>
 #include <execinfo.h> // For backtrace functions
+#include <cstring>    // For strerror function
 #include <cxxabi.h>   // For demangling C++ symbols
 
 using namespace std;
@@ -45,6 +46,44 @@ private:
         default: return "UNKNOWN";
     }
 }
+
+
+
+    // std::string GetCallerName() {
+    //     const int maxFrames = 3; // We need the second frame for the caller
+    //     void* callStack[maxFrames];
+    //     int frames = backtrace(callStack, maxFrames);
+
+    //     if (frames < 2) {
+    //         return "Unknown Caller";
+    //     }
+
+    //     // Get symbol names
+    //     char** symbols = backtrace_symbols(callStack, frames);
+    //     if (!symbols) {
+    //         return "Unknown Caller";
+    //     }
+
+    //     std::string callerName;
+    //     // Print the caller name for debugging purposes
+    //     cout << "Caller: " << symbols[2] << endl;
+    //     // Demangle the symbol name
+    //     char* demangledName = nullptr;
+    //     int status = 0;
+    //     demangledName = abi::__cxa_demangle(symbols[2], nullptr, nullptr, &status);
+
+    //     if (status == 0 && demangledName) {
+    //         callerName = demangledName;
+    //         free(demangledName); // Free the memory allocated by __cxa_demangle
+    //     } else {
+    //         callerName = symbols[2]; // Fallback to mangled name
+    //     }
+
+    //     free(symbols); // Free memory allocated by backtrace_symbols
+    //     return callerName;
+    // }
+
+
     // Get the current function name using backtrace
     inline string getFunctionName() const {
         void* callstack[2]; // Limit to the immediate caller
@@ -99,6 +138,8 @@ public:
 
     inline void log_error(const string& message) {
         log(LogLevel::ERROR, message);
+        int errnum = errno;
+        cerr << "Error number: " << errnum << ", Error message: " << strerror(errnum) << endl;
     }
 
     // Log function
@@ -109,16 +150,14 @@ public:
 
         ostringstream logEntry;
         logEntry << "[" << getCurrentTime() << "] "
-                 << "[" << logLevelToString(level) << "] "
                  << "[" << getFunctionName() << "] "
                  << "[Thread " << this_thread::get_id() << "] "
                  << message;
 
         {
             lock_guard<mutex> lock(logMutex);
-
-            // Print to standard output
-            cout << logEntry.str() << endl;
+            // Print to standard error
+            cerr << logEntry.str() << endl;
 
             // Append to log file
             ofstream logFile(logFileName, ios::app);

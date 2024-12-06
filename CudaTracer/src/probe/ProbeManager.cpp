@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <string>
 #include <vector>
+#include <stdexcept>
+#include <fmt/core.h>
 
 #include "Logger.h"
 #include "SymUtils.h"
@@ -41,15 +43,11 @@ ProbeManager::ProbeManager(ThreadSafeQueue<AllocationEvent> &queue)
 	}
 }
 
-bool ProbeManager::AttachAllPrograms()
+bool ProbeManager::AttachAllProbes()
 {
-	bool success = true;
-	for (auto &pair : m_programs) {
-		if (!AttachProgram(pair.first)) {
-			success = false;
-		}
-	}
-	return success;
+	globalLogger.log_info("Attaching all probes (not implemented)");
+
+	return false;
 }
 
 bool ProbeManager::AttachProbe(ProbeTarget target_func, pid_t target_pid)
@@ -63,59 +61,75 @@ bool ProbeManager::AttachProbe(ProbeTarget target_func, pid_t target_pid)
 
 	// Log pid + target_func
 	globalLogger.log_info("Attaching probe for pid: " + to_string(target_pid) +
-			      " target: " + target_sym_name);
+			      " target: " + string(target_sym_name));
 
+	globalLogger.log_info("Getting program\n");
 	info->prog = GetProgramFromSkeleton(m_skel, target_func);
 	if (!info->prog) {
 		globalLogger.log_error("Failed to get program for target: " +
 				       to_string(static_cast<int>(target_func)));
+		DestroyInfo(info);
 		return false;
 	}
+
+	// Log the program being attached
+	globalLogger.log_info("Finding symbols");
 
 	SymUtils symUtils(info->target_pid);
 	auto offsets = symUtils.findSymbolOffsets(target_sym_name);
 	if (offsets.empty()) {
-		globalLogger.log_error("Failed to find symbol: " + target_sym_name);
+		globalLogger.log_error("Failed to find symbol: " + string(target_sym_name));
+		DestroyInfo(info);
 		return false;
 	}
 
 	for (auto &offset : offsets) {
 		// Log offset + target_sym_name
-		globalLogger.log_info("Attaching probe at offset: " + to_string(offset.second) +
-				      " target: " + target_sym_name);
-		bpf_link *link ProgramInfo *info = new ProgramInfo();
-		= bpf_program__attach_uprobe(info.prog, false /* retprobe */, info.target_pid,
-					     offset.first.c_str(), offset.second);
+		cerr << "Attaching probe at symbol: " << offset.first.c_str() << endl;
+		fmt::print(stderr, "Attaching probe at 0x{:x}\n", (uintptr_t) offset.second);
+		fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) m_skel->progs.handle_cudaMemcpy);
+		fmt::print(stderr, "Attaching to PID: {}\n", target_pid);
+		fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) info->prog);
+		fmt::print(stderr, "Attaching to PID: {}\n", info->target_pid);
+		bpf_link *link = bpf_program__attach_uprobe(info->prog, false /* retprobe */,
+										info->target_pid, offset.first.c_str(),
+										offset.second);
+		cerr << "After attaching probe" << endl;
 		if (link) {
-			info.links.emplace_back(link);
+			info->links.emplace_back(link);
+		} else {
+			globalLogger.log_error("Failed to attach uprobe at offset: " + to_string(offset.second) + " errno: " + to_string(errno));
+			DestroyInfo(info);
+			return false;
 		}
 	}
 
+	globalLogger.log_info("Creating ring buffer\n");
 	info->ringbuf =
 		ring_buffer__new(bpf_map__fd(m_skel->maps.ringbuf), &HandleEvent, info, nullptr);
 	if (!info->ringbuf) {
 		globalLogger.log_error("Failed to create ring buffer for target: " +
-				       target_sym_name);
-		for (auto link : info.links) {
+				       string(target_sym_name));
+		for (auto link : info->links) {
 			bpf_link__destroy(link);
 		}
+		DestroyInfo(info);
 		return false;
 	}
 
 	// Add this ring buffer's fd to epoll
+	globalLogger.log_info("Adding ring buffer fd to epoll\n");
 	int rb_fd = ring_buffer__epoll_fd(info->ringbuf);
 	struct epoll_event ev = {};
 	ev.events = EPOLLIN;
 	ev.data.ptr = info->ringbuf; // identify which ringbuf triggered event
 	if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, rb_fd, &ev) < 0) {
-		cerr << "Failed to add ringbuf fd to epoll for " << sec_name << "\n";
-		ring_buffer__free(info->ringbuf);
-		info->ringbuf = nullptr;
-		bpf_link__destroy(info->link);
-		info->link = nullptr;
+		globalLogger.log_error("Failed to add ringbuf fd to epoll for " + string(target_sym_name));
+		DestroyInfo(info);
 		return false;
 	}
 
+	globalLogger.log_info("Starting polling\n");
 	// If this is the first program attached, start polling
 	if (!m_poll_thread.joinable()) {
 		StartPolling();
@@ -126,36 +140,33 @@ bool ProbeManager::AttachProbe(ProbeTarget target_func, pid_t target_pid)
 	return true;
 }
 
-bool ProbeManager::DetachProgram(ProbeTarget target_func)
+bool ProbeManager::DetachProbe(ProbeTarget target_func)
 {
 	// Log
 	globalLogger.log_info("Detaching probe for target: " +
-			      GetSymbolNameFromProbeTarget(target_func));
+			      string(GetSymbolNameFromProbeTarget(target_func)));
 
 	auto it = m_programs.find(target_func);
 	if (it == m_programs.end()) {
 		globalLogger.log_error("Program not found: " +
-				       GetSymbolNameFromProbeTarget(target_func));
+				       string(GetSymbolNameFromProbeTarget(target_func)));
 		return false;
 	}
 
-	ProgramInfo &info = it->second;
-	if (!info.link) {
+	ProgramInfo *info = it->second;
+	if (info->links.empty()) {
 		globalLogger.log_error("Program not attached: " +
-				       GetSymbolNameFromProbeTarget(target_func));
+				       string(GetSymbolNameFromProbeTarget(target_func)));
 		return false;
 	}
 
 	// Remove from epoll
-	int rb_fd = ring_buffer__epoll_fd(info.ringbuf);
+	// TODDO do this in Cleanup()? Or DestroyInfo()?
+	int rb_fd = ring_buffer__epoll_fd(info->ringbuf);
 	epoll_ctl(m_epoll_fd, EPOLL_CTL_DEL, rb_fd, nullptr);
 
-	ring_buffer__free(info.ringbuf);
-	info.ringbuf = nullptr;
-
-	bpf_link__destroy(info.link);
-	info.link = nullptr;
-
+	DestroyInfo(info);
+	
 	// If no more programs attached, stop polling
 	if (!AnyProgramAttached()) {
 		StopPolling();
@@ -166,7 +177,8 @@ bool ProbeManager::DetachProgram(ProbeTarget target_func)
 	return true;
 }
 
-void ProbeManager::Shutdown() {
+void ProbeManager::Shutdown()
+{
 	StopPolling();
 	Cleanup();
 }
@@ -174,14 +186,8 @@ void ProbeManager::Shutdown() {
 void ProbeManager::Cleanup()
 {
 	for (auto &pair : m_programs) {
-		ProgramInfo &info = pair.second;
-		if (info.ringbuf) {
-			ring_buffer__free(info.ringbuf);
-		}
-		if (info.link) {
-			bpf_link__destroy(info.link);
-		}
-		delete &info;
+		ProgramInfo *info = pair.second;
+		DestroyInfo(info);
 	}
 	m_programs.clear();
 
@@ -198,6 +204,23 @@ void ProbeManager::Cleanup()
 	assert(m_programs.empty());
 	// Log
 	globalLogger.log_info("Cleanup complete");
+}
+
+void ProbeManager::DestroyInfo(ProgramInfo *info)
+{
+	// For link in info.links, destroy and remove
+	for (auto link : info->links) {
+		bpf_link__destroy(link);
+	}
+
+	info->links.clear();
+
+	// Free ring buffer
+	if (info->ringbuf)
+		ring_buffer__free(info->ringbuf);
+	info->ringbuf = nullptr;
+
+	delete info;
 }
 
 void ProbeManager::StartPolling()
@@ -225,11 +248,12 @@ void ProbeManager::StopPolling()
 bool ProbeManager::AnyProgramAttached()
 {
 	for (auto &pair : m_programs) {
-		if (pair.second.link)
+		if (!pair.second->links.empty())
 			return true;
 	}
 	return false;
 }
+
 
 void ProbeManager::PollThreadFunc()
 {
@@ -262,22 +286,9 @@ void ProbeManager::PollThreadFunc()
 	}
 }
 
-// Static callback for ring buffer events
-// We get a pointer to this manager as ctx, and data from the ring buffer.
-static int ProbeManager::HandleEvent(void *ctx, void *data, size_t size)
-{
-	// Global log
-	globalLogger.log_info("Handling event");
-
-	ProgramInfo *info = static_cast<ProgramInfo *>(ctx);
-	// Now we know which program this event came from by info->target_func.
-	ProbeManager *manager = info->manager;
-	manager->ProcessEvent(data, size, info);
-	return 0;
-}
 
 // Process an event into an AllocationEvent and enqueue it to the event queue
-void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo &info)
+void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo *info)
 {
 	// TODO different kinds of events
 	CudaMemcpyEvent *evt = (CudaMemcpyEvent *)data;
@@ -286,5 +297,5 @@ void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo
 
 	// Global log including event details, using AllocationEvent's to_string method
 	globalLogger.log_info("Event: " + event.ToString());
-	event_queue.enqueue(event);
+	m_event_queue.enqueue(event);
 }

@@ -1,6 +1,9 @@
 #pragma once
 #include <sys/types.h>
 #include <set>
+#include <thread>
+#include <shared_mutex>
+
 
 #include "MemHistory.h"
 #include "ProbeManager.h"

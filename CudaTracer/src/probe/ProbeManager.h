@@ -1,5 +1,9 @@
 #pragma once
 
+#include <set>
+#include <thread>
+#include <atomic>
+#include <unordered_map>
 #include "AllocationHistory.h"
 #include "SyncUtils.h"
 #include "SymUtils.h"
@@ -24,7 +28,7 @@ class ProbeManager;
 struct ProgramInfo {
 	struct bpf_program *prog;
 	struct ring_buffer *ringbuf;
-	std::vector<struct bpf_link *> link;
+	std::vector<struct bpf_link *> links;
 	ProbeTarget target_func;
 	pid_t target_pid;
 	ProbeManager *manager;
@@ -86,8 +90,14 @@ class ProbeManager {
 
     void Shutdown();
 
+    // Process an event into an AllocationEvent and enqueue it to the event queue
+    // TODO find a way to make this static and private? Called by HandleEvent
+	void ProcessEvent(const void *data, size_t size, const ProgramInfo *info);
+
+
     private:
 	void Cleanup();
+    void DestroyInfo(ProgramInfo *info);
 
 	void StartPolling();
 
@@ -97,12 +107,6 @@ class ProbeManager {
 
 	void PollThreadFunc();
 
-	// Static callback for ring buffer events
-	// We get a pointer to this manager as ctx, and data from the ring buffer.
-	static int HandleEvent(void *ctx, void *data, size_t size);
-
-	// Process an event into an AllocationEvent and enqueue it to the event queue
-	void ProcessEvent(const void *data, size_t size, const ProgramInfo &info);
 
     private:
 	CudaTracerProbe_bpf *m_skel;
@@ -112,3 +116,19 @@ class ProbeManager {
 	unordered_map<ProbeTarget, ProgramInfo *> m_programs;
 	ThreadSafeQueue<AllocationEvent> &m_event_queue;
 };
+
+// Static callback for ring buffer events
+// We get a pointer to this manager as ctx, and data from the ring buffer.
+// Static callback for ring buffer events
+// We get a pointer to this manager as ctx, and data from the ring buffer.
+static int HandleEvent(void *ctx, void *data, size_t size)
+{
+	// // Global log
+	// globalLogger.log_info("Handling event");
+
+	ProgramInfo *info = static_cast<ProgramInfo *>(ctx);
+	// Now we know which program this event came from by info->target_func.
+	ProbeManager *manager = info->manager;
+	manager->ProcessEvent(data, size, info);
+	return 0;
+}

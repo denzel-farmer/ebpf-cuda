@@ -28,7 +28,7 @@ ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
 VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
 
 CXX = g++
-CXXFLAGS = -Wall -O2 -std=c++20
+CXXFLAGS = -Wall -g -std=c++20
 LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl
 
 # Use our own libbpf API headers and Linux UAPI headers distributed with
@@ -61,6 +61,8 @@ TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
 
 
 ## Executable/Object File Rules
+
+all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
 
 # Rule to build each test executable
 $(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
@@ -185,7 +187,6 @@ cleanall:
 	find $(SRCDIR) -name '*skel.h' -delete
 # TODO add cleanall vs clean
 
-all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
 #all: $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o
 # Rules
 .PHONY: clean all
