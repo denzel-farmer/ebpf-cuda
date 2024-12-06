@@ -25,6 +25,7 @@ struct CudaProcessInfo {
 struct CudaMemcpyEvent {
     unsigned long source;
     unsigned long destination;
+    unsigned long long timestamp;
     size_t size;
     enum cudaMemcpyKind direction;
     struct CudaProcessInfo processInfo;

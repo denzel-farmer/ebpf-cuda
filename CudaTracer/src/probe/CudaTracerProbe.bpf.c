@@ -39,7 +39,7 @@ int handle_cudaMemcpy(struct pt_regs *ctx)
     event->source = (unsigned long)PT_REGS_PARM2(ctx);
     event->size = (size_t)PT_REGS_PARM3(ctx);
     event->direction = (enum cudaMemcpyKind)PT_REGS_PARM4(ctx);
-
+    event->timestamp = bpf_ktime_get_ns();
     // Populate process info
     populate_proc_info(&event->processInfo);
 
