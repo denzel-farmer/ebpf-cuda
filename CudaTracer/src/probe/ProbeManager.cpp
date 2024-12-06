@@ -85,12 +85,12 @@ bool ProbeManager::AttachProbe(ProbeTarget target_func, pid_t target_pid)
 
 	for (auto &offset : offsets) {
 		// Log offset + target_sym_name
-		cerr << "Attaching probe at symbol: " << offset.first.c_str() << endl;
-		fmt::print(stderr, "Attaching probe at 0x{:x}\n", (uintptr_t) offset.second);
-		fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) m_skel->progs.handle_cudaMemcpy);
-		fmt::print(stderr, "Attaching to PID: {}\n", target_pid);
-		fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) info->prog);
-		fmt::print(stderr, "Attaching to PID: {}\n", info->target_pid);
+		// cerr << "Attaching probe at symbol: " << offset.first.c_str() << endl;
+		// fmt::print(stderr, "Attaching probe at 0x{:x}\n", (uintptr_t) offset.second);
+		// fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) m_skel->progs.handle_cudaMemcpy);
+		// fmt::print(stderr, "Attaching to PID: {}\n", target_pid);
+		// fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) info->prog);
+		// fmt::print(stderr, "Attaching to PID: {}\n", info->target_pid);
 		bpf_link *link = bpf_program__attach_uprobe(info->prog, false /* retprobe */,
 										info->target_pid, offset.first.c_str(),
 										offset.second);
@@ -292,10 +292,24 @@ void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo
 {
 	// TODO different kinds of events
 	CudaMemcpyEvent *evt = (CudaMemcpyEvent *)data;
+	unsigned long start;	
 
-	AllocationEvent event(evt->source, evt->timestamp, evt->size, EventType::DEVICE_TRANSFER);
+	switch (evt->direction) {
+		case cudaMemcpyHostToDevice:
+			start = evt->source;
+			break;
+		case cudaMemcpyDeviceToHost:
+			start = evt->destination;
+			break;
+		default:
+			globalLogger.log_error("Unknown CudaMemcpyKind: " + to_string(evt->destination));
+			return;
+	}
+
+
+	AllocationEvent event(start, evt->timestamp, evt->size, EventType::DEVICE_TRANSFER);
 
 	// Global log including event details, using AllocationEvent's to_string method
-	globalLogger.log_info("Event: " + event.ToString());
+	globalLogger.log_info("[ProbeManager->ProcessEvent] Event: " + event.ToString());
 	m_event_queue.enqueue(event);
 }
