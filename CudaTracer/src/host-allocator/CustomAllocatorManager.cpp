@@ -4,6 +4,10 @@
 #include <limits>
 #include "AllocationHistory.h"
 #include <chrono>
+#include <string>
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 CustomAllocatorManager g_allocator_manager;
 
@@ -19,7 +23,7 @@ void CustomAllocatorManager::initialize(const std::string& mode) {
     }
     else if (mode == "use") {
         std::cout << "Initializing in Optimized Mode.\n";
-        load_frequency_data("frequency_data.txt");
+        load_tracer_history("tracer_history.json");
     }
     else {
         std::cerr << "Unknown mode: " << mode << ". Use 'profile' or 'use'.\n";
@@ -34,11 +38,16 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
     std::cout << "Allocation called from return address: " << return_addr << std::endl;
     std::flush(std::cout);
 
+    update_allocation_number(return_addr);
+
     bool use_pinned = false;
-    {
+    // default to use pinning if no tracer history used
+    if (tracer_history_used == 0){
+        use_pinned = true;
+    } else {
         std::lock_guard<std::mutex> freq_lock(freq_mutex);
-        auto it = allocation_frequencies.find(return_addr);
-        if (it != allocation_frequencies.end()) {
+        auto it = transfer_count_history.find(((unsigned long)return_addr << 16) + allocation_numbers[return_addr]);
+        if (it != transfer_count_history.end()) {
             const size_t FREQUENCY_THRESHOLD = 5; // Adjust as needed
             if (it->second > FREQUENCY_THRESHOLD) {
                 use_pinned = true;
@@ -62,8 +71,7 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
         }
     }
 
-    update_frequency(return_addr);
-    update_tracer_agent(return_addr, allocation_frequencies[return_addr], ptr, size);
+    update_tracer_agent(return_addr, allocation_numbers[return_addr], ptr, size);
 
     return ptr;
 }
@@ -109,11 +117,53 @@ void CustomAllocatorManager::load_frequency_data(const std::string& filename) {
             infile.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             continue;
         }
-        allocation_frequencies[addr] = freq;
+        allocation_numbers[addr] = freq;
     }
 
     infile.close();
     std::cout << "Loaded frequency data from " << filename << ".\n";
+}
+
+void CustomAllocatorManager::load_tracer_history(const std::string& filename){
+    std::ifstream infile(filename);
+    if (!infile.is_open()) {
+        std::cerr << "Failed to open tracer data file: " << filename << ". Proceeding without tracer data.\n";
+        return;
+    } else{
+        std::cout << "tracer history load worked" << std::endl;
+    }
+
+    boost::property_tree::ptree pt;
+    try {
+        boost::property_tree::read_json("data.json", pt);
+    } catch (const boost::property_tree::json_parser_error& e) {
+        std::cerr << "Error reading JSON file: " << e.what() << std::endl;
+        return;
+    }
+
+    for (const auto& allocation : pt.get_child("Allocations")) {
+        try {
+            std::string call_site_str = allocation.second.get<std::string>("AllocTag.call_site");
+            unsigned long call_site = std::stoul(call_site_str);
+
+            std::string call_no_str = allocation.second.get<std::string>("AllocTag.call_no");
+            unsigned long call_no = std::stoul(call_no_str);
+
+            std::string transfer_count_str = allocation.second.get<std::string>("transfer_count");
+            unsigned long transfer_count = std::stoul(transfer_count_str);
+
+            unsigned long unique_identifier = (call_site << 16) + call_no;
+
+            transfer_count_history[unique_identifier] = transfer_count;
+        }catch(const boost::property_tree::ptree_bad_data& e) {
+            std::cerr << "Error accessing JSON key: " << e.what() << std::endl;
+        }
+    }
+    
+    infile.close();
+    std::cout << "Loaded tracer data from " << filename << ".\n";
+    tracer_history_used = 1;
+
 }
 
 void CustomAllocatorManager::save_frequency_data(const std::string& filename) {
@@ -124,7 +174,7 @@ void CustomAllocatorManager::save_frequency_data(const std::string& filename) {
     }
 
     std::lock_guard<std::mutex> freq_lock(freq_mutex);
-    for (const auto& pair : allocation_frequencies) {
+    for (const auto& pair : allocation_numbers) {
         outfile << pair.first << " " << pair.second << "\n";
     }
 
@@ -132,9 +182,9 @@ void CustomAllocatorManager::save_frequency_data(const std::string& filename) {
     std::cout << "Saved frequency data to " << filename << ".\n";
 }
 
-void CustomAllocatorManager::update_frequency(void* return_addr) {
+void CustomAllocatorManager::update_allocation_number(void* return_addr) {
     std::lock_guard<std::mutex> freq_lock(freq_mutex);
-    allocation_frequencies[return_addr]++;
+    allocation_numbers[return_addr]++;
 }
 
 unsigned long get_time_since_boot_ns() {

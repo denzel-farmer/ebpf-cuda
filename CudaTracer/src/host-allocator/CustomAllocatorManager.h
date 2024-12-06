@@ -12,24 +12,28 @@ class CustomAllocatorManager {
 public:
     CustomAllocatorManager();
     ~CustomAllocatorManager(){
+        std::cout << "reached here" << std::endl;
         tracer_agent->DumpHistory("tracer_history.json");
     };
     void initialize(const std::string& mode);
     void* allocate_memory(size_t size);
     void deallocate_memory(void* ptr, size_t size);
+    void load_tracer_history(const std::string& filename);
     void load_frequency_data(const std::string& filename);
     void save_frequency_data(const std::string& filename);
-    void update_frequency(void* return_addr);
+    void update_allocation_number(void* return_addr);
     void update_tracer_agent(void* return_addr, size_t frequency, void* ptr, size_t size);
 
 private:
     PinnedMemoryPool pinned_pool;
     NonPinnedMemoryPool non_pinned_pool;
     std::unordered_map<void*, bool> allocation_type_map;
-    std::unordered_map<void*, size_t> allocation_frequencies;
+    std::unordered_map<void*, size_t> allocation_numbers;
+    std::unordered_map<unsigned long, size_t> transfer_count_history;
     std::mutex alloc_mutex;
     std::mutex freq_mutex;
     unique_ptr<TracerAgent> tracer_agent;
+    int tracer_history_used = 0;
 
 };
 

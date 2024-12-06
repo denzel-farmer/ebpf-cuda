@@ -63,6 +63,8 @@ void perform_test(int num_allocations, size_t size, bool use_pinned,
     std::vector<void*> host_ptrs(num_allocations, nullptr);
     std::vector<void*> device_ptrs(num_allocations, nullptr);
 
+    int HOTSPOT = 2;
+
     auto alloc_start = std::chrono::high_resolution_clock::now();
     for(int i = 0; i < num_allocations; ++i) {
         if(use_pinned) {
@@ -128,6 +130,93 @@ void perform_test(int num_allocations, size_t size, bool use_pinned,
     dealloc_time = std::chrono::duration_cast<std::chrono::milliseconds>(dealloc_end - dealloc_start).count();
 }
 
+
+// 100 allocations, transfers to GPU once then frees, 100 unpinned
+// 5 allocations pinned, transfers to GPU 1000 times each
+
+// 100 allocations, transfers to GPU once then frees, 100 pinned
+// 5 allocations pinned, transfers to GPU 1000 times each
+
+// 100 allocations, transfers to GPU once then frees, 100 no
+// 5 allocations no, transfers to GPU 1000 times each
+
+void perform_test_simulated(size_t param){
+    std::cout << "running simulated performance test" << std::endl;
+
+    std::ofstream out_file("performance_test_results_2.csv", std::ios::app);
+
+    if (out_file.tellp() == 0) {
+        out_file << "data_size,first,second,runtime(ms)" << std::endl;  // Write the header only if the file is empty
+    }
+
+    std::vector<void*> host_ptrs(100, nullptr);
+    void* device_ptrs;
+    
+
+    size_t size = static_cast<size_t>(1024 * param);
+    CHECK_CUDA_ERROR(cudaMalloc(&device_ptrs, size));
+
+    for (bool first : {true, false}) {
+        for (bool second : {true, false}) {
+            if (first == true && second == false){
+                continue;
+            }
+    
+            auto start = std::chrono::high_resolution_clock::now();
+            for (int i=0; i<100; i++){
+                if (first == true){
+                    void* ptr = nullptr;
+                    cudaMallocHost(&ptr, size);
+                    host_ptrs[i] = ptr;
+                } else{
+                    host_ptrs[i] = malloc(size);
+                }
+
+                CHECK_CUDA_ERROR(cudaMemcpy(device_ptrs, host_ptrs[i], size, cudaMemcpyHostToDevice));
+                CHECK_CUDA_ERROR(cudaMemcpy(host_ptrs[i], device_ptrs, size, cudaMemcpyDeviceToHost));
+
+                if (first == true){
+                    cudaFreeHost(host_ptrs[i]);
+                }else{
+                    free(host_ptrs[i]);
+                }
+            }
+
+            for (int i=0; i<5; i++){
+                if (second == true){
+                    void* ptr = nullptr;
+                    cudaMallocHost(&ptr, size);
+                    host_ptrs[i] = ptr;
+                } else{
+                    host_ptrs[i] = malloc(size);
+                }
+
+                for (int j=0; j<100; j++){
+                    CHECK_CUDA_ERROR(cudaMemcpy(device_ptrs, host_ptrs[i], size, cudaMemcpyHostToDevice));
+                    CHECK_CUDA_ERROR(cudaMemcpy(host_ptrs[i], device_ptrs, size, cudaMemcpyDeviceToHost));
+                }
+
+                if (second == true){
+                    cudaFreeHost(host_ptrs[i]);
+                }else{
+                    free(host_ptrs[i]);
+                }
+            }
+            auto end = std::chrono::high_resolution_clock::now();
+
+            long long runtime_ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+            out_file << param << ","
+                    << (first ? "true" : "false") << ","
+                     << (second ? "true" : "false") << ","
+                     << runtime_ms << std::endl;
+        }
+    }
+    out_file.close();
+
+}
+
+
 void save_benchmark_results_to_csv(int num_iterations, double avg_alloc_pinned, double avg_dealloc_pinned,
                                 double avg_h2d_pinned, double avg_kernel_pinned, double avg_d2h_pinned,
                                 double avg_alloc_malloc, double avg_dealloc_malloc, double avg_h2d_malloc,
@@ -189,7 +278,7 @@ int main(int argc, char* argv[]) {
     // each allocation is data_size_bytes / num_allocations
     size_t block_size = data_size_bytes / num_allocations;
 
-    int num_iterations = 5;
+    int num_iterations = 3;
 
     std::vector<double> alloc_times_pinned, dealloc_times_pinned;
     std::vector<double> h2d_times_pinned, kernel_times_pinned, d2h_times_pinned;
@@ -206,7 +295,8 @@ int main(int argc, char* argv[]) {
 
     g_allocator_manager.initialize(mode);
 
-    perform_test_basic(num_allocations, block_size, true);
+    perform_test_simulated(data_size_gb);
+    std::cout << "stop here" << std::endl;
     return 0;
 
     for(int iter = 0; iter < num_iterations; ++iter) {

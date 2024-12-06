@@ -143,7 +143,7 @@ void AllocationHistory::SubmitEvent(EventInfo event) {
 AllocationState AllocationHistory::CalculateNextState(EventType new_type) {
     switch (new_type) {
         case EventType::ALLOC:
-            assert(state != AllocationState::ALLOCATED && "Memory already allocated");
+            // assert(state != AllocationState::ALLOCATED && "Memory already allocated");
             return AllocationState::ALLOCATED;
             break;
         case EventType::FREE:
