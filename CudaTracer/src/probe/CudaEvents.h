@@ -2,13 +2,15 @@
 #ifndef CUDA_EVENTS_H
 #define CUDA_EVENTS_H
 
-enum cudaMemcpyKind {
-    cudaMemcpyHostToHost = 0,
-    cudaMemcpyHostToDevice = 1,
-    cudaMemcpyDeviceToHost = 2,
-    cudaMemcpyDeviceToDevice = 3,
-    cudaMemcpyDefault = 4
-};
+#include <cuda_runtime.h>
+
+// enum cudaMemcpyKind {
+//     cudaMemcpyHostToHost = 0,
+//     cudaMemcpyHostToDevice = 1,
+//     cudaMemcpyDeviceToHost = 2,
+//     cudaMemcpyDeviceToDevice = 3,
+//     cudaMemcpyDefault = 4
+// };
 
 struct CudaProcessInfo {
     pid_t pid;
