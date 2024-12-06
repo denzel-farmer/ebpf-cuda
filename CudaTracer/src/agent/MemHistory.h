@@ -26,7 +26,7 @@ typedef multi_index_container<
     AllocationHistory,
     indexed_by<
         // Primary key is start address, used for fast lookup
-        ordered_unique<
+        ordered_non_unique<
             tag<by_start_address>,
             const_mem_fun<AllocationHistory, unsigned long, &AllocationHistory::GetStartAddress>
         >,
@@ -39,6 +39,9 @@ typedef multi_index_container<
         >
     >
 > AllocationHistoryContainer;
+
+typedef AllocationHistoryContainer::index<by_start_address>::type::iterator StartAddressIndexIterator;
+typedef AllocationHistoryContainer::index<by_transfer_count>::type::iterator TransferCountIndexIterator;
 
 class MemHistory {
 public:
@@ -59,8 +62,12 @@ public:
     void JSONSerialize(ostream& out, bool verbose) const;
 
 private:
-    void UpdateHistories(AllocationRange alloc_info, EventInfo event_info, AllocationIdentifier identifier);
-    void UpdateHistories(AllocationRange alloc_info, EventInfo event_info);
+    void UpdateNewAlloc(AllocationRange alloc_info, EventInfo event_info, AllocationIdentifier identifier);
+    void UpdateExistingAlloc(AllocationRange alloc_info, EventInfo event_info);
+
+   pair<StartAddressIndexIterator, StartAddressIndexIterator> FindStartAddressAllocRange(unsigned long startAddress) const;
+   optional<StartAddressIndexIterator> FindActiveAlloc(unsigned long startAddress) const;
+
 
 private:
     AllocationHistoryContainer histories;

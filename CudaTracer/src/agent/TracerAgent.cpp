@@ -88,16 +88,38 @@ void TracerAgent::DumpHistory(const char *filename, bool verbose) {
 // Non-identifier event 
 void TracerAgent::HandleEvent(AllocationEvent event) {
 	// Process the event, locking as a writer
-	globalLogger.log_info("Handling event");
+	// construct log string with start address (hex) size (hex) and event type
+	std::stringstream log_stream;
+	log_stream << "[TracerAgent->HandleEvent]: No identifier, start address = 0x" << std::hex << event.allocation_info.start 
+			   << ", size = 0x" << event.allocation_info.size 
+			   << ", type = " << EventTypeToString(event.event_info.type);
+	std::string log_string = log_stream.str();
+	
+	globalLogger.log_info(log_string.c_str());
+
 	lock_guard<shared_mutex> lock(history_mutex);
 	mem_history.RecordEvent(event);
 }
 
 // Identifier event
 void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identifier) {
-	cerr << "Event call site: " << std::hex << identifier.call_site << ", call no: " << std::dec << identifier.call_no << endl;
+	//cerr << "Event call site: " << std::hex << identifier.call_site << ", call no: " << std::dec << identifier.call_no << endl;
 	// Process the event, locking as a writer
-	globalLogger.log_info("Handling event");
+	//globalLogger.log_info("Handling event");
+	std::stringstream log_stream;
+	log_stream << "[TracerAgent->HandleEvent]: Has identifier, start address = 0x" << std::hex << event.allocation_info.start 
+			   << ", size = 0x" << event.allocation_info.size 
+			   << ", type = " << EventTypeToString(event.event_info.type);
+	std::string log_string = log_stream.str();
+
+	globalLogger.log_info(log_string.c_str());
+	// Log the identifier call site and call number
+	std::stringstream log_stream2;
+	log_stream2 << ", call site = 0x" << std::hex << identifier.call_site 
+			   << ", call no = " << std::dec << identifier.call_no;
+	std::string log_string2 = log_stream2.str();
+	globalLogger.log_info(log_string2.c_str());
+
 	lock_guard<shared_mutex> lock(history_mutex);
 	mem_history.RecordEvent(event, identifier);
 }
@@ -106,13 +128,13 @@ void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identi
 void TracerAgent::ProcessEvents()
 {
 	while (true) {
-		globalLogger.log_info("Event processing thread waiting for event");
+		globalLogger.log_debug("Event processing thread waiting for event");
 		optional<AllocationEvent> event = m_event_queue.dequeue_wait();
-		globalLogger.log_info("Event maybe dequeued");
+		globalLogger.log_debug("Event maybe dequeued");
 		if (event.has_value()) {
 			// Process the event, locking as a writer
 			lock_guard<shared_mutex> lock(history_mutex);
-			globalLogger.log_info("Event dequeued");
+			globalLogger.log_debug("Event dequeued");
 			mem_history.RecordEvent(event.value());
 		} else {
 			// Exit if queue is done and empty

@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "AllocationHistory.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -30,7 +31,7 @@ boost::property_tree::ptree AllocationRange::PtreeSerialize() const {
 
 string AllocationRange::ToString() const {
     stringstream ss;
-    ss << "Start: " << start << ", Size: " << size;
+    ss << "Start: 0x" << hex << start << ", Size: 0x" << hex << size;
     return ss.str();
 }
 
@@ -96,13 +97,13 @@ AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initi
 
 
 
-AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initial_event)
-{
-    this->alloc_info = alloc_info;
-    transfer_count = 0;
-    state = AllocationState::UNKOWN;
-    SubmitEvent(initial_event);
-}
+// AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initial_event)
+// {
+//     this->alloc_info = alloc_info;
+//     transfer_count = 0;
+//     state = AllocationState::UNKOWN;
+//     SubmitEvent(initial_event);
+// }
 
 unsigned long AllocationHistory::GetTransferCount() const {
     return transfer_count;
@@ -116,7 +117,7 @@ AllocationState AllocationHistory::GetState() const {
     return state;
 }
 
-optional<AllocationIdentifier> AllocationHistory::GetAllocTag() const {
+AllocationIdentifier AllocationHistory::GetAllocTag() const {
     return alloc_tag;
 }
 
@@ -136,7 +137,7 @@ void AllocationHistory::SubmitEvent(EventInfo event) {
     }
     
     events.insert(event);
-    cout << "Event submitted: " << event.ToString() << endl;
+   // cout << "Event submitted: " << event.ToString() << endl;
 
 }
 
@@ -144,6 +145,10 @@ AllocationState AllocationHistory::CalculateNextState(EventType new_type) {
     switch (new_type) {
         case EventType::ALLOC:
             // assert(state != AllocationState::ALLOCATED && "Memory already allocated");
+            if (state == AllocationState::ALLOCATED) {
+                globalLogger.log_error("[AllocationHistory->CalculateNextState] Memory already allocated");
+            }
+
             return AllocationState::ALLOCATED;
             break;
         case EventType::FREE:
@@ -165,7 +170,7 @@ boost::property_tree::ptree AllocationHistory::PtreeSerialize(bool verbose) cons
 
     // Make a node for AllocationRange
     root.add_child("AllocationRange", alloc_info.PtreeSerialize());   
-    root.add_child("AllocTag", alloc_tag->PtreeSerialize()); 
+    root.add_child("AllocTag", alloc_tag.PtreeSerialize()); 
     root.put("final_state", AllocationStateToString(state));
     root.put("transfer_count", transfer_count);
 

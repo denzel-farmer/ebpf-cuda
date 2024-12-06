@@ -15,6 +15,14 @@ struct AllocationIdentifier {
 
     boost::property_tree::ptree PtreeSerialize() const;
 
+    bool operator==(const AllocationIdentifier &other) const {
+        return call_site == other.call_site && call_no == other.call_no;
+    }
+
+    bool operator!=(const AllocationIdentifier &other) const {
+        return !(*this == other);
+    }
+
 };
 
 
@@ -103,12 +111,12 @@ constexpr const char* AllocationStateToString(AllocationState state) {
 class AllocationHistory {
 public:
     AllocationHistory(AllocationRange alloc_info, EventInfo initial_event, AllocationIdentifier alloc_tag);
-    AllocationHistory(AllocationRange alloc_info, EventInfo initial_event);
+   // AllocationHistory(AllocationRange alloc_info, EventInfo initial_event);
 
     unsigned long GetTransferCount() const;
     unsigned long GetStartAddress() const;
     AllocationState GetState() const;
-    optional<AllocationIdentifier> GetAllocTag() const;
+    AllocationIdentifier GetAllocTag() const;
 
     const EventInfo& GetLatestEvent() const;
 
@@ -128,7 +136,7 @@ private:
 
 private:
     AllocationRange alloc_info;
-    optional<AllocationIdentifier> alloc_tag;
+    AllocationIdentifier alloc_tag;
     AllocationState state;
     unsigned long transfer_count;
     multiset<EventInfo> events;
