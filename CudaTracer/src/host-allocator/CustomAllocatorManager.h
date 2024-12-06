@@ -11,6 +11,9 @@
 class CustomAllocatorManager {
 public:
     CustomAllocatorManager();
+    ~CustomAllocatorManager(){
+        tracer_agent->DumpHistory("tracer_history.json");
+    };
     void initialize(const std::string& mode);
     void* allocate_memory(size_t size);
     void deallocate_memory(void* ptr, size_t size);
