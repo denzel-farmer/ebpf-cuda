@@ -62,8 +62,8 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
         }
     }
 
-    update_frequency(return_addr, ptr, size);
-    update_tracer_agent(return_addr, allocation_frequencies[return_addr], ptr);
+    update_frequency(return_addr);
+    update_tracer_agent(return_addr, allocation_frequencies[return_addr], ptr, size);
 
     return ptr;
 }
@@ -137,11 +137,20 @@ void CustomAllocatorManager::update_frequency(void* return_addr) {
     allocation_frequencies[return_addr]++;
 }
 
+unsigned long get_time_since_boot_ns() {
+    struct timespec ts;
+    if (clock_gettime(CLOCK_BOOTTIME, &ts) != 0) {
+        perror("clock_gettime");
+        return 0; // Return 0 or handle the error as needed
+    }
+    return static_cast<unsigned long>(ts.tv_sec) * 1'000'000'000 + ts.tv_nsec;
+}
+
 void CustomAllocatorManager::update_tracer_agent(void* return_addr, size_t frequency, void* ptr, size_t size){
-    AllocationIdentifier allocation_identifier(static_cast<long>return_addr, static_cast<long>frequency);
-    AllocationRange allocation_range(static_cast<long>ptr, static_cast<long>size);
-    auto timestamp = std::chrono::system_clock::now();
-    EventInfo event_info(timestamp, ALLOC);
+    AllocationIdentifier allocation_identifier((unsigned long) return_addr, (unsigned long) frequency);
+    AllocationRange allocation_range( (unsigned long) ptr, static_cast<unsigned long>(size));
+    auto timestamp = get_time_since_boot_ns();
+    EventInfo event_info(timestamp, EventType::ALLOC);
     AllocationEvent event(allocation_range, event_info);
     tracer_agent->HandleEvent(event, allocation_identifier);
 }

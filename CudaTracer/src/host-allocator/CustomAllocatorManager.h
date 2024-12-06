@@ -10,6 +10,7 @@
 
 class CustomAllocatorManager {
 public:
+    CustomAllocatorManager();
     void initialize(const std::string& mode);
     void* allocate_memory(size_t size);
     void deallocate_memory(void* ptr, size_t size);

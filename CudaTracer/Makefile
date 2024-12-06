@@ -29,7 +29,7 @@ VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
 
 CXX = g++
 CXXFLAGS = -Wall -g -std=c++20
-LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl -L/usr/local/cuda/lilb64 -lcudart
+LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl -L/usr/local/cuda/lib64 -lcudart
 
 # Use our own libbpf API headers and Linux UAPI headers distributed with
 # libbpf to avoid dependency on system-wide headers, which could be missing or
