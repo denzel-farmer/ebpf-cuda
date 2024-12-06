@@ -20,6 +20,8 @@ enum class ProbeType { KPROBE, UPROBE };
 
 enum class ProbeTarget { DEVICE_TRANSFER, CUDA_MEMCPY };
 
+class ProbeManager;
+
 struct ProgramInfo {
 	struct bpf_program *prog;
 	struct ring_buffer *ringbuf;
