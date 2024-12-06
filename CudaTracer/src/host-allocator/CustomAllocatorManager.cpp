@@ -2,6 +2,8 @@
 #include <iostream>
 #include <fstream>
 #include <limits>
+#include "AllocationHistory.h"
+#include <chrono>
 
 CustomAllocatorManager g_allocator_manager;
 
@@ -28,8 +30,6 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
 
     std::cout << "Allocation called from return address: " << return_addr << std::endl;
     std::flush(std::cout);
-
-    update_frequency(return_addr);
 
     bool use_pinned = false;
     {
@@ -58,6 +58,10 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
             allocation_type_map[ptr] = false;
         }
     }
+
+    update_frequency(return_addr, ptr, size);
+    update_tracer_agent(return_addr, allocation_frequencies[return_addr], ptr);
+
     return ptr;
 }
 
@@ -128,6 +132,15 @@ void CustomAllocatorManager::save_frequency_data(const std::string& filename) {
 void CustomAllocatorManager::update_frequency(void* return_addr) {
     std::lock_guard<std::mutex> freq_lock(freq_mutex);
     allocation_frequencies[return_addr]++;
+}
+
+void CustomAllocatorManager::update_tracer_agent(void* return_addr, size_t frequency, void* ptr, size_t size){
+    AllocationIdentifier allocation_identifier(static_cast<long>return_addr, static_cast<long>frequency);
+    AllocationRange allocation_range(static_cast<long>ptr, static_cast<long>size);
+    auto timestamp = std::chrono::system_clock::now();
+    EventInfo event_info(timestamp, ALLOC);
+    AllocationEvent event(allocation_range, event_info);
+    tracer_agent->HandleEvent(event, allocation_identifier);
 }
 
 extern "C" void* allocate_memory(size_t size) {

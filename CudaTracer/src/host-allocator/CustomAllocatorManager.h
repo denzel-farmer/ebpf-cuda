@@ -21,6 +21,7 @@ public:
     void load_frequency_data(const std::string& filename);
     void save_frequency_data(const std::string& filename);
     void update_frequency(void* return_addr);
+    void send_info(void* return_addr, size_t frequency, void* ptr, size_t size);
 
 private:
     PinnedMemoryPool pinned_pool;
