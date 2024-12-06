@@ -3,7 +3,7 @@
 #include <set>
 
 #include "MemHistory.h"
-#include "EventProbe.h"
+#include "ProbeManager.h"
 
 using namespace std;
 
@@ -13,28 +13,44 @@ using namespace std;
 
 class TracerAgent {
     public:
-    TracerAgent(pid_t pid)
-        : target_pid(pid)
+    TracerAgent()
     {
+        m_target_pid = getpid();
+        probe_manager = make_unique<ProbeManager>(&m_event_queue);
+    }
+
+    TracerAgent(pid_t pid)
+    {
+        m_target_pid = pid;
+        probe_manager = make_unique<ProbeManager>(&m_event_queue);
+    }
+
+    ~TracerAgent() {
+        // // Ensure proper cleanup
+        // if (event_processing_thread.joinable()) {
+        //     event_processing_thread.join();
+        // }
+        StopAgent();
     }
 
     void StartAgentAsync();
-    // Shutdown the agent, likely due to the target process exiting
-    void ShutdownAgent();
 
-    void ConstructProbes();
+    void TracerAgent::DumpHistory(const char *filename, bool verbose = false);
+
+    void StopAgent();
+
+    // void ConstructProbes();
 
     private:
     void ProcessEvents();
 
-    pid_t target_pid;
+    pid_t m_target_pid;
     const char *dump_filename = "history.json";
     bool verbose = false;
 
     shared_mutex history_mutex;
     MemHistory mem_history;
 
-    set<unique_ptr<EventProbe>> probes;
-    ThreadSafeQueue<AllocationEvent> event_queue;
-    thread event_processing_thread;
-};
+    unique_ptr<ProbeManager> probe_manager;
+    ThreadSafeQueue<AllocationEvent> m_event_queue;
+};;

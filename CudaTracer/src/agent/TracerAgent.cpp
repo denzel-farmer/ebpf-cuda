@@ -7,6 +7,8 @@
 #include "MemHistory.h"
 #include "Logger.h"
 
+#include "ProbeManager.h"
+
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
@@ -19,43 +21,49 @@
 
 // TracerAgent class
 
-void TracerAgent::ConstructProbes(){
-	// Create one fake probe
-	probes.insert(make_unique<EventProbe>(event_queue));
-
-}
-
 void TracerAgent::StartAgentAsync()
 {
-	// Configure and attach probes
-	for (auto &probe : probes) {
-		probe->Configure();
-		// Launch each probe in a new thread
-		probe->probe_thread = thread(&EventProbe::LaunchProbe, probe.get());
+
+	bool success = probe_manager->AttachProbe(ProbeTarget::CUDA_MEMCPY, m_target_pid);
+	if (!success) {
+		globalLogger.log_error("Failed to attach probe");
+		return;
 	}
-	// Start the event processing loop in a separate thread
-	event_processing_thread = thread(&TracerAgent::ProcessEvents, this);
+	// // Configure and attach probes
+	// for (auto &probe : probes) {
+	// 	probe->Configure();
+	// 	// Launch each probe in a new thread
+	// 	probe->probe_thread = thread(&EventProbe::LaunchProbe, probe.get());
+	// }
+	// // Start the event processing loop in a separate thread
+	// event_processing_thread = thread(&TracerAgent::ProcessEvents, this);
 }
 
-// Shutdown the agent, likely due to the target process exiting
-void TracerAgent::ShutdownAgent()
-{
-	// Signal probes to stop
-	for (auto &probe : probes) {
-		probe->Terminate();
-	}
-	// Wait for probe threads to finish
-	for (auto &probe : probes) {
-		if (probe->probe_thread.joinable()) {
-			probe->probe_thread.join();
-		}
-	}
-	// Signal the processing thread to exit
-	event_queue.terminate();
-	if (event_processing_thread.joinable()) {
-		event_processing_thread.join();
-	}
 
+void TracerAgent::StopAgent() {
+	probe_manager->Shutdown();
+}
+
+// // Shutdown the agent, likely due to the target process exiting
+// void TracerAgent::ShutdownAgent()
+// {
+// 	// Signal probes to stop
+// 	for (auto &probe : probes) {
+// 		probe->Terminate();
+// 	}
+// 	// Wait for probe threads to finish
+// 	for (auto &probe : probes) {
+// 		if (probe->probe_thread.joinable()) {
+// 			probe->probe_thread.join();
+// 		}
+// 	}
+// 	// Signal the processing thread to exit
+// 	event_queue.terminate();
+// 	if (event_processing_thread.joinable()) {
+// 		event_processing_thread.join();
+// 	}
+
+void TracerAgent::DumpHistory(const char *filename, bool verbose) {
 	// Lock history as a writer, and dump the history to a file
 	lock_guard<shared_mutex> lock(history_mutex);
 	globalLogger.log_info("Dumping history to file");
@@ -84,5 +92,5 @@ void TracerAgent::ProcessEvents()
 	}
 
 	globalLogger.log_info("Event processing thread exiting");
-	ShutdownAgent();
+	StopAgent();
 }
