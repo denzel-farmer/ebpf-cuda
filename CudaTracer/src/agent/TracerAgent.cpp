@@ -85,13 +85,20 @@ void TracerAgent::DumpHistory(const char *filename, bool verbose) {
 	}
 }
 
-
-
-void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identifier) {
+// Non-identifier event 
+void TracerAgent::HandleEvent(AllocationEvent event) {
 	// Process the event, locking as a writer
 	globalLogger.log_info("Handling event");
 	lock_guard<shared_mutex> lock(history_mutex);
 	mem_history.RecordEvent(event);
+}
+
+// Identifier event
+void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identifier) {
+	// Process the event, locking as a writer
+	globalLogger.log_info("Handling event");
+	lock_guard<shared_mutex> lock(history_mutex);
+	mem_history.RecordEvent(event, identifier);
 }
 
 

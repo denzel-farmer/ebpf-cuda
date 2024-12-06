@@ -77,6 +77,16 @@ string AllocationEvent::ToString() const {
 
 // AllocationHistory Implementations: tracks the history of a single allocation
 
+AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initial_event, AllocationIdentifier alloc_tag)
+{
+    this->alloc_info = alloc_info;
+    this->alloc_tag = alloc_tag;
+    transfer_count = 0;
+
+    SubmitEvent(initial_event);
+}
+
+
 
 AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initial_event)
 {
@@ -96,6 +106,10 @@ unsigned long AllocationHistory::GetStartAddress() const {
 
 AllocationState AllocationHistory::GetState() const {
     return state;
+}
+
+optional<AllocationIdentifier> AllocationHistory::GetAllocTag() const {
+    return alloc_tag;
 }
 
 const EventInfo& AllocationHistory::GetLatestEvent() const {

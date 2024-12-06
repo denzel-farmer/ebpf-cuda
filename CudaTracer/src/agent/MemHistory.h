@@ -43,7 +43,7 @@ typedef multi_index_container<
 class MemHistory {
 public:
     MemHistory();
-
+    void RecordEvent(AllocationEvent event, AllocationIdentifier identifier);
     void RecordEvent(AllocationEvent event);
     vector<const AllocationHistory*> GetHotspots(int num) const;
     vector<const AllocationHistory*> GetColdspots(unsigned long max_transfers) const;

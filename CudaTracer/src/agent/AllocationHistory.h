@@ -99,13 +99,13 @@ constexpr const char* AllocationStateToString(AllocationState state) {
 // Current implementation is naive multiset of events (hotspot/coldspot optimization happens in the outer class)
 class AllocationHistory {
 public:
+    AllocationHistory(AllocationRange alloc_info, EventInfo initial_event, AllocationIdentifier alloc_tag);
     AllocationHistory(AllocationRange alloc_info, EventInfo initial_event);
 
     unsigned long GetTransferCount() const;
-
     unsigned long GetStartAddress() const;
-
     AllocationState GetState() const;
+    optional<AllocationIdentifier> GetAllocTag() const;
 
     const EventInfo& GetLatestEvent() const;
 
@@ -125,7 +125,7 @@ private:
 
 private:
     AllocationRange alloc_info;
-    AllocationIdentifier identifier;
+    optional<AllocationIdentifier> alloc_tag;
     AllocationState state;
     unsigned long transfer_count;
     multiset<EventInfo> events;

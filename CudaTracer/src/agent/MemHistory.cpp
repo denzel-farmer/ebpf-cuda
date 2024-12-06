@@ -19,6 +19,15 @@ using namespace std;
 MemHistory::MemHistory() {
 }
 
+
+void MemHistory::RecordEvent(AllocationEvent event, AllocationIdentifier identifier) {
+    // TODO do edge case testing here (ex no overlapping duplicate allocs, no double frees)
+
+    // TODO do merging/splitting here
+
+    UpdateHistories(event.allocation_info, event.event_info);
+}
+
 // Record a new memory event
 void MemHistory::RecordEvent(AllocationEvent event) {
 
