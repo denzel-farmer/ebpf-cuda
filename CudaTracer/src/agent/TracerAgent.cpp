@@ -80,7 +80,7 @@ void TracerAgent::DumpHistory(const char *filename, bool verbose) {
 void TracerAgent::ProcessEvents()
 {
 	while (true) {
-		optional<AllocationEvent> event = event_queue.dequeue_wait();
+		optional<AllocationEvent> event = m_event_queue.dequeue_wait();
 		if (event.has_value()) {
 			// Process the event, locking as a writer
 			lock_guard<shared_mutex> lock(history_mutex);

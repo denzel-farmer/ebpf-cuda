@@ -16,13 +16,13 @@ class TracerAgent {
     TracerAgent()
     {
         m_target_pid = getpid();
-        probe_manager = make_unique<ProbeManager>(&m_event_queue);
+        probe_manager = make_unique<ProbeManager>(m_event_queue);
     }
 
     TracerAgent(pid_t pid)
     {
         m_target_pid = pid;
-        probe_manager = make_unique<ProbeManager>(&m_event_queue);
+        probe_manager = make_unique<ProbeManager>(m_event_queue);
     }
 
     ~TracerAgent() {
@@ -35,7 +35,11 @@ class TracerAgent {
 
     void StartAgentAsync();
 
-    void TracerAgent::DumpHistory(const char *filename, bool verbose = false);
+    void DumpHistory(const char *filename) {
+        DumpHistory(filename, false);
+    }
+
+    void DumpHistory(const char *filename, bool verbose);
 
     void StopAgent();
 

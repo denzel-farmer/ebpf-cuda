@@ -1,6 +1,5 @@
 #pragma once
 
-#include "EventProbe.h"
 #include "AllocationHistory.h"
 #include "SyncUtils.h"
 #include "SymUtils.h"
@@ -74,7 +73,7 @@ class ProbeManager {
 	{
 	    Shutdown();
         // Terminate the queue
-        m_event_queue.Terminate();
+        m_event_queue.terminate();
 	}
 
 	// Public API
