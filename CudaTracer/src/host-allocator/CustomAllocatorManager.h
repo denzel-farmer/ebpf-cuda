@@ -13,7 +13,7 @@ public:
     CustomAllocatorManager();
     ~CustomAllocatorManager(){
         std::cout << "reached here" << std::endl;
-        tracer_agent->DumpHistory("tracer_history.json");
+        tracer_agent->DumpHistory("tracer_history.json", true);
     };
     void initialize(const std::string& mode);
     void* allocate_memory(size_t size);
@@ -22,7 +22,8 @@ public:
     void load_frequency_data(const std::string& filename);
     void save_frequency_data(const std::string& filename);
     void update_allocation_number(void* return_addr);
-    void update_tracer_agent(void* return_addr, size_t frequency, void* ptr, size_t size);
+    void update_tracer_alloc(void* return_addr, size_t frequency, void* ptr, size_t size);
+    void update_tracer_dealloc(void* ptr, size_t size);
 
 private:
     PinnedMemoryPool pinned_pool;
