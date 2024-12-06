@@ -21,6 +21,41 @@ __global__ void dummy_kernel(float* data, size_t size);
         }                                                                 \
     } while (0)
 
+void perform_test_basic(int num_allocations, size_t size, bool use_pinned) {
+    std::cout << "using basic" << std::endl;
+    
+    std::vector<void*> host_ptrs(num_allocations, nullptr);
+    std::vector<void*> device_ptrs(num_allocations, nullptr);
+
+    for(int i = 0; i < 1; ++i) {
+        if(use_pinned) {
+            host_ptrs[i] = allocate_memory(size);
+            if(!host_ptrs[i]) {
+                std::cerr << "Pinned allocation failed at index " << i << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+        else {
+            host_ptrs[i] = malloc(size);
+            if(!host_ptrs[i]) {
+                std::cerr << "Malloc failed at index " << i << std::endl;
+                exit(EXIT_FAILURE);
+            }
+        }
+        memset(host_ptrs[i], 0, size);
+    }
+
+    for(int i = 0; i < 1; ++i) {
+        CHECK_CUDA_ERROR(cudaFree(device_ptrs[i]));
+        if(use_pinned) {
+            deallocate_memory(host_ptrs[i], size);
+        }
+        else {
+            free(host_ptrs[i]);
+        }
+    }
+}
+
 void perform_test(int num_allocations, size_t size, bool use_pinned, 
                  double& alloc_time, double& dealloc_time, 
                  double& h2d_time, double& kernel_time, double& d2h_time) {
@@ -170,6 +205,9 @@ int main(int argc, char* argv[]) {
     std::cout << "Number of Iterations: " << num_iterations << "\n\n";
 
     g_allocator_manager.initialize(mode);
+
+    perform_test_basic(num_allocations, block_size, true);
+    return 0;
 
     for(int iter = 0; iter < num_iterations; ++iter) {
         std::cout << "Iteration " << (iter + 1) << " / " << num_iterations << " - Pinned Memory\n";
