@@ -31,6 +31,8 @@ CXX = g++
 CXXFLAGS = -Wall -g -std=c++20
 LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl -L/usr/local/cuda/lib64 -lcudart
 
+NVCC_FLAGS = -g -O2 -std=c++20
+
 # Use our own libbpf API headers and Linux UAPI headers distributed with
 # libbpf to avoid dependency on system-wide headers, which could be missing or
 # outdated
@@ -62,7 +64,28 @@ TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
 
 ## Executable/Object File Rules
 
-all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
+all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ) cuda_benchmark_application
+
+# # Compile test CUDA source files into object files
+# $(OUTPUT)/%.o: $(TESTDIR)/%.cu
+# 	@mkdir -p $(OUTPUT)
+# 	nvcc $(NVCC_FLAGS) $(INCLUDES) -c -o $@ $<
+
+# Rule to build each test executable with CUDA
+cuda_benchmark_application: $(OUTPUT)/dummy_kernel.o $(OUTPUT)/cuda_benchmark_application.o $(SRC_OBJ)
+	nvcc -o cuda_benchmark_application $(OUTPUT)/dummy_kernel.o $(OUTPUT)/cuda_benchmark_application.o $(SRC_OBJ) $(LDFLAGS)
+
+$(OUTPUT)/cuda_benchmark_application.o:
+	@mkdir -p $(dir $@)
+	nvcc $(NVCC_FLAGS) $(INCLUDES) -c $(TESTDIR)/cuda_benchmark_application.cu -o $(OUTPUT)/cuda_benchmark_application.o
+
+$(OUTPUT)/dummy_kernel.o:
+	nvcc $(NVCC_FLAGS) $(INCLUDES) -c $(TESTDIR)/dummy_kernel.cu -o $(OUTPUT)/dummy_kernel.o 
+
+# # Compile CUDA source files into object files
+# $(OUTPUT)/dummykernel.o: $(TESTDIR)/%.cu
+# 	@mkdir -p $(dir $@)
+# 	nvcc $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 # Rule to build each test executable
 $(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
