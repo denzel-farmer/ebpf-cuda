@@ -26,7 +26,7 @@ struct ProgramInfo {
 	std::vector<struct bpf_link *> link;
 	ProbeTarget target_func;
 	pid_t target_pid;
-	EBPFProgramManager *manager;
+	ProbeManager *manager;
 };
 
 inline ProbeType ConvertProbeTargetToProbeType(ProbeTarget target)
@@ -70,8 +70,9 @@ class ProbeManager {
 
 	~ProbeManager()
 	{
-		StopPolling();
-		Cleanup();
+	    Shutdown();
+        // Terminate the queue
+        m_event_queue.Terminate();
 	}
 
 	// Public API
@@ -80,7 +81,9 @@ class ProbeManager {
 
 	bool AttachProbe(ProbeTarget target_func, pid_t target_pid);
 
-	bool DetachProgram(ProbeTarget target_func);
+	bool DetachProbe(ProbeTarget target_func);
+
+    void Shutdown();
 
     private:
 	void Cleanup();

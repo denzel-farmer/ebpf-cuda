@@ -166,6 +166,11 @@ bool ProbeManager::DetachProgram(ProbeTarget target_func)
 	return true;
 }
 
+void ProbeManager::Shutdown() {
+	StopPolling();
+	Cleanup();
+}
+
 void ProbeManager::Cleanup()
 {
 	for (auto &pair : m_programs) {
