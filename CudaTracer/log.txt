@@ -310,3 +310,355 @@
 [2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737305978624] Event maybe dequeued
 [2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737305978624] Event processing thread exiting
 [2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 05:47:25] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:25] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:25] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:25] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:25] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:25] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:25] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737112543248, Size: 164361161614057, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737005166608, Size: 164361186004682, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736897789968, Size: 164361209983665, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736790413328, Size: 164361233240781, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736683036688, Size: 164361257049689, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736575660048, Size: 164361280567210, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735944851456, Size: 164361304630307, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735810633728, Size: 164361313763468, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735676416000, Size: 164361322900723, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735542198272, Size: 164361332115196, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735407980544, Size: 164361350902011, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735139545088, Size: 164361373979730, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735005327360, Size: 164361397738349, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734871109632, Size: 164361421202666, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734736891904, Size: 164361444407558, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734602674176, Size: 164361467573438, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734468456448, Size: 164361490788444, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734334238720, Size: 164361498981623, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734200020992, Size: 164361507102162, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734065803264, Size: 164361515339130, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:27] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737112543248, Size: 164362366637733, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737005166608, Size: 164362390470674, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736897789968, Size: 164362414263295, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736790413328, Size: 164362437759794, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736683036688, Size: 164362461258292, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736575660048, Size: 164362484931106, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735971692560, Size: 164362508580545, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735864315920, Size: 164362531851165, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735756939280, Size: 164362555332252, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735649562640, Size: 164362578912450, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:28] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735508643840, Size: 164362610869925, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735374426112, Size: 164362634308100, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735139545088, Size: 164362657748435, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735005327360, Size: 164362681052551, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734871109632, Size: 164362704770925, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734736891904, Size: 164362728410215, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734602674176, Size: 164362751569371, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734468456448, Size: 164362774664620, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734334238720, Size: 164362797917009, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734200020992, Size: 164362821115510, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:47:29] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:17] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:17] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:18] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:18] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:18] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:18] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:18] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737112543248, Size: 164413874105672, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737005166608, Size: 164413897806451, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736897789968, Size: 164413921906341, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736790413328, Size: 164413945857880, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736683036688, Size: 164413969296812, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736575660048, Size: 164413992768998, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735944851456, Size: 164414016365004, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735810633728, Size: 164414025594324, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735676416000, Size: 164414034687630, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735542198272, Size: 164414043687864, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735407980544, Size: 164414061791164, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735139545088, Size: 164414085003900, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735005327360, Size: 164414108497797, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734871109632, Size: 164414131743482, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734736891904, Size: 164414155180277, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734602674176, Size: 164414178543004, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734468456448, Size: 164414201872608, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734334238720, Size: 164414210101995, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734200020992, Size: 164414218224098, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734065803264, Size: 164414226310943, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:20] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737112543248, Size: 164415083548016, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140737005166608, Size: 164415107282951, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736897789968, Size: 164415131372323, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736790413328, Size: 164415154804712, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736683036688, Size: 164415178283512, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140736575660048, Size: 164415201916549, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735971692560, Size: 164415225083313, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735864315920, Size: 164415248429064, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735756939280, Size: 164415271746463, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735649562640, Size: 164415295046062, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735508643840, Size: 164415326831630, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735374426112, Size: 164415350108889, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735139545088, Size: 164415373650972, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140735005327360, Size: 164415396810539, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734871109632, Size: 164415419860728, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734736891904, Size: 164415443050198, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734602674176, Size: 164415466276374, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734468456448, Size: 164415489826704, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734334238720, Size: 164415513012879, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737311518720] Event: AllocationRange: Start: 140734200020992, Size: 164415536188031, EventInfo: Timestamp: 107374182, EventType: DEVICE_TRANSFER
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event maybe dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event dequeued
+[2024-12-06 05:48:21] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737303126016] Event processing thread waiting for event
+[2024-12-06 05:48:22] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:22] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:22] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:22] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
+[2024-12-06 05:48:22] [./cuda_benchmark_application(+0x3bd19) [0x55555558fd19]] [Thread 140737345114112] Handling event
