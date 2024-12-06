@@ -1,4 +1,8 @@
 TestMemHistory
 TestTracerAgent
+log.txt
+cuda_benchmark_application
+*.csv
+*.json
 obj/
 submodules_obj/
