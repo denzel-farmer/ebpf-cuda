@@ -38,6 +38,8 @@ class TracerAgent {
 
     void StartAgentAsync();
 
+    void HandleEvent(AllocationEvent event, AllocationIdentifier identifier);
+
     void DumpHistory(const char *filename) {
         DumpHistory(filename, false);
     }

@@ -85,7 +85,9 @@ void TracerAgent::DumpHistory(const char *filename, bool verbose) {
 	}
 }
 
-void TracerAgent::HandleEvent(AllocationEvent event) {
+
+
+void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identifier) {
 	// Process the event, locking as a writer
 	globalLogger.log_info("Handling event");
 	lock_guard<shared_mutex> lock(history_mutex);
