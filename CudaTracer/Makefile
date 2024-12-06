@@ -69,7 +69,7 @@ $(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
 # Compile source files into object files
-$(OUTPUT)/%.o: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h 
+$(OUTPUT)/%.o: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h $(LIBBLAZESYM_OBJ) 
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
