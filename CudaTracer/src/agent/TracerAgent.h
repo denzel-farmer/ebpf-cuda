@@ -60,4 +60,6 @@ class TracerAgent {
 
     unique_ptr<ProbeManager> probe_manager;
     ThreadSafeQueue<AllocationEvent> m_event_queue;
+
+    thread m_proccessing_thread;
 };;

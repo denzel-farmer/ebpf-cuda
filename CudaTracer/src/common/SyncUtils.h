@@ -8,6 +8,8 @@
 #include <condition_variable>
 #include <optional>
 
+using namespace std;
+
 template <typename T>
 class ThreadSafeQueue {
 public:
@@ -19,13 +21,14 @@ private:
     std::queue<T> m_queue;
     std::mutex m_mutex;
     std::condition_variable m_cond_var;
-    bool m_done = false;
-};
+    std::atomic<bool> m_done = false;
+};;
 
 // Definitions of template member functions
 
 template <typename T>
 void ThreadSafeQueue<T>::enqueue(T value) {
+    cerr << "enqueue" << endl;
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         m_queue.push(std::move(value));
@@ -35,6 +38,7 @@ void ThreadSafeQueue<T>::enqueue(T value) {
 
 template <typename T>
 std::optional<T> ThreadSafeQueue<T>::dequeue_wait() {
+    cerr << "dequeue_wait" << endl;
     std::unique_lock<std::mutex> lock(m_mutex);
     m_cond_var.wait(lock, [this]() { return !m_queue.empty() || m_done; });
     if (!m_queue.empty()) {
@@ -48,6 +52,7 @@ std::optional<T> ThreadSafeQueue<T>::dequeue_wait() {
 template <typename T>
 void ThreadSafeQueue<T>::terminate() {
     {
+        cerr << "terminate" << endl;
         std::lock_guard<std::mutex> lock(m_mutex);
         m_done = true;
     }

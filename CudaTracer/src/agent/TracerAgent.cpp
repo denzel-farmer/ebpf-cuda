@@ -36,12 +36,20 @@ void TracerAgent::StartAgentAsync()
 	// 	probe->probe_thread = thread(&EventProbe::LaunchProbe, probe.get());
 	// }
 	// // Start the event processing loop in a separate thread
-	// event_processing_thread = thread(&TracerAgent::ProcessEvents, this);
+	m_proccessing_thread = thread(&TracerAgent::ProcessEvents, this);
 }
 
 
 void TracerAgent::StopAgent() {
+
 	probe_manager->Shutdown();
+	
+	// Signal thread to stop
+	m_event_queue.terminate();
+	
+	// if (m_proccessing_thread.joinable()) {
+	// 	m_proccessing_thread.join();
+	// }
 }
 
 // // Shutdown the agent, likely due to the target process exiting
@@ -58,9 +66,9 @@ void TracerAgent::StopAgent() {
 // 		}
 // 	}
 // 	// Signal the processing thread to exit
-// 	event_queue.terminate();
-// 	if (event_processing_thread.joinable()) {
-// 		event_processing_thread.join();
+	// event_queue.terminate();
+	// if (event_processing_thread.joinable()) {
+	// 	event_processing_thread.join();
 // 	}
 
 void TracerAgent::DumpHistory(const char *filename, bool verbose) {
@@ -80,10 +88,13 @@ void TracerAgent::DumpHistory(const char *filename, bool verbose) {
 void TracerAgent::ProcessEvents()
 {
 	while (true) {
+		globalLogger.log_info("Event processing thread waiting for event");
 		optional<AllocationEvent> event = m_event_queue.dequeue_wait();
+		globalLogger.log_info("Event maybe dequeued");
 		if (event.has_value()) {
 			// Process the event, locking as a writer
 			lock_guard<shared_mutex> lock(history_mutex);
+			globalLogger.log_info("Event dequeued");
 			mem_history.RecordEvent(event.value());
 		} else {
 			// Exit if queue is done and empty

@@ -179,7 +179,7 @@ $(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(SUBMOD
 
 # Clean files generated from our code
 clean:
-	rm -rf $(OUTPUT)
+	rm -rf $(OUTPUT) $(TESTS)
 
 # Clean all files generated from our code and submodules
 cleanall:

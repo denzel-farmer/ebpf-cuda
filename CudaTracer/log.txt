@@ -146,3 +146,167 @@
 [2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Cleanup complete
 [2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Stopping polling
 [2024-12-06 02:37:52] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:39:32] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Attaching probe for pid: 553907 target: cudaMemcpy
+[2024-12-06 02:39:32] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:39:32] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:39:32] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:39:32] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:39:32] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:39:32] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:39:38] [./TestTracerAgent(+0x3a87f) [0x55555558e87f]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 153091905798638, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:45:17] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Attaching probe for pid: 554729 target: cudaMemcpy
+[2024-12-06 02:45:17] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:45:17] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:45:17] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:45:17] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:45:17] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:45:17] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:45:22] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 153435718846863, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:45:52] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:45:52] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:45:52] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:45:53] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:45:53] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:45:53] [./TestTracerAgent(+0x3a84f) [0x55555558e84f]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:47:09] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Attaching probe for pid: 555599 target: cudaMemcpy
+[2024-12-06 02:47:09] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:47:09] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:47:09] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:47:09] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:47:09] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:47:09] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:47:15] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 153549546666985, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:47:34] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:47:34] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:47:34] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:47:34] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:47:34] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:47:34] [./TestTracerAgent(+0x3a8df) [0x55555558e8df]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:48:33] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737347946496] Attaching probe for pid: 556215 target: cudaMemcpy
+[2024-12-06 02:48:33] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:48:33] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:48:34] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:48:34] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:48:34] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:48:34] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:48:36] [./TestTracerAgent(+0x3a907) [0x55555558e907]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 153630553743357, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Attaching probe for pid: 557180 target: cudaMemcpy
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:52:47] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737305978624] Event processing thread waiting for event
+[2024-12-06 02:52:53] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 153886875685777, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:52:53] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737305978624] Event maybe dequeued
+[2024-12-06 02:52:53] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737305978624] Event dequeued
+[2024-12-06 02:52:53] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737305978624] Event processing thread waiting for event
+[2024-12-06 02:53:02] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:53:02] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:53:03] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:53:04] [./TestTracerAgent(+0x3aa85) [0x55555558ea85]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Attaching probe for pid: 559472 target: cudaMemcpy
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:55:03] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Event processing thread waiting for event
+[2024-12-06 02:55:08] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737314371328] Event: AllocationRange: Start: 140736936804352, Size: 154022357278745, EventInfo: Timestamp: 10485760, EventType: DEVICE_TRANSFER
+[2024-12-06 02:55:08] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Event maybe dequeued
+[2024-12-06 02:55:08] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Event dequeued
+[2024-12-06 02:55:08] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Event processing thread waiting for event
+[2024-12-06 02:55:12] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:55:12] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:55:14] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:55:14] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:55:14] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Event maybe dequeued
+[2024-12-06 02:55:14] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Event processing thread exiting
+[2024-12-06 02:55:14] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Stopping polling
+[2024-12-06 02:55:14] [./TestTracerAgent(+0x3aa95) [0x55555558ea95]] [Thread 140737305978624] Cleanup complete
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Attaching probe for pid: 559472 target: cudaMemcpy
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737305978624] Event processing thread waiting for event
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:58:04] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:58:06] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:58:07] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:58:07] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737305978624] Event maybe dequeued
+[2024-12-06 02:58:07] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737305978624] Event processing thread exiting
+[2024-12-06 02:58:07] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737305978624] Stopping polling
+[2024-12-06 02:58:07] [./TestTracerAgent(+0x3abaf) [0x55555558ebaf]] [Thread 140737305978624] Cleanup complete
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Attaching probe for pid: 561010 target: cudaMemcpy
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Getting program
+
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Finding symbols
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Starting polling
+[2024-12-06 02:59:45] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737305978624] Event processing thread waiting for event
+[2024-12-06 02:59:47] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 02:59:47] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 02:59:48] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Stopping polling
+[2024-12-06 02:59:49] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 02:59:49] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737305978624] Event maybe dequeued
+[2024-12-06 02:59:49] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737305978624] Event processing thread exiting
+[2024-12-06 02:59:49] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737305978624] Stopping polling
+[2024-12-06 02:59:49] [./TestTracerAgent(+0x3aa61) [0x55555558ea61]] [Thread 140737305978624] Cleanup complete
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Attaching probe for pid: 561010 target: cudaMemcpy
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Getting program
+
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Finding symbols
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Creating ring buffer
+
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Adding ring buffer fd to epoll
+
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Starting polling
+
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Starting polling
+[2024-12-06 03:00:57] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737305978624] Event processing thread waiting for event
+[2024-12-06 03:00:58] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Dumping history to file
+[2024-12-06 03:00:58] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] History successfully dumped to file
+[2024-12-06 03:00:58] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Stopping polling
+[2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Cleanup complete
+[2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Stopping polling
+[2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737305978624] Event maybe dequeued
+[2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737305978624] Event processing thread exiting
+[2024-12-06 03:00:59] [./TestTracerAgent(+0x3aa39) [0x55555558ea39]] [Thread 140737347946496] Cleanup complete

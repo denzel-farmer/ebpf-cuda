@@ -76,8 +76,6 @@ class ProbeManager {
 	~ProbeManager()
 	{
 	    Shutdown();
-        // Terminate the queue
-        m_event_queue.terminate();
 	}
 
 	// Public API

@@ -86,9 +86,9 @@ private:
 
     // Get the current function name using backtrace
     inline string getFunctionName() const {
-        void* callstack[2]; // Limit to the immediate caller
-        int frames = backtrace(callstack, 2);
-        if (frames < 2) {
+        void* callstack[3]; // Increase the size to get the next name up the stack
+        int frames = backtrace(callstack, 3);
+        if (frames < 3) {
             return "UNKNOWN";
         }
 
@@ -97,7 +97,7 @@ private:
             return "UNKNOWN";
         }
 
-        string funcName = symbols[1]; // Caller function is at index 1
+        string funcName = symbols[2]; // Caller function is now at index 2
         free(symbols);
 
         // Demangle the function name for readability

@@ -30,11 +30,16 @@ int main(int argc, char* argv[]) {
 
     agent.StartAgentAsync();
 
-    std::cout << "Agent started. Press Enter to dump history and exit..." << std::endl;
+    std::cout << "Agent started. Press Enter to dump history" << std::endl;
     std::cin.get();
+
 
     agent.DumpHistory("/home/denzelgfarmer/ebpf-cuda/CudaTracer/history_dump.json");
     std::cout << "History dumped to history_dump.json" << std::endl;
+
+    std::cout << "Press Enter to stop agent" << std::endl;
+    std::cin.get();
+    agent.StopAgent();
 
     return 0;
 }
