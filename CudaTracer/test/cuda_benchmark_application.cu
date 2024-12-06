@@ -35,8 +35,8 @@ float do_single_transfer(float *host_ptr, float *device_ptr, size_t size)
 // constexpr size_t single_alloc_iters = 25;
 // constexpr size_t multi_alloc_iters = 2;
 // constexpr size_t multi_alloc_transfers = 175;
-constexpr size_t single_alloc_iters = 1;
-constexpr size_t multi_alloc_iters = 1;
+constexpr size_t single_alloc_iters = 10;
+constexpr size_t multi_alloc_iters = 2;
 constexpr size_t multi_alloc_transfers = 5;
 void perform_test_demo_pinned(size_t alloc_size)
 {
@@ -208,6 +208,12 @@ int main(int argc, char *argv[])
     // Do profiling run
     g_allocator_manager.initialize("profile");
     perform_test_demo_smart(size_in_bytes);
+
+    // Reset and optimize
+    g_allocator_manager.initialize("use");
+    g_allocator_manager.load_tracer_history("tracer_history.json");
+    perform_test_demo_smart(size_in_bytes);
+
 
 	return EXIT_SUCCESS;
 }
