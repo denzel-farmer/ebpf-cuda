@@ -18,6 +18,9 @@ CustomAllocatorManager::CustomAllocatorManager()
     }
 
 void CustomAllocatorManager::initialize(const std::string& mode) {
+    // Reset number of allocations for each call site, allows reinitialization
+    reset_allocation_numbers();
+
     if (mode == "profile") {
         std::cout << "Initializing in Profiling Mode.\n";
     }
@@ -127,17 +130,17 @@ void CustomAllocatorManager::load_frequency_data(const std::string& filename) {
 }
 
 void CustomAllocatorManager::load_tracer_history(const std::string& filename){
-    std::ifstream infile(filename);
-    if (!infile.is_open()) {
-        std::cerr << "Failed to open tracer data file: " << filename << ". Proceeding without tracer data.\n";
-        return;
-    } else{
-        std::cout << "tracer history load worked" << std::endl;
-    }
+    // std::ifstream infile(filename);
+    // if (!infile.is_open()) {
+    //     std::cerr << "Failed to open tracer data file: " << filename << ". Proceeding without tracer data.\n";
+    //     return;
+    // } else{
+    //     std::cout << "tracer history load worked" << std::endl;
+    // }
 
     boost::property_tree::ptree pt;
     try {
-        boost::property_tree::read_json("data.json", pt);
+        boost::property_tree::read_json(filename, pt);
     } catch (const boost::property_tree::json_parser_error& e) {
         std::cerr << "Error reading JSON file: " << e.what() << std::endl;
         return;
@@ -162,7 +165,7 @@ void CustomAllocatorManager::load_tracer_history(const std::string& filename){
         }
     }
     
-    infile.close();
+    // infile.close();
     std::cout << "Loaded tracer data from " << filename << ".\n";
     tracer_history_used = 1;
 
@@ -182,6 +185,11 @@ void CustomAllocatorManager::save_frequency_data(const std::string& filename) {
 
     outfile.close();
     std::cout << "Saved frequency data to " << filename << ".\n";
+}
+
+void CustomAllocatorManager::reset_allocation_numbers() {
+    std::lock_guard<std::mutex> freq_lock(freq_mutex);
+    allocation_numbers.clear();
 }
 
 void CustomAllocatorManager::update_allocation_number(void* return_addr) {

@@ -19,6 +19,7 @@ public:
     void* allocate_memory(size_t size);
     void deallocate_memory(void* ptr, size_t size);
     void load_tracer_history(const std::string& filename);
+    void load_tracer_history();
     void load_frequency_data(const std::string& filename);
     void save_frequency_data(const std::string& filename);
     void update_allocation_number(void* return_addr);
@@ -26,6 +27,7 @@ public:
     void update_tracer_dealloc(void* ptr, size_t size);
 
 private:
+    void reset_allocation_numbers();
     PinnedMemoryPool pinned_pool;
     NonPinnedMemoryPool non_pinned_pool;
     std::unordered_map<void*, bool> allocation_type_map;
