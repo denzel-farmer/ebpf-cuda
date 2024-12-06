@@ -10,18 +10,13 @@
 
 class CustomAllocatorManager {
 public:
-    CustomAllocatorManager(){
-        tracer_agent = make_unique<TracerAgent>();
-        tracer_agent->StartAgentAsync();
-    };
-
     void initialize(const std::string& mode);
     void* allocate_memory(size_t size);
     void deallocate_memory(void* ptr, size_t size);
     void load_frequency_data(const std::string& filename);
     void save_frequency_data(const std::string& filename);
     void update_frequency(void* return_addr);
-    void send_info(void* return_addr, size_t frequency, void* ptr, size_t size);
+    void update_tracer_agent(void* return_addr, size_t frequency, void* ptr, size_t size);
 
 private:
     PinnedMemoryPool pinned_pool;

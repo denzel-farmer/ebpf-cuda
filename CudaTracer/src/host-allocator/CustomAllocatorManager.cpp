@@ -8,7 +8,10 @@
 CustomAllocatorManager g_allocator_manager;
 
 CustomAllocatorManager::CustomAllocatorManager()
-    : pinned_pool(), non_pinned_pool() {}
+    : pinned_pool(), non_pinned_pool() {
+        tracer_agent = make_unique<TracerAgent>();
+        tracer_agent->StartAgentAsync();
+    }
 
 void CustomAllocatorManager::initialize(const std::string& mode) {
     if (mode == "profile") {
