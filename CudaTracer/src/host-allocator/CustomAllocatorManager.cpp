@@ -14,14 +14,14 @@ CustomAllocatorManager g_allocator_manager;
 CustomAllocatorManager::CustomAllocatorManager()
     : pinned_pool(), non_pinned_pool() {
         tracer_agent = make_unique<TracerAgent>();
-        tracer_agent->StartAgentAsync();
     }
 
 void CustomAllocatorManager::initialize(const std::string& mode) {
     // Reset number of allocations for each call site, allows reinitialization
     reset_allocation_numbers();
-
+    tracer_agent->StopAgent(); 
     if (mode == "profile") {
+         tracer_agent->StartAgentAsync();
         std::cout << "Initializing in Profiling Mode.\n";
     }
     else if (mode == "use") {

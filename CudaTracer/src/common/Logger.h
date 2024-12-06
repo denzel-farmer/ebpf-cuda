@@ -139,6 +139,7 @@ public:
     inline void log_error(const string& message) {
         log(LogLevel::ERROR, message);
         int errnum = errno;
+        cerr << "ERROR:" << message << endl;
         cerr << "Error number: " << errnum << ", Error message: " << strerror(errnum) << endl;
     }
 

@@ -20,9 +20,13 @@
 #include <iostream>
 
 // TracerAgent class
-
+// TODO add a lock to avoid the race between start and stop
 void TracerAgent::StartAgentAsync()
 {
+	if (m_running.exchange(true)) {
+		globalLogger.log_error("Agent already running");
+		return;
+	}
 
 	bool success = probe_manager->AttachProbe(ProbeTarget::CUDA_MEMCPY, m_target_pid);
 	if (!success) {
@@ -41,7 +45,21 @@ void TracerAgent::StartAgentAsync()
 
 
 void TracerAgent::StopAgent() {
+	if (m_running.exchange(false)) {
+		probe_manager->DetachProbe(ProbeTarget::CUDA_MEMCPY);
+	}
 
+	// probe_manager->Shutdown();
+	
+	// // Signal thread to stop
+	// m_event_queue.terminate();
+	
+	// // if (m_proccessing_thread.joinable()) {
+	// // 	m_proccessing_thread.join();
+	// }
+}
+
+void TracerAgent::CleanupAgent() {
 	probe_manager->Shutdown();
 	
 	// Signal thread to stop
@@ -49,7 +67,6 @@ void TracerAgent::StopAgent() {
 	
 	// if (m_proccessing_thread.joinable()) {
 	// 	m_proccessing_thread.join();
-	// }
 }
 
 // // Shutdown the agent, likely due to the target process exiting

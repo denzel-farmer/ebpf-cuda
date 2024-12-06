@@ -16,14 +16,11 @@ using namespace std;
 
 class TracerAgent {
     public:
-    TracerAgent()
-    {
-        m_target_pid = getpid();
-        probe_manager = make_unique<ProbeManager>(m_event_queue);
-    }
+    TracerAgent() : TracerAgent(getpid()) {}
 
     TracerAgent(pid_t pid)
     {
+        m_running.store(false);
         m_target_pid = pid;
         probe_manager = make_unique<ProbeManager>(m_event_queue);
     }
@@ -34,9 +31,11 @@ class TracerAgent {
         //     event_processing_thread.join();
         // }
         StopAgent();
+        CleanupAgent();
     }
 
     void StartAgentAsync();
+    void StopAgent();
 
     void HandleEvent(AllocationEvent event, AllocationIdentifier identifier);
     void HandleEvent(AllocationEvent event);
@@ -47,7 +46,7 @@ class TracerAgent {
 
     void DumpHistory(const char *filename, bool verbose);
 
-    void StopAgent();
+    void CleanupAgent();
 
     // void ConstructProbes();
 
@@ -60,6 +59,8 @@ class TracerAgent {
 
     shared_mutex history_mutex;
     MemHistory mem_history;
+    
+    atomic<bool> m_running;
 
     unique_ptr<ProbeManager> probe_manager;
     ThreadSafeQueue<AllocationEvent> m_event_queue;

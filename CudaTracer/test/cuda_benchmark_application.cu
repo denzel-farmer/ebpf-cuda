@@ -47,6 +47,7 @@ void perform_test_demo_pinned(size_t alloc_size)
 	CHECK_CUDA_ERROR(cudaMalloc(&device_ptr, alloc_size));
 
 	// Do 100 allocations, transfer each to GPU target once
+    cudaDeviceSynchronize();
 	auto start = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < single_alloc_iters; ++i) {
 		CHECK_CUDA_ERROR(cudaMallocHost(&host_ptr, alloc_size));
@@ -73,6 +74,7 @@ void perform_test_demo_pinned(size_t alloc_size)
 		CHECK_CUDA_ERROR(cudaFreeHost(host_ptr));
 	}
 
+    cudaDeviceSynchronize();
 	auto end = std::chrono::high_resolution_clock::now();
 	double elapsed_time =
 		std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -91,6 +93,7 @@ void perform_test_demo_unpinned(size_t alloc_size)
 	CHECK_CUDA_ERROR(cudaMalloc(&device_ptr, alloc_size));
 
 	// Do 100 allocations, transfer each to GPU target once
+    cudaDeviceSynchronize();
 	auto start = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < single_alloc_iters; ++i) {
 		host_ptr = static_cast<float *>(malloc(alloc_size));
@@ -125,6 +128,8 @@ void perform_test_demo_unpinned(size_t alloc_size)
         free(host_ptr);
 	}
 
+
+    cudaDeviceSynchronize();
 	auto end = std::chrono::high_resolution_clock::now();
 	double elapsed_time =
 		std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -143,6 +148,7 @@ void perform_test_demo_smart(size_t alloc_size)
 	CHECK_CUDA_ERROR(cudaMalloc(&device_ptr, alloc_size));
 
 	// Do 100 allocations, transfer each to GPU target once
+    cudaDeviceSynchronize();
 	auto start = std::chrono::high_resolution_clock::now();
 	for (int i = 0; i < single_alloc_iters; ++i) {
 		host_ptr = static_cast<float *>(g_allocator_manager.allocate_memory(alloc_size));
@@ -176,6 +182,7 @@ void perform_test_demo_smart(size_t alloc_size)
         g_allocator_manager.deallocate_memory(host_ptr, alloc_size);
 	}
 
+    cudaDeviceSynchronize();
 	auto end = std::chrono::high_resolution_clock::now();
 	double elapsed_time =
 		std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
@@ -195,14 +202,11 @@ int main(int argc, char *argv[])
 	size_t size_in_mb = std::stoul(argv[1]);
 	size_t size_in_bytes = size_in_mb * 1024 * 1024;
 
-    // std::cerr << "Running pinned memory test" << std::endl;
-	// perform_test_demo_pinned(size_in_bytes);
+    std::cerr << "Running pinned memory test" << std::endl;
+	perform_test_demo_pinned(size_in_bytes);
 
-    // // cuda sync
-    // cudaDeviceSynchronize();
-
-    // std::cerr << "Running unpinned memory test" << std::endl;
-    // perform_test_demo_unpinned(size_in_bytes);
+    std::cerr << "Running unpinned memory test" << std::endl;
+    perform_test_demo_unpinned(size_in_bytes);
 
     std::cerr << "Running smart memory test" << std::endl;
     // Do profiling run
