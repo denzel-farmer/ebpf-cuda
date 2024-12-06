@@ -4,5 +4,6 @@ log.txt
 cuda_benchmark_application
 *.csv
 *.json
+*.txt
 obj/
 submodules_obj/
