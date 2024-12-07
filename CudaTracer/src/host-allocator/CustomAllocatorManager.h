@@ -13,7 +13,7 @@ public:
     CustomAllocatorManager();
     ~CustomAllocatorManager(){
         std::cout << "reached here" << std::endl;
-        tracer_agent->DumpHistory("tracer_history.json", true);
+        //tracer_agent->DumpHistory("tracer_history.json", true);
     };
     void initialize(const std::string& mode);
     void* allocate_memory(size_t size);
@@ -26,6 +26,8 @@ public:
     void update_tracer_alloc(void* return_addr, size_t frequency, void* ptr, size_t size);
     void update_tracer_dealloc(void* ptr, size_t size);
 
+    size_t total_amount_pinned = 0;
+
 private:
     void reset_allocation_numbers();
     PinnedMemoryPool pinned_pool;
@@ -37,7 +39,6 @@ private:
     std::mutex freq_mutex;
     unique_ptr<TracerAgent> tracer_agent;
     int tracer_history_used = 0;
-    size_t total_amount_pinned = 0;
 
 };
 

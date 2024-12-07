@@ -19,12 +19,15 @@ CustomAllocatorManager::CustomAllocatorManager()
 void CustomAllocatorManager::initialize(const std::string& mode) {
     // Reset number of allocations for each call site, allows reinitialization
     reset_allocation_numbers();
+    tracer_history_used = 0;
+    total_amount_pinned = 0;
     tracer_agent->StopAgent(); 
     if (mode == "profile") {
          tracer_agent->StartAgentAsync();
         std::cout << "Initializing in Profiling Mode.\n";
     }
     else if (mode == "use") {
+        tracer_agent->DumpHistory("tracer_history.json");
         std::cout << "Initializing in Optimized Mode.\n";
         load_tracer_history("tracer_history.json");
     }
@@ -62,6 +65,7 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
     if (use_pinned) {
         ptr = pinned_pool.allocate(size);
         total_amount_pinned += size;
+        std::cout << size << " allocated in customAllocator" << std::endl;
         {
             std::lock_guard<std::mutex> freq_lock(freq_mutex);
             allocation_type_map[ptr] = true;
@@ -164,6 +168,11 @@ void CustomAllocatorManager::load_tracer_history(const std::string& filename){
         }catch(const boost::property_tree::ptree_bad_data& e) {
             std::cerr << "Error accessing JSON key: " << e.what() << std::endl;
         }
+    }
+
+    std::cout << "showing loaded transfer count history" << std::endl;
+    for (const auto& pair : transfer_count_history) {
+        std::cout << pair.first << ": " << pair.second << "\n";
     }
     
     // infile.close();
