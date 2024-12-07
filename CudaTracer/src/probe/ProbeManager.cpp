@@ -306,8 +306,9 @@ void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo
 			return;
 	}
 
+	globalLogger.log_info("Event return address: " + to_string(evt->return_address));
 
-	AllocationEvent event(start, evt->timestamp, evt->size, EventType::DEVICE_TRANSFER);
+	AllocationEvent event(start, evt->timestamp, evt->size, evt->return_address, EventType::DEVICE_TRANSFER);
 
 	// Global log including event details, using AllocationEvent's to_string method
 	globalLogger.log_info("[ProbeManager->ProcessEvent] Event: " + event.ToString());

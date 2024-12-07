@@ -1,6 +1,7 @@
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
+#include <bpf/bpf_core_read.h>
 #include "CudaEvents.h"
 // #include "eBPFProbe.h"
 // #include "agent/AllocationHistory.h"
@@ -40,6 +41,31 @@ int handle_cudaMemcpy(struct pt_regs *ctx)
     event->size = (size_t)PT_REGS_PARM3(ctx);
     event->direction = (enum cudaMemcpyKind)PT_REGS_PARM4(ctx);
     event->timestamp = bpf_ktime_get_ns();
+
+        // Get the return address
+    void *sp;
+    void *ret_addr = NULL;
+
+    // Read stack pointer from pt_regs
+    sp = (void *)ctx->sp;
+
+    // Read the return address from the stack pointer
+    if (sp) {
+        bpf_probe_read_user(&ret_addr, sizeof(ret_addr), sp);
+    }
+
+    event->return_address = (unsigned long)ret_addr;
+    
+    // Get the return address (x86 specific)
+    // ctx->sp gives the stack pointer. Dereference it to get the return address.
+    // Get the return address safely using bpf_core_read
+    // void *sp;
+    // void *ret_addr;
+    // bpf_core_read(&sp, sizeof(sp), &ctx->sp); // Read stack pointer from ctx
+    // bpf_probe_read_user(&ret_addr, sizeof(ret_addr), sp); // Read return address
+    bpf_trace_printk("SP: 0x%lx, Return Address: 0x%lx\n", (unsigned long)sp, (unsigned long)ret_addr);
+
+   // bpf_trace_printk("SP: 0x%lx, Return Address: 0x%lx\n", (unsigned long)sp, (unsigned long)ret_addr);
     // Populate process info
     populate_proc_info(&event->processInfo);
 
@@ -47,3 +73,5 @@ int handle_cudaMemcpy(struct pt_regs *ctx)
 
     return 0;
 }
+
+char __license[] SEC("license") = "GPL";

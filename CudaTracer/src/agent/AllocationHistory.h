@@ -67,9 +67,11 @@ constexpr const char* EventTypeToString(EventType type) {
 
 struct EventInfo {
     unsigned long timestamp;
+    unsigned long call_site;
     EventType type;
 
     EventInfo(unsigned long ts, EventType et) : timestamp(ts), type(et) {}
+    EventInfo(unsigned long ts, unsigned long cs, EventType et) : timestamp(ts), call_site(cs), type(et) {}
 
     bool operator<(const EventInfo &other) const;
     bool operator>(const EventInfo &other) const;
@@ -84,6 +86,7 @@ struct AllocationEvent {
 
     AllocationEvent(AllocationRange alloc_info, EventInfo event_info) : allocation_info(alloc_info), event_info(event_info) {}
     AllocationEvent(unsigned long start, unsigned long size, unsigned long timestamp, EventType type) : allocation_info(start, size), event_info(timestamp, type) {}
+    AllocationEvent(unsigned long start, unsigned long size, unsigned long timestamp, unsigned long call_site, EventType type) : allocation_info(start, size), event_info(timestamp, call_site, type) {}
 
     bool operator<(const AllocationEvent &other) const;
     boost::property_tree::ptree PtreeSerialize() const;

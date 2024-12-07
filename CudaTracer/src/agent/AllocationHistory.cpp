@@ -55,6 +55,7 @@ boost::property_tree::ptree EventInfo::PtreeSerialize() const {
 string EventInfo::ToString() const {
     stringstream ss;
     ss << "Timestamp: " << timestamp << ", EventType: ";
+    ss << "Call Site: 0x" << hex << call_site << ", ";
     ss << EventTypeToString(type);
 
     return ss.str();
