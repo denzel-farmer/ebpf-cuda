@@ -2,6 +2,7 @@
 #include <map>
 #include <iostream>
 #include <unordered_map>
+#include <shared_mutex>
 
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/member.hpp>
@@ -31,9 +32,10 @@ void MemHistory::RecordEvent(AllocationEvent event, AllocationIdentifier identif
     globalLogger.log_debug("Recording event");
     // If type is alloc, create a new history entry
     if (event.event_info.type == EventType::ALLOC) {
+        unique_lock<shared_mutex> lock(m_history_mutex);
         UpdateNewAlloc(event.allocation_info, event.event_info, identifier);
     } else {
-
+        unique_lock<shared_mutex> lock(m_history_mutex);
         // For debugging, check if the active allocation matches the identifier
         auto active_alloc_opt = FindActiveAlloc(event.allocation_info.start);
         if (active_alloc_opt.has_value()) {
@@ -71,7 +73,9 @@ void MemHistory::RecordEvent(AllocationEvent event) {
 // Retrieve references to allocation history for n hotspots
 vector<const AllocationHistory*> MemHistory::GetHotspots(int num) const {
     vector<const AllocationHistory*> hotspots;
-    auto &index_by_transfer_count = histories.get<by_transfer_count>();
+
+    shared_lock<shared_mutex> lock(m_history_mutex);
+    auto &index_by_transfer_count = m_histories.get<by_transfer_count>();
 
     auto it = index_by_transfer_count.begin();
     for (int i = 0; i < num && it != index_by_transfer_count.end(); i++, it++) {
@@ -84,7 +88,9 @@ vector<const AllocationHistory*> MemHistory::GetHotspots(int num) const {
 // Retrieve references to allocation history for all coldspots with fewer than max_transfers transfers
 vector<const AllocationHistory*> MemHistory::GetColdspots(unsigned long max_transfers) const {
     vector<const AllocationHistory*> coldspots;
-    auto &index_by_transfer_count = histories.get<by_transfer_count>();
+
+    shared_lock<shared_mutex> lock(m_history_mutex);
+    auto &index_by_transfer_count = m_histories.get<by_transfer_count>();
 
     auto it = index_by_transfer_count.rbegin();
     while (it != index_by_transfer_count.rend() && it->GetTransferCount() < max_transfers) {
@@ -97,7 +103,9 @@ vector<const AllocationHistory*> MemHistory::GetColdspots(unsigned long max_tran
 
 vector <const AllocationHistory*> MemHistory::GetAllocationHistories() const {
     vector<const AllocationHistory*> all_histories;
-    for (const auto &history : histories) {
+
+    shared_lock<shared_mutex> lock(m_history_mutex);
+    for (const auto &history : m_histories) {
         all_histories.push_back(&history);
     }
 
@@ -111,7 +119,7 @@ pair<StartAddressIndexIterator, StartAddressIndexIterator>
 MemHistory::FindStartAddressAllocRange(unsigned long startAddress) const
 {
     // Get the index by_start_address
-    const auto& startAddressIndex = histories.get<by_start_address>();
+    const auto& startAddressIndex = m_histories.get<by_start_address>();
 
     // Use equal_range to find the range of entries with the given start address
     return startAddressIndex.equal_range(startAddress);
@@ -129,7 +137,7 @@ optional<StartAddressIndexIterator> MemHistory::FindActiveAlloc(unsigned long st
 }
 
 
-
+// Update functions assume writer lock is already acquired
 void MemHistory::UpdateExistingAlloc(AllocationRange alloc_info, EventInfo event_info) {
     // Find the active allocation with the given start address 
     auto active_alloc_opt = FindActiveAlloc(alloc_info.start);
@@ -140,7 +148,7 @@ void MemHistory::UpdateExistingAlloc(AllocationRange alloc_info, EventInfo event
     }
     auto active_alloc = active_alloc_opt.value();
 
-    auto &index_by_start = histories.get<by_start_address>();
+    auto &index_by_start = m_histories.get<by_start_address>();
     if (active_alloc == index_by_start.end()) {
         // No active allocation, log error 
         globalLogger.log_error("UpdateExistingAlloc called on non-existent allocation");
@@ -163,7 +171,7 @@ void MemHistory::UpdateNewAlloc(AllocationRange alloc_info, EventInfo event_info
     }
     // Create a new alloc history and insert in history
     AllocationHistory new_alloc(alloc_info, event_info, identifier);
-    histories.insert(move(new_alloc));
+    m_histories.insert(move(new_alloc));
     
     // If no allocation in container, create a new one 
     //auto &index_by_start = histories.get<by_start_address>();
@@ -185,7 +193,7 @@ void MemHistory::UpdateNewAlloc(AllocationRange alloc_info, EventInfo event_info
     boost::property_tree::ptree root;
 
     boost::property_tree::ptree allocationsNode;
-    for (const auto& history : histories) {
+    for (const auto& history : m_histories) {
         allocationsNode.push_back(std::make_pair("", history.PtreeSerialize(verbose)));
     }
     root.add_child("Allocations", allocationsNode);
@@ -200,7 +208,7 @@ void MemHistory::UpdateNewAlloc(AllocationRange alloc_info, EventInfo event_info
 
 string MemHistory::ToString(bool verbose) const {
     stringstream ss;
-    for (const auto& history : histories) {
+    for (const auto& history : m_histories) {
         ss << history.ToString(verbose) << "\n";
     }
     return ss.str();

@@ -70,5 +70,8 @@ private:
 
 
 private:
-    AllocationHistoryContainer histories;
+    // Lock the full history, but not the individual allocation histories
+    mutable shared_mutex m_history_mutex;
+    AllocationHistoryContainer m_histories;
+
 };
