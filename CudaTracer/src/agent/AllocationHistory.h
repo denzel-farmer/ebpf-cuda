@@ -3,6 +3,7 @@
 #include <set>
 #include <string>
 #include <boost/property_tree/ptree.hpp>
+#include <shared_mutex>
 
 using namespace std;
 
@@ -121,7 +122,7 @@ public:
     AllocationState GetState() const;
     AllocationIdentifier GetAllocTag() const;
 
-    const EventInfo& GetLatestEvent() const;
+    EventInfo GetLatestEventInfo();
 
     void SubmitEvent(EventInfo event);
 
@@ -135,12 +136,18 @@ public:
 
 private:
     AllocationState CalculateNextState(EventType new_type);
-    bool IsLatestEvent(const EventInfo& event) const;
+    const EventInfo& GetLatestEventUnsafe();
+    bool IsLatestEvent(const EventInfo& event);
+
+    void SubmitEventUnsafe(EventInfo event);
+
 
 private:
-    AllocationRange alloc_info;
-    AllocationIdentifier alloc_tag;
-    AllocationState state;
-    unsigned long transfer_count;
-    multiset<EventInfo> events;
+    // Protects all private data
+    mutable shared_mutex m_alloc_mutex;
+    AllocationRange alloc_info; 
+    AllocationIdentifier alloc_tag; 
+    AllocationState state; 
+    unsigned long transfer_count; 
+    multiset<EventInfo> events; 
 };

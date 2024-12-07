@@ -89,11 +89,12 @@ string AllocationEvent::ToString() const {
 
 AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initial_event, AllocationIdentifier alloc_tag)
 {
+    unique_lock<shared_mutex> lock(m_alloc_mutex);
     this->alloc_info = alloc_info;
     this->alloc_tag = alloc_tag;
     transfer_count = 0;
 
-    SubmitEvent(initial_event);
+    SubmitEventUnsafe(initial_event);
 }
 
 
@@ -107,27 +108,42 @@ AllocationHistory::AllocationHistory(AllocationRange alloc_info, EventInfo initi
 // }
 
 unsigned long AllocationHistory::GetTransferCount() const {
+    shared_lock<shared_mutex> lock(m_alloc_mutex);
     return transfer_count;
 }
 
 unsigned long AllocationHistory::GetStartAddress() const {
+    shared_lock<shared_mutex> lock(m_alloc_mutex);
     return alloc_info.start;
 }
 
 AllocationState AllocationHistory::GetState() const {
+    shared_lock<shared_mutex> lock(m_alloc_mutex);
     return state;
 }
 
 AllocationIdentifier AllocationHistory::GetAllocTag() const {
+    shared_lock<shared_mutex> lock(m_alloc_mutex);
     return alloc_tag;
 }
 
-const EventInfo& AllocationHistory::GetLatestEvent() const {
+EventInfo AllocationHistory::GetLatestEventInfo() {
+    shared_lock<shared_mutex> lock(m_alloc_mutex);
+    return GetLatestEventUnsafe();
+}
+
+// Asumes at least reader lock held, for duration of EventInfo usage
+const EventInfo& AllocationHistory::GetLatestEventUnsafe() {
     return *events.rbegin();
 }
 
 void AllocationHistory::SubmitEvent(EventInfo event) {
+    unique_lock<shared_mutex> lock(m_alloc_mutex);
+    SubmitEventUnsafe(event);
+}
 
+// Assumes write lock held
+void AllocationHistory::SubmitEventUnsafe(EventInfo event) {
     // Only update state if event is the latest
     if (IsLatestEvent(event)) {
         state = CalculateNextState(event.type);
@@ -138,21 +154,26 @@ void AllocationHistory::SubmitEvent(EventInfo event) {
     }
     
     events.insert(event);
-   // cout << "Event submitted: " << event.ToString() << endl;
-
+    globalLogger.log_debug("Event submitted: " + event.ToString());
 }
 
+
+// Assumes at least reader lock is held
 AllocationState AllocationHistory::CalculateNextState(EventType new_type) {
     switch (new_type) {
         case EventType::ALLOC:
             // assert(state != AllocationState::ALLOCATED && "Memory already allocated");
             if (state == AllocationState::ALLOCATED) {
-                globalLogger.log_error("[AllocationHistory->CalculateNextState] Memory already allocated");
+                globalLogger.log_warning("[AllocationHistory->CalculateNextState] Allocation event on already allocated memory");
             }
 
             return AllocationState::ALLOCATED;
             break;
         case EventType::FREE:
+            if (state == AllocationState::FREED) {
+                globalLogger.log_warning("[AllocationHistory->CalculateNextState] Free event on already freed memory");
+            }
+
             return AllocationState::FREED;
             break;
         default:
@@ -160,8 +181,9 @@ AllocationState AllocationHistory::CalculateNextState(EventType new_type) {
     }
 }
 
-bool AllocationHistory::IsLatestEvent(const EventInfo& event) const {
-    return events.empty() || (event > GetLatestEvent());
+// Assumes at least reader lock is held
+bool AllocationHistory::IsLatestEvent(const EventInfo& event) {
+    return events.empty() || (event > GetLatestEventUnsafe());
 }
 
 
@@ -183,6 +205,7 @@ boost::property_tree::ptree AllocationHistory::PtreeSerialize(bool verbose) cons
             event_node.put("Event", event.ToString());
             events_node.push_back(make_pair("", event_node));
         }
+        root.add_child("Events", events_node);
     }
 
     return root;
