@@ -1,3 +1,21 @@
-Num Iterations,Data Size (GB),Mode,Num Allocations,Avg Alloc Time Pinned (s),Avg Dealloc Time Pinned (s),Avg Host to Device Time Pinned (s),Avg Kernel Execution Time Pinned (s),Avg Device to Host Time Pinned (s),Avg Alloc Time Malloc (s),Avg Dealloc Time Malloc (s),Avg Host to Device Time Malloc (s),Avg Kernel Execution Time Malloc (s),Avg Device to Host Time Malloc (s)
-1,1,profile,10,2.381,0.138,0.186,0.008,0.181,0.717,0.075,0.237,0.008,0.234
-3,1,profile,10,1.272,0.237333,0.105667,0.00833333,0.0943333,0.736333,0.076,0.237,0.008,0.234333
+AllocType,AllocSizeKB,RuntimeMS
+0,1024,133
+0,17408,1720
+0,33792,3339
+0,50176,4981
+0,66560,6644
+0,82944,8299
+0,99328,9920
+0,115712,11645
+0,132096,13377
+0,148480,15067
+3,1024,167
+3,17408,1977
+3,33792,3638
+3,50176,5312
+3,66560,6966
+3,82944,8601
+3,99328,10283
+3,115712,11923
+3,132096,13604
+3,148480,15214
