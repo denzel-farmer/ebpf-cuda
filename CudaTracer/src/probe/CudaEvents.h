@@ -36,4 +36,12 @@ struct CudaMemcpyEvent {
     struct CudaProcessInfo processInfo;
 };
 
+// struct MallocEvent {
+//     unsigned long address;
+//     size_t size;
+//     unsigned long return_address;
+//     unsigned long long timestamp;
+//     struct CudaProcessInfo processInfo;
+// }
+
 #endif // CUDA_EVENTS_H

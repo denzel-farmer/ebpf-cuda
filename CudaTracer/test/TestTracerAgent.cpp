@@ -4,6 +4,7 @@
 #include <unistd.h>
 
 #include "TracerAgent.h"
+#include "MemHistory.h"
 
 void signalHandler(int signum) {
     std::cout << "Interrupt signal (" << signum << ") received.\n";
@@ -34,7 +35,7 @@ int main(int argc, char* argv[]) {
     std::cin.get();
 
 
-    agent.DumpHistory("/home/denzelgfarmer/ebpf-cuda/CudaTracer/history_dump.json");
+    agent.DumpHistory("/home/denzelgfarmer/ebpf-cuda/CudaTracer/history_dump.json", DumpFormat::JSON, true);
     std::cout << "History dumped to history_dump.json" << std::endl;
 
     std::cout << "Press Enter to stop agent" << std::endl;

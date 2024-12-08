@@ -63,7 +63,7 @@ int handle_cudaMemcpy(struct pt_regs *ctx)
     // void *ret_addr;
     // bpf_core_read(&sp, sizeof(sp), &ctx->sp); // Read stack pointer from ctx
     // bpf_probe_read_user(&ret_addr, sizeof(ret_addr), sp); // Read return address
-    bpf_trace_printk("SP: 0x%lx, Return Address: 0x%lx\n", (unsigned long)sp, (unsigned long)ret_addr);
+    // bpf_trace_printk("SP: 0x%lx, Return Address: 0x%lx\n", (unsigned long)sp, (unsigned long)ret_addr);
 
    // bpf_trace_printk("SP: 0x%lx, Return Address: 0x%lx\n", (unsigned long)sp, (unsigned long)ret_addr);
     // Populate process info

@@ -141,3 +141,18 @@ period known to have repeat allocations)
 - cargo (no apt option?)
 
  TODO: put demo into docker container
+
+
+
+
+
+ ## TODO
+ - put into docker container, write tutorial
+ - alloc splitting
+ - binary dumping
+ - fix timestamps
+ - add kprobe for pinning
+ - add kprobe for transfer
+ - add call site to probes
+ - fix logging/backtrace
+ - general cleanup code

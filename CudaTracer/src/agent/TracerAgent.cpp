@@ -21,17 +21,17 @@
 
 // TracerAgent class
 // TODO add a lock to avoid the race between start and stop
-void TracerAgent::StartAgentAsync()
+bool TracerAgent::StartAgentAsync()
 {
 	if (m_running.exchange(true)) {
 		globalLogger.log_error("Agent already running");
-		return;
+		return false;
 	}
 
-	bool success = probe_manager->AttachProbe(ProbeTarget::CUDA_MEMCPY, m_target_pid);
+	bool success = m_probe_manager->AttachProbe(ProbeTarget::CUDA_MEMCPY, m_target_pid);
 	if (!success) {
 		globalLogger.log_error("Failed to attach probe");
-		return;
+		return false;
 	}
 	// // Configure and attach probes
 	// for (auto &probe : probes) {
@@ -41,12 +41,13 @@ void TracerAgent::StartAgentAsync()
 	// }
 	// // Start the event processing loop in a separate thread
 	m_proccessing_thread = thread(&TracerAgent::ProcessEvents, this);
+	return true;
 }
 
 
 void TracerAgent::StopAgent() {
 	if (m_running.exchange(false)) {
-		probe_manager->DetachProbe(ProbeTarget::CUDA_MEMCPY);
+		m_probe_manager->DetachProbe(ProbeTarget::CUDA_MEMCPY);
 	}
 
 	// probe_manager->Shutdown();
@@ -60,7 +61,7 @@ void TracerAgent::StopAgent() {
 }
 
 void TracerAgent::CleanupAgent() {
-	probe_manager->Shutdown();
+	m_probe_manager->Shutdown();
 	
 	// Signal thread to stop
 	m_event_queue.terminate();
@@ -88,18 +89,44 @@ void TracerAgent::CleanupAgent() {
 	// 	event_processing_thread.join();
 // 	}
 
-void TracerAgent::DumpHistory(const char *filename, bool verbose) {
-	// Lock history as a writer, and dump the history to a file
-	lock_guard<shared_mutex> lock(history_mutex);
-	globalLogger.log_info("Dumping history to file");
-	ofstream dump_file(filename);
-	if (dump_file.is_open()) {
-		mem_history.JSONSerialize(dump_file, verbose);
-		dump_file.close();
-		globalLogger.log_info("History successfully dumped to file");
-	} else {
-		globalLogger.log_error("Failed to open dump file");
-	}
+const MemHistory& TracerAgent::GetMemHistory() {
+	return m_history;
+}
+
+
+// Transfer hotspot/coldspot specific interface
+vector<Allocation> TracerAgent::GetHotspots(size_t num) const {
+	return m_history.GetHotspots(num);
+}
+vector<Allocation> TracerAgent::GetColdspots(size_t num) const {
+	return m_history.GetColdspots(num);
+}
+
+vector<Allocation> TracerAgent::GetHotspotsThreshold(unsigned long min_transfers) const {
+	return m_history.GetHotspotsThreshold(min_transfers);
+}
+vector<Allocation> TracerAgent::GetColdspotsThreshold(unsigned long max_transfers) const {
+	return m_history.GetColdspotsThreshold(max_transfers);
+}
+
+
+
+
+void TracerAgent::DumpHistory(const char *filename, DumpFormat format, bool verbose) {
+
+	m_history.SaveDatabase(filename, format, verbose);
+
+// 	lock_guard<shared_mutex> lock(history_mutex);
+// 	globalLogger.log_info("Dumping history to file");
+// 	ofstream dump_file(filename);
+// 	if (dump_file.is_open()) {
+// 		mem_history.JSONSerialize(dump_file, verbose);
+// 		dump_file.close();
+// 		globalLogger.log_info("History successfully dumped to file");
+// 	} else {
+// 		globalLogger.log_error("Failed to open dump file");
+// 	}
+// }
 }
 
 // Non-identifier event 
@@ -107,39 +134,37 @@ void TracerAgent::HandleEvent(AllocationEvent event) {
 	// Process the event, locking as a writer
 	// construct log string with start address (hex) size (hex) and event type
 	std::stringstream log_stream;
-	log_stream << "[TracerAgent->HandleEvent]: No identifier, start address = 0x" << std::hex << event.allocation_info.start 
+	log_stream << "[TracerAgent->HandleEvent]: Event with start address = 0x" << std::hex << event.allocation_info.start 
 			   << ", size = 0x" << event.allocation_info.size 
 			   << ", type = " << EventTypeToString(event.event_info.type);
 	std::string log_string = log_stream.str();
 	
 	globalLogger.log_info(log_string.c_str());
 
-	lock_guard<shared_mutex> lock(history_mutex);
-	mem_history.RecordEvent(event);
+	m_history.RecordEvent(event);
 }
 
-// Identifier event
-void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identifier) {
-	//cerr << "Event call site: " << std::hex << identifier.call_site << ", call no: " << std::dec << identifier.call_no << endl;
-	// Process the event, locking as a writer
-	//globalLogger.log_info("Handling event");
-	std::stringstream log_stream;
-	log_stream << "[TracerAgent->HandleEvent]: Has identifier, start address = 0x" << std::hex << event.allocation_info.start 
-			   << ", size = 0x" << event.allocation_info.size 
-			   << ", type = " << EventTypeToString(event.event_info.type);
-	std::string log_string = log_stream.str();
+// // Identifier event
+// void TracerAgent::HandleEvent(AllocationEvent event, AllocationIdentifier identifier) {
+// 	//cerr << "Event call site: " << std::hex << identifier.call_site << ", call no: " << std::dec << identifier.call_no << endl;
+// 	// Process the event, locking as a writer
+// 	//globalLogger.log_info("Handling event");
+// 	std::stringstream log_stream;
+// 	log_stream << "[TracerAgent->HandleEvent]: Has identifier, start address = 0x" << std::hex << event.allocation_info.start 
+// 			   << ", size = 0x" << event.allocation_info.size 
+// 			   << ", type = " << EventTypeToString(event.event_info.type);
+// 	std::string log_string = log_stream.str();
 
-	globalLogger.log_info(log_string.c_str());
-	// Log the identifier call site and call number
-	std::stringstream log_stream2;
-	log_stream2 << ", call site = 0x" << std::hex << identifier.call_site 
-			   << ", call no = " << std::dec << identifier.call_no;
-	std::string log_string2 = log_stream2.str();
-	globalLogger.log_info(log_string2.c_str());
-
-	lock_guard<shared_mutex> lock(history_mutex);
-	mem_history.RecordEvent(event, identifier);
-}
+// 	globalLogger.log_info(log_string.c_str());
+// 	// Log the identifier call site and call number
+// 	std::stringstream log_stream2;
+// 	log_stream2 << ", call site = 0x" << std::hex << identifier.call_site 
+// 			   << ", call no = " << std::dec << identifier.call_no;
+// 	std::string log_string2 = log_stream2.str();
+// 	globalLogger.log_info(log_string2.c_str());
+	
+// 	m_history.RecordEvent(event, identifier);
+// }
 
 
 void TracerAgent::ProcessEvents()
@@ -149,10 +174,8 @@ void TracerAgent::ProcessEvents()
 		optional<AllocationEvent> event = m_event_queue.dequeue_wait();
 		globalLogger.log_debug("Event maybe dequeued");
 		if (event.has_value()) {
-			// Process the event, locking as a writer
-			lock_guard<shared_mutex> lock(history_mutex);
 			globalLogger.log_debug("Event dequeued");
-			mem_history.RecordEvent(event.value());
+			m_history.RecordEvent(event.value());
 		} else {
 			// Exit if queue is done and empty
 			break;

@@ -1,22 +1,20 @@
-### Paths and variables
-
 CLANG ?= clang
 ROOT := $(abspath ..)
-# OUTPUT := .output
 OUTPUT := $(ROOT)/CudaTracer/obj
 SUBMOD_OUTPUT := $(ROOT)/CudaTracer/submodules_obj
 SRCDIR = src
 TESTDIR = test
+
 LIBBPF_SRC := $(abspath $(ROOT)/libbpf/src)
 BPFTOOL_SRC := $(abspath $(ROOT)/bpftool/src)
-# LIBBPF_SRC := $(abspath ../../../../libbpf/src)
-# BPFTOOL_SRC := $(abspath ../../../../bpftool/src)
 LIBBPF_OBJ := $(abspath $(SUBMOD_OUTPUT)/libbpf.a)
 BPFTOOL_OUTPUT ?= $(abspath $(SUBMOD_OUTPUT)/bpftool)
 BPFTOOL ?= $(BPFTOOL_OUTPUT)/bootstrap/bpftool
+
 LIBBLAZESYM_SRC := $(abspath ../blazesym/)
 LIBBLAZESYM_INC := $(abspath $(LIBBLAZESYM_SRC)/capi/include)
 LIBBLAZESYM_OBJ := $(abspath $(SUBMOD_OUTPUT)/libblazesym_c.a)
+
 ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
 			 | sed 's/arm.*/arm/' \
 			 | sed 's/aarch64/arm64/' \
@@ -24,136 +22,117 @@ ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
 			 | sed 's/mips.*/mips/' \
 			 | sed 's/riscv64/riscv/' \
 			 | sed 's/loongarch64/loongarch/')
-# VMLINUX := ../vmlinux.h/include/$(ARCH)/vmlinux.h
+
 VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
 
 CXX = g++
 CXXFLAGS = -Wall -g -std=c++20
 LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl -L/usr/local/cuda/lib64 -lcudart
-
 NVCC_FLAGS = -g -O2 -std=c++20
 
-# Use our own libbpf API headers and Linux UAPI headers distributed with
-# libbpf to avoid dependency on system-wide headers, which could be missing or
-# outdated
 INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
 INCLUDES := $(addprefix -I,$(INCLUDE_DIRS)) -I$(OUTPUT) -I$(SUBMOD_OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC) -I/usr/local/cuda/include
-#CFLAGS := -g -Wall
-# ALL_LDFLAGS := $(LDFLAGS) $(EXTRA_LDFLAGS)
-# ALL_LDFLAGS += -lrt -ldl -lpthread -lm -lfmt 
 
-# Find all source files under src
+# All main source files
 SRC = $(shell find $(SRCDIR) -type f -name '*.cpp')
-
-# Find all test source files
-TEST_SRC = $(wildcard $(TESTDIR)/*.cpp)
-
-# Generate list of object files, mirroring directory structure
 SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OUTPUT)/%.o, $(SRC))
+SRC_DEPS = $(SRC_OBJ:.o=.d)
 
-# Generate list of test object files
+# Hardcoded test executables from .cpp files
+TESTS := TestTracerAgent TestMemHistory
+TEST_SRC = $(addprefix $(TESTDIR)/,$(patsubst %,%.cpp,$(TESTS)))
 TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OUTPUT)/test_%.o, $(TEST_SRC))
+TEST_DEPS = $(TEST_OBJ:.o=.d)
 
-# Include directories under src for headers
-# INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
-# CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
+# Hardcoded CUDA test executables from .cu files
+TESTS_CU := cuda_benchmark_application simple_cuda_memcpy
+TEST_CU_SRC = $(addprefix $(TESTDIR)/,$(patsubst %,%.cu,$(TESTS_CU)))
+TEST_CU_OBJ = $(patsubst $(TESTDIR)/%.cu, $(OUTPUT)/test_%.o, $(TEST_CU_SRC))
+TEST_CU_DEPS = $(TEST_CU_OBJ:.o=.d)
 
-# Generate list of test executables
-TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
+all: $(TESTS) $(TEST_CU_EXES) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
 
-
-## Executable/Object File Rules
-
-all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ) cuda_benchmark_application
-
-# # Compile test CUDA source files into object files
-# $(OUTPUT)/%.o: $(TESTDIR)/%.cu
-# 	@mkdir -p $(OUTPUT)
-# 	nvcc $(NVCC_FLAGS) $(INCLUDES) -c -o $@ $<
-
-# Rule to build each test executable with CUDA
-cuda_benchmark_application: $(OUTPUT)/dummy_kernel.o $(OUTPUT)/cuda_benchmark_application.o $(SRC_OBJ)
-	nvcc -o cuda_benchmark_application $(OUTPUT)/dummy_kernel.o $(OUTPUT)/cuda_benchmark_application.o $(SRC_OBJ) $(LDFLAGS)
-
-$(OUTPUT)/cuda_benchmark_application.o:
+##############################
+# Main source compilation
+##############################
+$(OUTPUT)/%.o: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h $(LIBBLAZESYM_OBJ)
 	@mkdir -p $(dir $@)
-	nvcc $(NVCC_FLAGS) $(INCLUDES) -c $(TESTDIR)/cuda_benchmark_application.cu -o $(OUTPUT)/cuda_benchmark_application.o
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
-$(OUTPUT)/dummy_kernel.o:
-	nvcc $(NVCC_FLAGS) $(INCLUDES) -c $(TESTDIR)/dummy_kernel.cu -o $(OUTPUT)/dummy_kernel.o 
+$(OUTPUT)/%.d: $(SRCDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -M $< > $@
 
-# # Compile CUDA source files into object files
-# $(OUTPUT)/dummykernel.o: $(TESTDIR)/%.cu
-# 	@mkdir -p $(dir $@)
-# 	nvcc $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
+##############################
+# C++ Test compilation
+##############################
+$(OUTPUT)/test_%.o: $(TESTDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
-# Rule to build each test executable
+$(OUTPUT)/test_%.d: $(TESTDIR)/%.cpp
+	@mkdir -p $(dir $@)
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -M $< > $@
+
 $(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
 	$(CXX) -o $@ $^ $(LDFLAGS)
 
-# Compile source files into object files
-$(OUTPUT)/%.o: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h $(LIBBLAZESYM_OBJ) 
+##############################
+# CUDA Test compilation
+##############################
+$(OUTPUT)/test_%.o: $(TESTDIR)/%.cu
 	@mkdir -p $(dir $@)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
+	nvcc $(NVCC_FLAGS) $(INCLUDES) -c -o $@ $<
 
-# Compile test source files into object files
-$(OUTPUT)/test_%.o: $(TESTDIR)/%.cpp
-	@mkdir -p $(OUTPUT)
-	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
+$(OUTPUT)/test_%.d: $(TESTDIR)/%.cu
+	@mkdir -p $(dir $@)
+	nvcc $(NVCC_FLAGS) $(INCLUDES) -M $< > $@
 
-# Specific dependencies between eBPFProbe object and BPF code
-# TODO just make list of probes
-$(OUTPUT)/probe/eBPFProbes.o: $(LIBBPF_OBJ) $(OUTPUT)/probe/CudaTracerProbe.bpf.o $(SRCDIR)/probe/CudaTracerProbe.skel.h
+$(TEST_CU_EXES): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
+	nvcc -o $@ $^ $(LDFLAGS)
 
-# Build BPF code (bpf.c -> bpf.o)
+##############################
+# BPF code build rules
+##############################
 $(OUTPUT)/%.bpf.o: $(SRCDIR)/%.bpf.c $(LIBBPF_OBJ) $(wildcard %.h) $(VMLINUX) | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
 	$(call msg,BPF,$@)
 	@mkdir -p $(dir $@)
-	$(Q)$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH)		      \
-		     $(INCLUDES) $(CLANG_BPF_SYS_INCLUDES)		      \
+	$(Q)$(CLANG) -g -O2 -target bpf -D__TARGET_ARCH_$(ARCH) \
+		     $(INCLUDES) $(CLANG_BPF_SYS_INCLUDES) \
 		     -c $(filter %.c,$^) -o $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
 	$(Q)$(BPFTOOL) gen object $@ $(patsubst %.bpf.o,%.tmp.bpf.o,$@)
 
-# Generate BPF skeletons
 $(SRCDIR)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
 	$(call msg,GEN-SKEL,$@)
 	$(Q)$(BPFTOOL) gen skeleton $< > $@
 
-# Build user-space code
-$(patsubst %,$(OUTPUT)/%.o,$(APP)): %.o: %.skel.h
+##############################
+# Tool build rules
+##############################
 
-# From cudemem Makefile:
-# # Convert cpp files to object files
-# APP_OBJ_FILES := $(patsubst %.cpp,$(OUTPUT)/%.o,$(APP_CPP_FILES))
+$(LIBBPF_OBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(SUBMOD_OUTPUT)/libbpf
+	$(call msg,LIB,$@)
+	$(Q)$(MAKE) -C $(LIBBPF_SRC) BUILD_STATIC_ONLY=1 \
+		    OBJDIR=$(dir $@)/libbpf DESTDIR=$(dir $@) \
+		    INCLUDEDIR= LIBDIR= UAPIDIR= \
+		    install
 
-# $(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
-# 	$(call msg,CXX,$@)
-# 	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
+$(BPFTOOL): | $(BPFTOOL_OUTPUT)
+	$(call msg,BPFTOOL,$@)
+	$(Q)$(MAKE) ARCH= CROSS_COMPILE= OUTPUT=$(BPFTOOL_OUTPUT)/ -C $(BPFTOOL_SRC) bootstrap
 
+$(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a::
+	$(Q)cd $(LIBBLAZESYM_SRC) && $(CARGO) build --package=blazesym-c --release
 
-
-## Build submodule dependencies: libbpf, bpftool, libblazesym
-
-# Directories
+$(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(SUBMOD_OUTPUT)
+	$(call msg,LIB, $@)
+	$(Q)sudo cp $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a $@
 
 $(OUTPUT) $(SUBMOD_OUTPUT) $(SUBMOD_OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
 	$(call msg,MKDIR,$@)
 	$(Q)mkdir -p $@
 
-# $(SUBMOD_OUTPUT) $(SUBMOD_OUTPUT)/libbpf $(BPFTOOL_OUTPUT):
-# 	$(call msg,MKDIR,$@)
-# 	$(Q)mkdir -p $@
-
 CARGO ?= $(shell which cargo)
-
-# Get Clang's default includes on this system. We'll explicitly add these dirs
-# to the includes list when compiling with `-target bpf` because otherwise some
-# architecture-specific dirs will be "missing" on some architectures/distros -
-# headers such as asm/types.h, asm/byteorder.h, asm/socket.h, asm/sockios.h,
-# sys/cdefs.h etc. might be missing.
-#
-# Use '-idirafter': Don't interfere with include mechanics except where the
-# build would have failed anyways.
 CLANG_BPF_SYS_INCLUDES ?= $(shell $(CLANG) -v -E - </dev/null 2>&1 \
 	| sed -n '/<...> search starts here:/,/End of search list./{ s| \(/.*\)|-idirafter \1|p }')
 
@@ -162,9 +141,9 @@ ifeq ($(V),1)
 	msg =
 else
 	Q = @
-	msg = @printf '  %-8s %s%s\n'					\
-		      "$(1)"						\
-		      "$(patsubst $(abspath $(OUTPUT))/%,%,$(2))"	\
+	msg = @printf '  %-8s %s%s\n' \
+		      "$(1)" \
+		      "$(patsubst $(abspath $(OUTPUT))/%,%,$(2))" \
 		      "$(if $(3), $(3))";
 	MAKEFLAGS += --no-print-directory
 endif
@@ -179,41 +158,93 @@ $(call allow-override,CC,$(CROSS_COMPILE)cc)
 $(call allow-override,LD,$(CROSS_COMPILE)ld)
 
 
-# Build libbpf
-$(LIBBPF_OBJ): $(wildcard $(LIBBPF_SRC)/*.[ch] $(LIBBPF_SRC)/Makefile) | $(SUBMOD_OUTPUT)/libbpf
-	$(call msg,LIB,$@)
-	$(Q)$(MAKE) -C $(LIBBPF_SRC) BUILD_STATIC_ONLY=1		      \
-		    OBJDIR=$(dir $@)/libbpf DESTDIR=$(dir $@)		      \
-		    INCLUDEDIR= LIBDIR= UAPIDIR=			      \
-		    install
+##############################
+# Include dependencies
+##############################
+-include $(SRC_DEPS) $(TEST_DEPS) $(TEST_CU_DEPS)
 
-# Build bpftool
-$(BPFTOOL): | $(BPFTOOL_OUTPUT)
-	$(call msg,BPFTOOL,$@)
-	$(Q)$(MAKE) ARCH= CROSS_COMPILE= OUTPUT=$(BPFTOOL_OUTPUT)/ -C $(BPFTOOL_SRC) bootstrap
-
-# Build libblazesym
-$(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a::
-	$(Q)cd $(LIBBLAZESYM_SRC) && $(CARGO) build --package=blazesym-c --release
-
-$(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(SUBMOD_OUTPUT)
-	$(call msg,LIB, $@)
-	$(Q)sudo cp $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a $@
-
-# Clean files generated from our code
 clean:
-	rm -rf $(OUTPUT) $(TESTS)
+	rm -rf $(OUTPUT) $(TESTS) $(TEST_CU_EXES)
 
-# Clean all files generated from our code and submodules
 cleanall:
 	rm -rf $(OUTPUT) $(SUBMOD_OUTPUT)
 	find $(SRCDIR) -name '*skel.h' -delete
-# TODO add cleanall vs clean
 
-#all: $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o
-# Rules
-.PHONY: clean all
+.PHONY: clean all cleanall
 
-# # Build all test executables
-# all: $(OUTPUT)/probe/EventProbe.o
-# # all: $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# # Path variables
+
+# ROOT := $(abspath ..)
+# # Output for object files from our code and tests (not submodules)
+# OUTPUT := $(ROOT)/CudaTracer/object
+# # Output for object files from submodules
+# SUBMOD_OUTPUT := $(ROOT)/CudaTracer/submodules_object
+
+# SRCDIR = src
+# TESTDIR = test
+
+# # Paths for libbpf submodule
+# LIBBPF_SRC := $(ROOT)/libbpf/src
+# LIBBPF_OBJ := $(SUBMOD_OUTPUT)/libbpf.a
+
+# # Paths for bpftool submodule
+# BPFTOOL_SRC := $(ROOT)/bpftool/src
+# BPFTOOL_OUTPUT ?= $(SUBMOD_OUTPUT)/bpftool
+# BPFTOOL ?= $(BPFTOOL_OUTPUT)/bootstrap/bpftool
+
+# # Paths for blazesym submodule
+# LIBBLAZESYM_SRC := $(ROOT)/blazesym
+# LIBBLAZESYM_INC := $(LIBBLAZESYM_SRC)/capi/include
+# LIBBLAZESYM_OBJ := $(SUBMOD_OUTPUT)/libblazesym_c.a
+
+# # Path for vmlinux.h
+# ARCH ?= $(shell uname -m | sed 's/x86_64/x86/' \
+# 			 | sed 's/arm.*/arm/' \
+# 			 | sed 's/aarch64/arm64/' \
+# 			 | sed 's/ppc64le/powerpc/' \
+# 			 | sed 's/mips.*/mips/' \
+# 			 | sed 's/riscv64/riscv/' \
+# 			 | sed 's/loongarch64/loongarch/')
+# VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
+
+
+# # Compiler and linker flags
+# CXX = g++
+# NVCC = nvcc
+# COMPILE_FLAGS = -O2 -g -std=c++20
+# LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl -L/usr/local/cuda/lib64 -lcudart
+
+# INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
+# INCLUDES := $(addprefix -I,$(INCLUDE_DIRS)) -I$(OUTPUT) -I$(SUBMOD_OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC) -I/usr/local/cuda/include
+
+# # Test Targets
+# CXX_TARGETS = $(TESTDIR)/TestMemHistory.cpp $(TESTDIR)/TestTracerAgent.cpp
+# CU_TARGETS = $(TESTDIR)/cuda_benchmark_application.cu $(TESTDIR)/simple_cuda_memcpy.cu
+
+# # Source files
+# SRC = $(shell find $(SRCDIR) -type f -name '*.cpp')
