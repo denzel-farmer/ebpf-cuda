@@ -16,14 +16,34 @@
 
 #include "AllocationHistory.h"
 
-// Optimized container for tracking allocation history
+#define BOOST_BIND_GLOBAL_PLACEHOLDERS
+
 using namespace boost::multi_index;
+using namespace std;
 
 struct by_start_address {};
 struct by_transfer_count {};
 
+// typedef multi_index_container<
+//     AllocationHistory,
+//     indexed_by<
+//         // Primary key is start address, used for fast lookup
+//         ordered_non_unique<
+//             tag<by_start_address>,
+//             const_mem_fun<AllocationHistory, unsigned long, &AllocationHistory::GetStartAddress>
+//         >,
+
+//         // Secondary key is transfer count, used for hotspot/coldspot optimization
+//         ordered_non_unique<
+//             tag<by_transfer_count>,
+//             const_mem_fun<AllocationHistory, unsigned long, &AllocationHistory::GetTransferCount>,
+//             std::greater<unsigned long>
+//         >
+//     >
+// > AllocationHistoryContainer;
+
 typedef multi_index_container<
-    AllocationHistory,
+    shared_ptr<AllocationHistory>,
     indexed_by<
         // Primary key is start address, used for fast lookup
         ordered_non_unique<
@@ -40,18 +60,34 @@ typedef multi_index_container<
     >
 > AllocationHistoryContainer;
 
+
 typedef AllocationHistoryContainer::index<by_start_address>::type::iterator StartAddressIndexIterator;
 typedef AllocationHistoryContainer::index<by_transfer_count>::type::iterator TransferCountIndexIterator;
+
+enum class DumpFormat {
+    JSON,
+    BINARY
+};
 
 class MemHistory {
 public:
     MemHistory();
-    void RecordEvent(AllocationEvent event, AllocationIdentifier identifier);
+   // void RecordEvent(AllocationEvent event);
     void RecordEvent(AllocationEvent event);
-    vector<const AllocationHistory*> GetHotspots(int num) const;
-    vector<const AllocationHistory*> GetColdspots(unsigned long max_transfers) const;
 
-    vector<const AllocationHistory*> GetAllocationHistories() const;
+    vector<Allocation> GetHotspots(size_t num) const;
+    vector<Allocation> GetColdspots(size_t num) const;
+    vector<Allocation> GetHotspotsThreshold(unsigned long min_transfers) const;
+    vector<Allocation> GetColdspotsThreshold(unsigned long max_transfers) const;
+
+    vector<Allocation> GetAllocations() const; 
+
+    // TODO get shared_ptr to AllocationHistory (all or hotspots)
+
+    // vector<const AllocationHistory*> GetHotspots(int num) const;
+    // vector<const AllocationHistory*> GetColdspots(unsigned long max_transfers) const;
+
+    // vector<const AllocationHistory*> GetAllocationHistories() const;
 
     string ToString() const {
         return ToString(false);
@@ -60,13 +96,15 @@ public:
 
     boost::property_tree::ptree PtreeSerialize(bool verbose) const;
     void JSONSerialize(ostream& out, bool verbose) const;
+    void BinarySerialize(ostream& out, bool verbose) const;
+    void SaveDatabase(const char* filename, DumpFormat format, bool verbose) const;
 
 private:
-    void UpdateNewAlloc(AllocationRange alloc_info, EventInfo event_info, AllocationIdentifier identifier);
+    void UpdateNewAlloc(Allocation alloc_info, EventInfo event_info);
     void UpdateExistingAlloc(AllocationRange alloc_info, EventInfo event_info);
 
    pair<StartAddressIndexIterator, StartAddressIndexIterator> FindStartAddressAllocRange(unsigned long startAddress) const;
-   optional<StartAddressIndexIterator> FindActiveAlloc(unsigned long startAddress) const;
+   optional<StartAddressIndexIterator> FindActiveAlloc(AllocationRange alloc_info) const;
 
 
 private:
