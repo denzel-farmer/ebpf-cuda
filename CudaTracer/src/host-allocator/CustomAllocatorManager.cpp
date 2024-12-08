@@ -61,6 +61,7 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
     void* ptr;
     if (use_pinned) {
         ptr = pinned_pool.allocate(size);
+        total_amount_pinned += size;
         {
             std::lock_guard<std::mutex> freq_lock(freq_mutex);
             allocation_type_map[ptr] = true;

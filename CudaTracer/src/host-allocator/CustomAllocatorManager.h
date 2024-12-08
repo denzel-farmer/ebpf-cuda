@@ -37,6 +37,7 @@ private:
     std::mutex freq_mutex;
     unique_ptr<TracerAgent> tracer_agent;
     int tracer_history_used = 0;
+    size_t total_amount_pinned = 0;
 
 };
 
