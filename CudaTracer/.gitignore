@@ -2,6 +2,7 @@ TestMemHistory
 TestTracerAgent
 log.txt
 cuda_benchmark_application
+simple_cuda_memcpy
 *.csv
 *.json
 *.txt
