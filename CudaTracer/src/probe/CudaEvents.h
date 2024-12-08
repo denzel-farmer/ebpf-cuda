@@ -18,14 +18,6 @@ struct CudaProcessInfo {
     pid_t pid;
 };
 
-// struct CudaTransferEvent {
-//     void *destination;
-//     const void *source;
-//     size_t size;
-//     enum cudaMemcpyKind direction;
-//     struct CudaProcessInfo processInfo;
-// };
-
 struct CudaMemcpyEvent {
     unsigned long source;
     unsigned long destination;
@@ -36,12 +28,27 @@ struct CudaMemcpyEvent {
     struct CudaProcessInfo processInfo;
 };
 
-// struct MallocEvent {
-//     unsigned long address;
-//     size_t size;
-//     unsigned long return_address;
-//     unsigned long long timestamp;
-//     struct CudaProcessInfo processInfo;
-// }
+struct GenericAllocEvent {
+    unsigned long address;
+    size_t size;
+    unsigned long return_address;
+    unsigned long long timestamp;
+    struct CudaProcessInfo processInfo;
+};
+
+struct GenericFreeEvent {
+    unsigned long address;
+    unsigned long return_address;
+    unsigned long long timestamp;
+    struct CudaProcessInfo processInfo;
+};
+
+struct CudaPinPagesEvent {
+    unsigned long address;
+    size_t size;
+    unsigned long return_address;
+    unsigned long long timestamp;
+    struct CudaProcessInfo processInfo;
+};
 
 #endif // CUDA_EVENTS_H

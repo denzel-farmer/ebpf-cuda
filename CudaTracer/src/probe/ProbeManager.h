@@ -11,6 +11,7 @@
 #include <bpf/libbpf.h>
 
 #include "CudaEvents.h"
+#include "Logger.h"
 
 #include "CudaTracerProbe.skel.h"
 
@@ -21,7 +22,14 @@ using namespace std;
 
 enum class ProbeType { KPROBE, UPROBE };
 
-enum class ProbeTarget { DEVICE_TRANSFER, CUDA_MEMCPY };
+enum class ProbeTarget { 
+	CUDA_HOST_ALLOC,
+	MALLOC,
+	CUDA_MEMCPY,
+	PIN_PAGES,
+	CUDA_FREE,
+	FREE
+	};
 
 class ProbeManager;
 
@@ -37,12 +45,10 @@ struct ProgramInfo {
 inline ProbeType ConvertProbeTargetToProbeType(ProbeTarget target)
 {
 	switch (target) {
-	case ProbeTarget::DEVICE_TRANSFER:
+	case ProbeTarget::PIN_PAGES:
 		return ProbeType::KPROBE;
-	case ProbeTarget::CUDA_MEMCPY:
-		return ProbeType::UPROBE;
 	default:
-		throw std::invalid_argument("Unknown ProbeTarget");
+		return ProbeType::UPROBE;
 	}
 }
 
@@ -60,10 +66,14 @@ inline struct bpf_program *GetProgramFromSkeleton(struct CudaTracerProbe_bpf *sk
 inline const char *GetSymbolNameFromProbeTarget(ProbeTarget target)
 {
 	switch (target) {
-	case ProbeTarget::DEVICE_TRANSFER:
-		return "device_transfer";
+	case ProbeTarget::CUDA_HOST_ALLOC:
+		return "cudaHostAlloc";
 	case ProbeTarget::CUDA_MEMCPY:
 		return "cudaMemcpy";
+	case ProbeTarget::PIN_PAGES:
+		return "os_lock_user_pages";
+	case ProbeTarget::CUDA_FREE:
+		return "cudaFree";
 	default:
 		throw std::invalid_argument("Unknown ProbeTarget");
 	}
@@ -83,6 +93,8 @@ class ProbeManager {
 	bool AttachAllProbes();
 
 	bool AttachProbe(ProbeTarget target_func, pid_t target_pid);
+	bool AttachKprobe(ProbeTarget target_func, pid_t target_pid);
+	bool AttachUprobe(ProbeTarget target_func, pid_t target_pid);
 
 	bool DetachProbe(ProbeTarget target_func);
 
@@ -118,12 +130,10 @@ class ProbeManager {
 
 // Static callback for ring buffer events
 // We get a pointer to this manager as ctx, and data from the ring buffer.
-// Static callback for ring buffer events
-// We get a pointer to this manager as ctx, and data from the ring buffer.
 static int HandleEvent(void *ctx, void *data, size_t size)
 {
 	// // Global log
-	// globalLogger.log_info("Handling event");
+	globalLogger.log_debug("Handling event");
 
 	ProgramInfo *info = static_cast<ProgramInfo *>(ctx);
 	// Now we know which program this event came from by info->target_func.

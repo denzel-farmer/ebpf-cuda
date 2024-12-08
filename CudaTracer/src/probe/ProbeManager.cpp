@@ -52,6 +52,79 @@ bool ProbeManager::AttachAllProbes()
 
 bool ProbeManager::AttachProbe(ProbeTarget target_func, pid_t target_pid)
 {
+	if (ConvertProbeTargetToProbeType(target_func) == ProbeType::KPROBE) {
+		return AttachKprobe(target_func, target_pid);
+	} else {
+		return AttachUprobe(target_func, target_pid);
+	}
+}
+
+bool ProbeManager::AttachKprobe(ProbeTarget target_func, pid_t target_pid) {
+	// TODO better lifetime management
+	ProgramInfo *info = new ProgramInfo();
+	info->target_func = target_func;
+	info->target_pid = target_pid;
+	info->manager = this; // So handle_event can access this object
+
+	globalLogger.log_info("Getting program\n");
+	info->prog = GetProgramFromSkeleton(m_skel, target_func);
+	if (!info->prog) {
+		globalLogger.log_error("Failed to get program for target: " +
+				       to_string(static_cast<int>(target_func)));
+		DestroyInfo(info);
+		return false;
+	}
+	// Use GetSymbolNameFromProbeTarget to get func name
+	const char *target_sym_name = GetSymbolNameFromProbeTarget(target_func);
+
+	bpf_link *link = bpf_program__attach_kprobe(info->prog, false /* retprobe */,
+										target_sym_name);
+	if (link) {
+		info->links.emplace_back(link);
+	} else {
+		globalLogger.log_error("Failed to attach kprobe at symbol: " + string(target_sym_name));
+		DestroyInfo(info);
+		return false;
+	}
+
+	globalLogger.log_info("Creating ring buffer\n");
+	info->ringbuf =
+		ring_buffer__new(bpf_map__fd(m_skel->maps.ringbuf), &HandleEvent, info, nullptr);
+	if (!info->ringbuf) {
+		globalLogger.log_error("Failed to create ring buffer for target: " +
+				       string(target_sym_name));
+		for (auto link : info->links) {
+			bpf_link__destroy(link);
+		}
+		DestroyInfo(info);
+		return false;
+	}
+
+	// Add this ring buffer's fd to epoll
+	globalLogger.log_info("Adding ring buffer fd to epoll\n");
+	int rb_fd = ring_buffer__epoll_fd(info->ringbuf);
+	struct epoll_event ev = {};
+	ev.events = EPOLLIN;
+	ev.data.ptr = info->ringbuf; // identify which ringbuf triggered event
+	if (epoll_ctl(m_epoll_fd, EPOLL_CTL_ADD, rb_fd, &ev) < 0) {
+		globalLogger.log_error("Failed to add ringbuf fd to epoll for " + string(target_sym_name));
+		DestroyInfo(info);
+		return false;
+	}
+
+	globalLogger.log_info("Starting polling\n");
+	// If this is the first program attached, start polling
+	if (!m_poll_thread.joinable()) {
+		StartPolling();
+	}
+
+	m_programs[target_func] = info;
+
+	return true;
+}
+
+bool ProbeManager::AttachUprobe(ProbeTarget target_func, pid_t target_pid)
+{
 	// TODO better lifetime management
 	ProgramInfo *info = new ProgramInfo();
 	info->target_func = target_func;
