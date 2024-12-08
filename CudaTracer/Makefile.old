@@ -54,9 +54,6 @@ SRC_OBJ = $(patsubst $(SRCDIR)/%.cpp, $(OUTPUT)/%.o, $(SRC))
 # Generate list of test object files
 TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OUTPUT)/test_%.o, $(TEST_SRC))
 
-# Include directories under src for headers
-# INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
-# CXXFLAGS += $(addprefix -I,$(INCLUDE_DIRS))
 
 # Generate list of test executables
 TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
@@ -66,10 +63,6 @@ TESTS = $(patsubst $(TESTDIR)/%.cpp, %, $(TEST_SRC))
 
 all: $(TESTS) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ) cuda_benchmark_application
 
-# # Compile test CUDA source files into object files
-# $(OUTPUT)/%.o: $(TESTDIR)/%.cu
-# 	@mkdir -p $(OUTPUT)
-# 	nvcc $(NVCC_FLAGS) $(INCLUDES) -c -o $@ $<
 
 # Rule to build each test executable with CUDA
 cuda_benchmark_application: $(OUTPUT)/dummy_kernel.o $(OUTPUT)/cuda_benchmark_application.o $(SRC_OBJ)
@@ -90,10 +83,6 @@ $(OUTPUT)/cuda_benchmark_application.o: $(TESTDIR)/cuda_benchmark_application.cu
 $(OUTPUT)/dummy_kernel.o:
 	nvcc $(NVCC_FLAGS) $(INCLUDES) -c $(TESTDIR)/dummy_kernel.cu -o $(OUTPUT)/dummy_kernel.o 
 
-# # Compile CUDA source files into object files
-# $(OUTPUT)/dummykernel.o: $(TESTDIR)/%.cu
-# 	@mkdir -p $(dir $@)
-# 	nvcc $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
 # Rule to build each test executable
 $(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
@@ -129,16 +118,6 @@ $(SRCDIR)/%.skel.h: $(OUTPUT)/%.bpf.o | $(OUTPUT) $(SUBMOD_OUTPUT) $(BPFTOOL)
 
 # Build user-space code
 $(patsubst %,$(OUTPUT)/%.o,$(APP)): %.o: %.skel.h
-
-# From cudemem Makefile:
-# # Convert cpp files to object files
-# APP_OBJ_FILES := $(patsubst %.cpp,$(OUTPUT)/%.o,$(APP_CPP_FILES))
-
-# $(OUTPUT)/%.o: %.cpp $(wildcard %.h) | $(OUTPUT)
-# 	$(call msg,CXX,$@)
-# 	$(Q)$(CXX) $(CXXFLAGS) $(INCLUDES) -c $(filter %.cpp,$^) -o $@
-
-
 
 ## Build submodule dependencies: libbpf, bpftool, libblazesym
 
@@ -222,6 +201,3 @@ cleanall:
 # Rules
 .PHONY: clean all
 
-# # Build all test executables
-# all: $(OUTPUT)/probe/EventProbe.o
-# # all: $(OUTPUT)/probe/bpf/CudaMemcpyProbe.bpf.o 

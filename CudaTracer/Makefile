@@ -50,7 +50,7 @@ TEST_CU_SRC = $(addprefix $(TESTDIR)/,$(patsubst %,%.cu,$(TESTS_CU)))
 TEST_CU_OBJ = $(patsubst $(TESTDIR)/%.cu, $(OUTPUT)/test_%.o, $(TEST_CU_SRC))
 TEST_CU_DEPS = $(TEST_CU_OBJ:.o=.d)
 
-all: $(TESTS) $(TEST_CU_EXES) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
+all: $(TESTS) $(TESTS_CU) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
 
 ##############################
 # Main source compilation
@@ -88,7 +88,7 @@ $(OUTPUT)/test_%.d: $(TESTDIR)/%.cu
 	@mkdir -p $(dir $@)
 	nvcc $(NVCC_FLAGS) $(INCLUDES) -M $< > $@
 
-$(TEST_CU_EXES): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
+$(TESTS_CU): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
 	nvcc -o $@ $^ $(LDFLAGS)
 
 ##############################
@@ -164,7 +164,7 @@ $(call allow-override,LD,$(CROSS_COMPILE)ld)
 -include $(SRC_DEPS) $(TEST_DEPS) $(TEST_CU_DEPS)
 
 clean:
-	rm -rf $(OUTPUT) $(TESTS) $(TEST_CU_EXES)
+	rm -rf $(OUTPUT) $(TESTS) $(TESTS_CU)
 
 cleanall:
 	rm -rf $(OUTPUT) $(SUBMOD_OUTPUT)
