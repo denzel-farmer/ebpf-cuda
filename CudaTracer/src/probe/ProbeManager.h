@@ -111,6 +111,7 @@ class ProbeManager {
 	int m_epoll_fd;
 	atomic<bool> m_poll_stop;
 	thread m_poll_thread;
+	unordered_map<unsigned long, size_t> m_call_no_map;
 	unordered_map<ProbeTarget, ProgramInfo *> m_programs;
 	ThreadSafeQueue<AllocationEvent> &m_event_queue;
 };

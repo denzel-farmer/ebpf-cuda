@@ -56,13 +56,13 @@ int main() {
     auto hotspots = memHistory.GetHotspots(2);
     cout << "Hotspots: " << endl;
     for (const auto& hotspot : hotspots) {
-        cout << hotspot->ToString() << endl;
+        cout << hotspot.ToString() << endl;
     }
 
     auto coldspots = memHistory.GetColdspots(5);
     cout << "Coldspots: " << endl;
     for (const auto& coldspot : coldspots) {
-        cout << coldspot->ToString() << endl;
+        cout << coldspot.ToString() << endl;
     }
 
     // Write to alloc-log.json

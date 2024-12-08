@@ -3,6 +3,7 @@
 #include <fstream>
 #include <limits>
 #include "AllocationHistory.h"
+#include "MemHistory.h"
 #include <chrono>
 #include <string>
 
@@ -27,7 +28,7 @@ void CustomAllocatorManager::initialize(const std::string& mode) {
         std::cout << "Initializing in Profiling Mode.\n";
     }
     else if (mode == "use") {
-        tracer_agent->DumpHistory("tracer_history.json");
+        tracer_agent->DumpHistory("tracer_history.json", DumpFormat::JSON, false);
         std::cout << "Initializing in Optimized Mode.\n";
         load_tracer_history("tracer_history.json");
     }
@@ -79,13 +80,20 @@ void* CustomAllocatorManager::allocate_memory(size_t size) {
         }
     }
 
-    update_tracer_alloc(return_addr, allocation_numbers[return_addr], ptr, size);
-
+    update_tracer(return_addr, allocation_numbers[return_addr], ptr, size, EventType::ALLOC);
     return ptr;
 }
 
 void CustomAllocatorManager::deallocate_memory(void* ptr, size_t size) {
     std::lock_guard<std::mutex> lock(alloc_mutex);
+
+       void* return_addr = __builtin_return_address(0);
+
+  //  std::cout << "Allocation called from return address: " << return_addr << std::endl;
+    std::flush(std::cout);
+
+    update_allocation_number(return_addr);
+
 
     bool was_pinned = false;
     {
@@ -108,7 +116,7 @@ void CustomAllocatorManager::deallocate_memory(void* ptr, size_t size) {
         non_pinned_pool.deallocate(ptr);
     }
 
-    update_tracer_dealloc(ptr, size);
+    update_tracer(return_addr, allocation_numbers[return_addr], ptr, size, EventType::FREE);
 }
 
 void CustomAllocatorManager::load_frequency_data(const std::string& filename) {
@@ -216,22 +224,39 @@ unsigned long get_time_since_boot_ns() {
     return static_cast<unsigned long>(ts.tv_sec) * 1'000'000'000 + ts.tv_nsec;
 }
 
-void CustomAllocatorManager::update_tracer_alloc(void* return_addr, size_t frequency, void* ptr, size_t size){
-    AllocationIdentifier allocation_identifier((unsigned long) return_addr, (unsigned long) frequency);
-    AllocationRange allocation_range( (unsigned long) ptr, static_cast<unsigned long>(size));
-    auto timestamp = get_time_since_boot_ns();
-    EventInfo event_info(timestamp, EventType::ALLOC);
-    AllocationEvent event(allocation_range, event_info);
-    tracer_agent->HandleEvent(event, allocation_identifier);
-}
+void CustomAllocatorManager::update_tracer(void* return_addr, size_t frequency, void* ptr, size_t size, EventType type) {
+    // AllocationIdentifier allocation_identifier((unsigned long) return_addr, (unsigned long) frequency);
+    // AllocationRange allocation_range( (unsigned long) ptr, static_cast<unsigned long>(size));
+    // auto timestamp = get_time_since_boot_ns();
+    // EventInfo event_info(timestamp, EventType::ALLOC);
+    
+    unsigned long start = (unsigned long) ptr;
+    unsigned long timestamp = get_time_since_boot_ns();
+    unsigned long call_no = frequency;
+    unsigned long call_site = (unsigned long) return_addr;
 
-void CustomAllocatorManager::update_tracer_dealloc(void* ptr, size_t size){
-    AllocationRange allocation_range((unsigned long) ptr, static_cast<unsigned long>(size));
-    auto timestamp = get_time_since_boot_ns();
-    EventInfo event_info(timestamp, EventType::FREE);
-    AllocationEvent event(allocation_range, event_info);
+    
+    AllocationEvent event(start, (unsigned long) size, timestamp, call_site, call_no, type);
     tracer_agent->HandleEvent(event);
 }
+
+// void CustomAllocatorManager::update_tracer_dealloc(void* ptr, size_t size){
+//     // AllocationRange allocation_range((unsigned long) ptr, static_cast<unsigned long>(size));
+//     // auto timestamp = get_time_since_boot_ns();
+//     // EventInfo event_info(timestamp, EventType::FREE);
+//     // AllocationEvent event(allocation_range, event_info);
+//     // tracer_agent->HandleEvent(event);
+
+
+//     unsigned long start = (unsigned long) ptr;
+//     unsigned long timestamp = get_time_since_boot_ns();
+//     unsigned long call_no = frequency;
+//     unsigned long call_site = (unsigned long) return_addr;
+
+    
+//     AllocationEvent event(start, (unsigned long) size, timestamp, call_site, call_no, EventType::ALLOC);
+//     tracer_agent->HandleEvent(event);
+// }
 
 extern "C" void* allocate_memory(size_t size) {
     return g_allocator_manager.allocate_memory(size);

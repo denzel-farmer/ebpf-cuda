@@ -10,9 +10,15 @@
 #include <iomanip>
 #include <functional>
 
-__global__ void dummy_kernel(float *data, size_t size);
 
 #include <fstream>
+
+__global__ void dummy_kernel(float* data, size_t size) {
+    size_t idx = blockIdx.x * blockDim.x + threadIdx.x;
+    if (idx < size) {
+        data[idx] += 1.0f;
+    }
+}
 
 // Global file stream for CSV
 std::ofstream csv_file;

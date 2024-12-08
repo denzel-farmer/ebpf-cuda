@@ -308,7 +308,16 @@ void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo
 
 	globalLogger.log_info("Event return address: " + to_string(evt->return_address));
 
-	AllocationEvent event(start, evt->timestamp, evt->size, evt->return_address, EventType::DEVICE_TRANSFER);
+	// Track call numbers
+	int call_number = 0;
+
+	if (m_call_no_map.find(evt->return_address) != m_call_no_map.end()) {
+		call_number = ++m_call_no_map[evt->return_address];
+	} else {
+		m_call_no_map[evt->return_address] = call_number;
+	}
+
+	AllocationEvent event(start, evt->size, evt->timestamp, evt->return_address, call_number, EventType::DEVICE_TRANSFER);
 
 	// Global log including event details, using AllocationEvent's to_string method
 	globalLogger.log_info("[ProbeManager->ProcessEvent] Event: " + event.ToString());

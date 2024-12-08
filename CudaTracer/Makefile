@@ -59,7 +59,7 @@ $(OUTPUT)/%.o: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTrac
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
-$(OUTPUT)/%.d: $(SRCDIR)/%.cpp
+$(OUTPUT)/%.d: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h $(LIBBLAZESYM_OBJ)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -M $< > $@
 
