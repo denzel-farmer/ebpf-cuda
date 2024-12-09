@@ -45,7 +45,7 @@ struct GenericFreeEvent {
 
 struct CudaPinPagesEvent {
     unsigned long address;
-    size_t size;
+    size_t pages;
     unsigned long return_address;
     unsigned long long timestamp;
     struct CudaProcessInfo processInfo;

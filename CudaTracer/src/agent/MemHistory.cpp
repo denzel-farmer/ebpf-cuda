@@ -41,7 +41,18 @@ void MemHistory::RecordEvent(AllocationEvent event) {
 
         unique_lock<shared_mutex> lock(m_history_mutex);
         UpdateNewAlloc(new_alloc, event.event_info);
-    } else {
+    } 
+    else if (event.event_info.type == EventType::HOST_TRANSFER) {
+        // If type is host transfer, we can create an Allocation object with call tag as tag found in event
+        // For now, don't log
+        return;
+        
+        Allocation new_alloc(event.allocation_info, event.event_info.call_info);
+
+        unique_lock<shared_mutex> lock(m_history_mutex);
+        UpdateNewAlloc(new_alloc, event.event_info);
+    }
+    else {
 
 
         unique_lock<shared_mutex> lock(m_history_mutex);

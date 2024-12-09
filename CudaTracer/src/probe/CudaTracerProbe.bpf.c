@@ -7,8 +7,7 @@
 struct {
     __uint(type, BPF_MAP_TYPE_RINGBUF);
     __uint(max_entries, 1 << 24); // 16 MB ring buffer
-} ringbuf SEC(".maps");
-
+} rb_lock_user_pages SEC(".maps");
 
 void populate_proc_info(struct CudaProcessInfo *processInfo)
 {
@@ -23,13 +22,15 @@ int BPF_KPROBE(os_lock_user_pages, void *address, uint64_t page_count, void ** p
 
     // TODO filter by PID here rather than in userspace (reduce event volume)
 
-    event = bpf_ringbuf_reserve(&ringbuf, sizeof(struct CudaPinPagesEvent), 0);
+
+    
+    event = bpf_ringbuf_reserve(&rb_lock_user_pages, sizeof(struct CudaPinPagesEvent), 0);
     if (!event) {
         return 0;
     }
 
     event->address = (unsigned long)address;
-    event->size = page_count*4096;
+    event->pages = page_count;
     event->timestamp = bpf_ktime_get_ns();
 
     // Get the return address
@@ -54,13 +55,19 @@ int BPF_KPROBE(os_lock_user_pages, void *address, uint64_t page_count, void ** p
     return 0;
 }
 
+struct {
+    __uint(type, BPF_MAP_TYPE_RINGBUF);
+    __uint(max_entries, 1 << 24); // 16 MB ring buffer
+} rb_cuda_memcpy SEC(".maps");
+
+
 
 SEC("uprobe/cudaMemcpy")
 int handle_cudaMemcpy(struct pt_regs *ctx)
 {
     struct CudaMemcpyEvent *event;
 
-    event = bpf_ringbuf_reserve(&ringbuf, sizeof(struct CudaMemcpyEvent), 0);
+    event = bpf_ringbuf_reserve(&rb_cuda_memcpy, sizeof(struct CudaMemcpyEvent), 0);
     if (!event) {
         return 0;
     }
@@ -94,12 +101,19 @@ int handle_cudaMemcpy(struct pt_regs *ctx)
     return 0;
 }
 
-SEC("uprobe/cudaFree")
-int handle_cudaFree(struct pt_regs *ctx)
+struct {
+    __uint(type, BPF_MAP_TYPE_RINGBUF);
+    __uint(max_entries, 1 << 24); // 16 MB ring buffer
+} rb_cuda_host_free SEC(".maps");
+
+
+
+SEC("uprobe/cudaHostFree")
+int handle_cudaHostFree(struct pt_regs *ctx)
 {
     struct GenericFreeEvent *event;
 
-    event = bpf_ringbuf_reserve(&ringbuf, sizeof(struct GenericFreeEvent), 0);
+    event = bpf_ringbuf_reserve(&rb_cuda_host_free, sizeof(struct GenericFreeEvent), 0);
     if (!event) {
         return 0;
     }
@@ -130,12 +144,19 @@ int handle_cudaFree(struct pt_regs *ctx)
     return 0;
 }
 
+
+struct {
+    __uint(type, BPF_MAP_TYPE_RINGBUF);
+    __uint(max_entries, 1 << 24); // 16 MB ring buffer
+} rb_cuda_host_alloc SEC(".maps");
+
+
 SEC("uprobe/cudaHostAlloc")
 int handle_cudaHostAlloc(struct pt_regs *ctx)
 {
     struct GenericAllocEvent *event;
 
-    event = bpf_ringbuf_reserve(&ringbuf, sizeof(struct GenericAllocEvent), 0);
+    event = bpf_ringbuf_reserve(&rb_cuda_host_alloc, sizeof(struct GenericAllocEvent), 0);
     if (!event) {
         return 0;
     }

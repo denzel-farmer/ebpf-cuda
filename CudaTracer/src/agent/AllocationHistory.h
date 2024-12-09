@@ -83,7 +83,7 @@ struct EventInfo {
     unsigned long timestamp;
     CallTag call_info;
     EventType type;
-
+    EventInfo() : timestamp(0), type(EventType::ALLOC) {}
     EventInfo(unsigned long ts, EventType et) : timestamp(ts), type(et) {}
     EventInfo(unsigned long ts, unsigned long call_site, unsigned long call_no, EventType et) : timestamp(ts), call_info(call_site, call_no), type(et) {}
 
@@ -105,10 +105,11 @@ struct EventInfo {
 
     string ToString() const {
         stringstream ss;
-        ss << "Timestamp: " << timestamp << ", EventType: ";
-        ss << "Call Info: " << call_info.ToString() << ", ";
-        ss << EventTypeToString(type);
-
+        // convert timestamp from ns to ms
+        //float timestamp_ms = static_cast<float>(timestamp) / 1e6;
+        ss << "Timestamp: " << timestamp << " ms, ";
+        ss << "Type: " << EventTypeToString(type);
+        ss << ", CallTag: " << call_info.ToString();
         return ss.str();
     }
 
@@ -119,6 +120,7 @@ struct AllocationEvent {
 	AllocationRange allocation_info;
     EventInfo event_info;
 
+    AllocationEvent () {}
     AllocationEvent(AllocationRange alloc_info, EventInfo event_info) : allocation_info(alloc_info), event_info(event_info) {}
     AllocationEvent(unsigned long start, unsigned long size, unsigned long timestamp, EventType type) : allocation_info(start, size), event_info(timestamp, type) {}
     AllocationEvent(unsigned long start, unsigned long size, unsigned long timestamp, unsigned long call_site, unsigned long call_no, EventType type) : allocation_info(start, size), event_info(timestamp, call_site, call_no, type) {}

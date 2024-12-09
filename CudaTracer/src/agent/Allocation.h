@@ -37,7 +37,7 @@ struct CallTag {
 
     string ToString() const {
         stringstream ss;
-        ss << "CallSite: " << call_site << ", CallNo: " << call_no;
+        ss << "CallSite: 0x" << hex << call_site << ", CallNo: " << dec << call_no;
         return ss.str();
     }
 

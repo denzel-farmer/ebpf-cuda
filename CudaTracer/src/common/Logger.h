@@ -117,7 +117,9 @@ private:
     }
 
 public:
-    Logger(LogLevel level, const string& fileName) : logLevel(level), logFileName(fileName) {}
+    Logger(LogLevel level, const string& fileName) : logLevel(level), logFileName(fileName) {
+        log_info("-------------------- Logger Initialized --------------------");
+    }
 
     // Set log level
     inline void setLogLevel(LogLevel level) {
@@ -137,10 +139,17 @@ public:
     }
 
     inline void log_error(const string& message) {
-        log(LogLevel::ERROR, message);
+       // log(LogLevel::ERROR, message);
         int errnum = errno;
-        cerr << "ERROR:" << message << endl;
-        cerr << "Error number: " << errnum << ", Error message: " << strerror(errnum) << endl;
+        if (errnum != 0) {
+            ostringstream errMsg;
+            errMsg << "ERROR: " << message << " | Error number: " << errnum << ", Error message: " << strerror(errnum);
+            log(LogLevel::ERROR, errMsg.str());
+            cerr << errMsg.str() << endl;
+        } else {
+            log(LogLevel::ERROR, message);
+            cerr << "ERROR: " << message << endl;
+        }
     }
 
     // Log function

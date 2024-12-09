@@ -12,7 +12,7 @@ void dummyFunction() {
 }
 
 int main() {
-    int h_data = 42;
+    void *h_data;
     int *d_data;
 
 
@@ -24,6 +24,9 @@ int main() {
     // Allocate device memory
     cudaMalloc((void**)&d_data, sizeof(int));
 
+    // Allocate pinned host memory
+    cudaHostAlloc(&h_data, sizeof(int), cudaHostAllocDefault);
+
     // Copy data from host to device
     dummyFunction();
     cudaMemcpy(d_data, &h_data, sizeof(int), cudaMemcpyHostToDevice);
@@ -33,8 +36,14 @@ int main() {
     // Launch a simple kernel
     simpleKernel<<<1, 1>>>(d_data);
 
+    // synchronize
+    cudaDeviceSynchronize();
+
     // Free device memory
     cudaFree(d_data);
+
+    // Free pinned host memory
+    cudaFreeHost(h_data);
 
     return 0;
 }

@@ -88,8 +88,9 @@ bool ProbeManager::AttachKprobe(ProbeTarget target_func, pid_t target_pid) {
 	}
 
 	globalLogger.log_info("Creating ring buffer\n");
+	bpf_map *ringbuf = GetRingBufferFromSkeleton(m_skel, target_func);
 	info->ringbuf =
-		ring_buffer__new(bpf_map__fd(m_skel->maps.ringbuf), &HandleEvent, info, nullptr);
+		ring_buffer__new(bpf_map__fd(ringbuf), &HandleEvent, info, nullptr);
 	if (!info->ringbuf) {
 		globalLogger.log_error("Failed to create ring buffer for target: " +
 				       string(target_sym_name));
@@ -157,10 +158,14 @@ bool ProbeManager::AttachUprobe(ProbeTarget target_func, pid_t target_pid)
 	}
 
 	for (auto &offset : offsets) {
+		if (offset.second == 0) {
+			//globalLogger.log_info("Skipping symbol: " + offset.first);
+			continue;
+		}
 		// Log offset + target_sym_name
 		// cerr << "Attaching probe at symbol: " << offset.first.c_str() << endl;
-		// fmt::print(stderr, "Attaching probe at 0x{:x}\n", (uintptr_t) offset.second);
-		// fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) m_skel->progs.handle_cudaMemcpy);
+		fmt::print(stderr, "Attaching probe at 0x{:x}\n", (uintptr_t) offset.second);
+		fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) m_skel->progs.handle_cudaMemcpy);
 		// fmt::print(stderr, "Attaching to PID: {}\n", target_pid);
 		// fmt::print(stderr, "skel->progs.handle_cudaMemcpy: 0x{:x}\n", (uintptr_t) info->prog);
 		// fmt::print(stderr, "Attaching to PID: {}\n", info->target_pid);
@@ -178,8 +183,9 @@ bool ProbeManager::AttachUprobe(ProbeTarget target_func, pid_t target_pid)
 	}
 
 	globalLogger.log_info("Creating ring buffer\n");
+	bpf_map *ringbuf = GetRingBufferFromSkeleton(m_skel, target_func);
 	info->ringbuf =
-		ring_buffer__new(bpf_map__fd(m_skel->maps.ringbuf), &HandleEvent, info, nullptr);
+		ring_buffer__new(bpf_map__fd(ringbuf), &HandleEvent, info, nullptr);
 	if (!info->ringbuf) {
 		globalLogger.log_error("Failed to create ring buffer for target: " +
 				       string(target_sym_name));
@@ -359,40 +365,134 @@ void ProbeManager::PollThreadFunc()
 	}
 }
 
+size_t ProbeManager::GetUpdateCallNo(unsigned long return_address)
+{
+	if (m_call_no_map.find(return_address) != m_call_no_map.end()) {
+		return ++m_call_no_map[return_address];
+	} else {
+		m_call_no_map[return_address] = 0;
+		return 0;
+	}
+}
+
+optional<AllocationEvent> ProbeManager::ParseMemcpyEvent(const CudaMemcpyEvent *event, const ProgramInfo *info)
+{
+	unsigned long start;
+	EventType evt_type;
+	switch (event->direction) {
+		case cudaMemcpyHostToDevice:
+			start = event->source;
+			evt_type = EventType::DEVICE_TRANSFER;
+			break;
+		case cudaMemcpyDeviceToHost:
+			start = event->destination;
+			evt_type = EventType::DEVICE_TRANSFER;
+			break;
+		case cudaMemcpyDeviceToDevice:
+			globalLogger.log_debug("Skipping cudaMemcpyDeviceToDevice event");
+			return {}; // DOn't care about device to device
+			break;
+		case cudaMemcpyHostToHost:
+			start = event->source;
+			evt_type = EventType::HOST_TRANSFER;
+			break;
+		default:
+			globalLogger.log_error("Unknown CudaMemcpyKind: " + to_string(event->destination));
+			return {};
+	}
+
+
+	size_t call_no = GetUpdateCallNo(event->return_address);
+	AllocationEvent allocation_event(start, event->size, event->timestamp, event->return_address, call_no, evt_type);
+	return allocation_event;
+}
+
+AllocationEvent ProbeManager::ParseAllocEvent(const GenericAllocEvent *event, const ProgramInfo *info)
+{
+	size_t call_no = GetUpdateCallNo(event->return_address);
+	AllocationEvent allocation_event(event->address, event->size, event->timestamp, event->return_address, call_no, EventType::ALLOC);
+	return allocation_event;
+}
+
+AllocationEvent ProbeManager::ParseFreeEvent(const GenericFreeEvent *event, const ProgramInfo *info)
+{
+	size_t call_no = GetUpdateCallNo(event->return_address);
+	AllocationEvent allocation_event(event->address, 0 /*TODO this should be needed*/, event->timestamp, event->return_address, call_no, EventType::ALLOC);
+	return allocation_event;
+}
+
+AllocationEvent ProbeManager::ParsePinPagesEvent(const CudaPinPagesEvent *event, const ProgramInfo *info) {
+	size_t call_no = GetUpdateCallNo(event->return_address);
+	size_t size = event->pages * getpagesize();
+	AllocationEvent allocation_event(event->address, size, event->timestamp, event->return_address, call_no, EventType::HOST_TRANSFER);
+	return allocation_event;
+}
+	
+
+
 
 // Process an event into an AllocationEvent and enqueue it to the event queue
 void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo *info)
 {
-	// TODO different kinds of events
-	CudaMemcpyEvent *evt = (CudaMemcpyEvent *)data;
-	unsigned long start;	
 
-	switch (evt->direction) {
-		case cudaMemcpyHostToDevice:
-			start = evt->source;
+	globalLogger.log_debug("Processing event for program: " + string(GetSymbolNameFromProbeTarget(info->target_func)) + " with size: " + to_string(size));
+
+
+	optional<AllocationEvent> event;
+	switch(info->target_func) {
+		case ProbeTarget::CUDA_MEMCPY:
+			event = ParseMemcpyEvent((const CudaMemcpyEvent *)data, info);
 			break;
-		case cudaMemcpyDeviceToHost:
-			start = evt->destination;
+		case ProbeTarget::CUDA_HOST_ALLOC:
+			event = ParseAllocEvent((const GenericAllocEvent *)data, info);
+			break;
+		case ProbeTarget::CUDA_FREE:
+			event = ParseFreeEvent((const GenericFreeEvent *)data, info);
+			break;
+		case ProbeTarget::PIN_PAGES:
+			event = ParsePinPagesEvent((const CudaPinPagesEvent *)data, info);
 			break;
 		default:
-			globalLogger.log_error("Unknown CudaMemcpyKind: " + to_string(evt->destination));
+			globalLogger.log_error("Unknown ProbeTarget: " + to_string(static_cast<int>(info->target_func)));
 			return;
 	}
 
-	globalLogger.log_info("Event return address: " + to_string(evt->return_address));
-
-	// Track call numbers
-	int call_number = 0;
-
-	if (m_call_no_map.find(evt->return_address) != m_call_no_map.end()) {
-		call_number = ++m_call_no_map[evt->return_address];
-	} else {
-		m_call_no_map[evt->return_address] = call_number;
+	if (!event.has_value()) {
+		return;
 	}
 
-	AllocationEvent event(start, evt->size, evt->timestamp, evt->return_address, call_number, EventType::DEVICE_TRANSFER);
+	globalLogger.log_info("[ProbeManager->ProcessEvent] Event: " + (*event).ToString());
+	m_event_queue.enqueue(*event);
+
+	// CudaMemcpyEvent *evt = (CudaMemcpyEvent *)data;
+	// unsigned long start;	
+
+	// switch (evt->direction) {
+	// 	case cudaMemcpyHostToDevice:
+	// 		start = evt->source;
+	// 		break;
+	// 	case cudaMemcpyDeviceToHost:
+	// 		start = evt->destination;
+	// 		break;
+	// 	default:
+	// 		globalLogger.log_error("Unknown CudaMemcpyKind: " + to_string(evt->destination));
+	// 		return;
+	// }
+
+	// globalLogger.log_info("Event return address: " + to_string(evt->return_address));
+
+	// // Track call numbers
+	// int call_number = 0;
+
+	// if (m_call_no_map.find(evt->return_address) != m_call_no_map.end()) {
+	// 	call_number = ++m_call_no_map[evt->return_address];
+	// } else {
+	// 	m_call_no_map[evt->return_address] = call_number;
+	// }
+
+	// AllocationEvent event(start, evt->size, evt->timestamp, evt->return_address, call_number, EventType::DEVICE_TRANSFER);
 
 	// Global log including event details, using AllocationEvent's to_string method
-	globalLogger.log_info("[ProbeManager->ProcessEvent] Event: " + event.ToString());
-	m_event_queue.enqueue(event);
+	// globalLogger.log_info("[ProbeManager->ProcessEvent] Event: " + event.ToString());
+	// m_event_queue.enqueue(event);
 }

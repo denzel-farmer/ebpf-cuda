@@ -28,6 +28,7 @@ enum class ProbeTarget {
 	CUDA_MEMCPY,
 	PIN_PAGES,
 	CUDA_FREE,
+	CUDA_HOST_FREE,
 	FREE
 	};
 
@@ -58,6 +59,29 @@ inline struct bpf_program *GetProgramFromSkeleton(struct CudaTracerProbe_bpf *sk
 	switch (target) {
 	case ProbeTarget::CUDA_MEMCPY:
 		return skel->progs.handle_cudaMemcpy;
+	case ProbeTarget::CUDA_HOST_ALLOC:
+		return skel->progs.handle_cudaHostAlloc;
+	case ProbeTarget::CUDA_HOST_FREE:
+		return skel->progs.handle_cudaHostFree;
+	case ProbeTarget::PIN_PAGES:
+		return skel->progs.os_lock_user_pages;
+	default:
+		throw std::invalid_argument("Unknown ProbeTarget");
+	}
+}
+
+inline struct bpf_map *GetRingBufferFromSkeleton(struct CudaTracerProbe_bpf *skel,
+						 ProbeTarget target)
+{
+	switch (target) {
+	case ProbeTarget::CUDA_MEMCPY:
+		return skel->maps.rb_cuda_memcpy;
+	case ProbeTarget::CUDA_HOST_ALLOC:
+		return skel->maps.rb_cuda_host_alloc;
+	case ProbeTarget::CUDA_HOST_FREE:
+		return skel->maps.rb_cuda_host_free;
+	case ProbeTarget::PIN_PAGES:
+		return skel->maps.rb_lock_user_pages;
 	default:
 		throw std::invalid_argument("Unknown ProbeTarget");
 	}
@@ -72,6 +96,8 @@ inline const char *GetSymbolNameFromProbeTarget(ProbeTarget target)
 		return "cudaMemcpy";
 	case ProbeTarget::PIN_PAGES:
 		return "os_lock_user_pages";
+	case ProbeTarget::CUDA_HOST_FREE:
+		return "cudaHostFree";
 	case ProbeTarget::CUDA_FREE:
 		return "cudaFree";
 	default:
@@ -104,8 +130,14 @@ class ProbeManager {
     // TODO find a way to make this static and private? Called by HandleEvent
 	void ProcessEvent(const void *data, size_t size, const ProgramInfo *info);
 
-
     private:
+
+	optional<AllocationEvent> ParseMemcpyEvent(const CudaMemcpyEvent *event, const ProgramInfo *info);
+	AllocationEvent ParseAllocEvent(const GenericAllocEvent *event, const ProgramInfo *info);
+	AllocationEvent ParseFreeEvent(const GenericFreeEvent *event, const ProgramInfo *info);
+	AllocationEvent ParsePinPagesEvent(const CudaPinPagesEvent *event, const ProgramInfo *info);
+
+	size_t GetUpdateCallNo(unsigned long return_address);
 	void Cleanup();
     void DestroyInfo(ProgramInfo *info);
 

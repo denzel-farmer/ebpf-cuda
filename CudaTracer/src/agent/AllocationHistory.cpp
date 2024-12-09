@@ -219,8 +219,8 @@ boost::property_tree::ptree AllocationHistory::PtreeSerialize(bool verbose) cons
         boost::property_tree::ptree events_node;
         for (const auto& event : events) {
             boost::property_tree::ptree event_node;
-            event_node.add_child("Event", event.PtreeSerialize());
-            events_node.push_back(make_pair("", event_node));
+         //   event_node.add_child("Event", event.PtreeSerialize());
+            events_node.push_back(make_pair("", event.PtreeSerialize()));
         }
         root.add_child("Events", events_node);
     }

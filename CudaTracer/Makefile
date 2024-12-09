@@ -28,7 +28,7 @@ VMLINUX := $(ROOT)/vmlinux.h/include/$(ARCH)/vmlinux.h
 CXX = g++
 CXXFLAGS = -Wall -g -std=c++20
 LDFLAGS = -lpthread -lfmt -lelf -L$(dir $(LIBBLAZESYM_OBJ)) -lblazesym_c -L$(dir $(LIBBPF_OBJ)) -lbpf -lz -ldl -L/usr/local/cuda/lib64 -lcudart
-NVCC_FLAGS = -g -O2 -std=c++20
+NVCC_FLAGS = -g -O2 -std=c++17
 
 INCLUDE_DIRS = $(shell find $(SRCDIR) -type d)
 INCLUDES := $(addprefix -I,$(INCLUDE_DIRS)) -I$(OUTPUT) -I$(SUBMOD_OUTPUT) -I$(ROOT)/libbpf/include/uapi -I$(dir $(VMLINUX)) -I$(LIBBLAZESYM_INC) -I/usr/local/cuda/include
@@ -50,12 +50,12 @@ TEST_CU_SRC = $(addprefix $(TESTDIR)/,$(patsubst %,%.cu,$(TESTS_CU)))
 TEST_CU_OBJ = $(patsubst $(TESTDIR)/%.cu, $(OUTPUT)/test_%.o, $(TEST_CU_SRC))
 TEST_CU_DEPS = $(TEST_CU_OBJ:.o=.d)
 
-all: $(TESTS) $(TESTS_CU) $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ)
+all: $(LIBBPF_OBJ) $(BPFTOOL) $(LIBBLAZESYM_OBJ) $(TESTS) $(TESTS_CU) 
 
 ##############################
 # Main source compilation
 ##############################
-$(OUTPUT)/%.o: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h $(LIBBLAZESYM_OBJ)
+$(OUTPUT)/%.o: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h $(LIBBLAZESYM_OBJ) $(SRC_DEPS)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
@@ -66,29 +66,29 @@ $(OUTPUT)/%.d: $(SRCDIR)/%.cpp $(BPFTOOL) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTrac
 ##############################
 # C++ Test compilation
 ##############################
-$(OUTPUT)/test_%.o: $(TESTDIR)/%.cpp
+$(OUTPUT)/test_%.o: $(TESTDIR)/%.cpp $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h $(TEST_DEPS)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -c -o $@ $<
 
-$(OUTPUT)/test_%.d: $(TESTDIR)/%.cpp
+$(OUTPUT)/test_%.d: $(TESTDIR)/%.cpp $(LIBBPF_OBJ)
 	@mkdir -p $(dir $@)
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -M $< > $@
 
-$(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+$(TESTS): %: $(OUTPUT)/test_%.o $(SRC_OBJ) $(LIBBPF_OBJ) $(SRCDIR)/probe/CudaTracerProbe.skel.h
+	$(CXX) $(CXXFLAGS) $(INCLUDES) -o $@ $^ $(LDFLAGS)
 
 ##############################
 # CUDA Test compilation
 ##############################
-$(OUTPUT)/test_%.o: $(TESTDIR)/%.cu
+$(OUTPUT)/test_%.o: $(TESTDIR)/%.cu $(SRCDIR)/probe/CudaTracerProbe.skel.h $(TEST_CU_DEPS)
 	@mkdir -p $(dir $@)
 	nvcc $(NVCC_FLAGS) $(INCLUDES) -c -o $@ $<
 
-$(OUTPUT)/test_%.d: $(TESTDIR)/%.cu
+$(OUTPUT)/test_%.d: $(TESTDIR)/%.cu $(LIBBPF_OBJ)
 	@mkdir -p $(dir $@)
 	nvcc $(NVCC_FLAGS) $(INCLUDES) -M $< > $@
 
-$(TESTS_CU): %: $(OUTPUT)/test_%.o $(SRC_OBJ)
+$(TESTS_CU): %: $(OUTPUT)/test_%.o $(SRC_OBJ) | $(SRCDIR)/probe/CudaTracerProbe.skel.h
 	nvcc -o $@ $^ $(LDFLAGS)
 
 ##############################
@@ -121,7 +121,7 @@ $(BPFTOOL): | $(BPFTOOL_OUTPUT)
 	$(call msg,BPFTOOL,$@)
 	$(Q)$(MAKE) ARCH= CROSS_COMPILE= OUTPUT=$(BPFTOOL_OUTPUT)/ -C $(BPFTOOL_SRC) bootstrap
 
-$(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a::
+$(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a:
 	$(Q)cd $(LIBBLAZESYM_SRC) && $(CARGO) build --package=blazesym-c --release
 
 $(LIBBLAZESYM_OBJ): $(LIBBLAZESYM_SRC)/target/release/libblazesym_c.a | $(SUBMOD_OUTPUT)
@@ -159,18 +159,22 @@ $(call allow-override,LD,$(CROSS_COMPILE)ld)
 
 
 ##############################
-# Include dependencies
+# Include dependencies (except for clean)
 ##############################
--include $(SRC_DEPS) $(TEST_DEPS) $(TEST_CU_DEPS)
+# ifneq ($(MAKECMDGOALS),clean)
+# ifneq ($(MAKECMDGOALS),cleanall)
+# -include $(SRC_DEPS) $(TEST_DEPS) $(TEST_CU_DEPS)
+# endif
+# endif
 
 clean:
 	rm -rf $(OUTPUT) $(TESTS) $(TESTS_CU)
-
-cleanall:
-	rm -rf $(OUTPUT) $(SUBMOD_OUTPUT)
 	find $(SRCDIR) -name '*skel.h' -delete
 
-.PHONY: clean all cleanall
+cleanall: clean
+	rm -rf $(SUBMOD_OUTPUT)
+
+.PHONY: clean cleanall all
 
 
 

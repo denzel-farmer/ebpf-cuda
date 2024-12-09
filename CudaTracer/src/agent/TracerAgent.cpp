@@ -40,7 +40,7 @@ bool TracerAgent::StartAgentAsync()
 	if (!success) {
 		globalLogger.log_error("Failed to attach probe");
 	}
-	success = m_probe_manager->AttachProbe(ProbeTarget::CUDA_FREE, m_target_pid);
+	success = m_probe_manager->AttachProbe(ProbeTarget::CUDA_HOST_FREE, m_target_pid);
 	if (!success) {
 		globalLogger.log_error("Failed to attach probe");
 	}
