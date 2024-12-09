@@ -131,8 +131,8 @@ MemoryPools components handle memory allocations calls from CustomAllocatorManag
 Composed of two classes: PinnedMemoryPool and NonPinnedMemoryPool. These two classes each have functions to allocate and deallocate memory. Non-pinned memory uses malloc underneath the hood and Pinned memory uses cudaMallocHost. 
 
 
-# Allocator Benchmarks
-
+# Benchmarks
+## Allocator Benchmarks
 Our benchmarks are run on synthetic workloads, that simulate those with 'hotspots'. 
 
 In particular we have the following two type of calls:
@@ -148,6 +148,7 @@ In the following graphs, we have the following labels:
 We compare performance of both CustomAllcocatorManager modes, Unpinned, and Fully Pinned, both on runtime and 
 percentage of memory pinned.
 
+### Runtime Performance
 
 <img src="image-3.png" alt="Allocator Benchmark 1" width="55%">
 
@@ -155,11 +156,29 @@ Our CustomAllcocatorManager performs better than full pinning for less than 32MB
 
 Performance CustomAllcocatorManager and no pinning decreases a lot at the 32MB threshold. This may be due to the performance drop in malloc() when we allocate more than 32MB at a time.
 
+
+### Pinned Memory Usage
+
 <img src="image-4.png" alt="Allocator Benchmark 2" width="55%">
 
 CustomAllocatorManager pins only 7% of memory (the “hotspots”) but performs better or slightly worse than full pinning and much better than no pinning. 
 
-
 <img src="image-5.png" alt="Allocator Benchmark 3" width="55%">
 
 CustomAllocatorManager is almost identical to full pinning in “profile” mode but includes the Tracer logic. The graph above shows that the overhead from Tracer is very small and negligible.
+
+## Tracer Microbenchmarks
+
+We also did microbenchmarking on the overhead of eBPF events, using the built-in eBPF profiler for linux.
+
+
+![alt text](image-6.png)
+
+
+This demonstrates that the per-uprobe overhead is minimal, about 22 microseconds on the initial run
+and only 7 on average. Kernel probes, on the other hand, were consitently so fast that the profiler's overhead
+was as significant as their runtime. 
+
+They consistently take less than 1 microsecond, making them effecively negligible. The majority of the 
+profiling overhead overall is from the userspace C++ application, which is managed by the OS scheduler 
+to prevent interference with other tasks, and which can be tuned by the polling rate.
