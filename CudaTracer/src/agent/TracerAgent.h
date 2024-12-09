@@ -30,7 +30,7 @@ class TracerAgent {
     }
 
     // Start and stop the agent (low overhead), returns success
-    bool StartAgentAsync();
+    bool StartAgentAsync(bool transfer_only = false);
     void StopAgent();
 
     // Provide events to the agent 

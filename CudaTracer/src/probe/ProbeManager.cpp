@@ -446,7 +446,7 @@ void ProbeManager::ProcessEvent(const void *data, size_t size, const ProgramInfo
 		case ProbeTarget::CUDA_HOST_ALLOC:
 			event = ParseAllocEvent((const GenericAllocEvent *)data, info);
 			break;
-		case ProbeTarget::CUDA_FREE:
+		case ProbeTarget::CUDA_HOST_FREE:
 			event = ParseFreeEvent((const GenericFreeEvent *)data, info);
 			break;
 		case ProbeTarget::PIN_PAGES:

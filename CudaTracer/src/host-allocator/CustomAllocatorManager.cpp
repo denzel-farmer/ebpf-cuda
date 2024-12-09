@@ -17,18 +17,18 @@ CustomAllocatorManager::CustomAllocatorManager()
         tracer_agent = make_unique<TracerAgent>();
     }
 
-void CustomAllocatorManager::initialize(const std::string& mode) {
+void CustomAllocatorManager::initialize(const std::string& mode, bool verbose_log) {
     // Reset number of allocations for each call site, allows reinitialization
     reset_allocation_numbers();
     tracer_history_used = 0;
     total_amount_pinned = 0;
     tracer_agent->StopAgent(); 
     if (mode == "profile") {
-         tracer_agent->StartAgentAsync();
+         tracer_agent->StartAgentAsync(true);
         std::cout << "Initializing in Profiling Mode.\n";
     }
     else if (mode == "use") {
-        tracer_agent->DumpHistory("tracer_history.json", DumpFormat::JSON, false);
+        tracer_agent->DumpHistory("tracer_history.json", DumpFormat::JSON, verbose_log);
         std::cout << "Initializing in Optimized Mode.\n";
         load_tracer_history("tracer_history.json");
     }
@@ -161,10 +161,10 @@ void CustomAllocatorManager::load_tracer_history(const std::string& filename){
 
     for (const auto& allocation : pt.get_child("Allocations")) {
         try {
-            std::string call_site_str = allocation.second.get<std::string>("AllocTag.call_site");
+            std::string call_site_str = allocation.second.get<std::string>("AllocationInfo.AllocationTag.call_site");
             unsigned long call_site = std::stoul(call_site_str);
 
-            std::string call_no_str = allocation.second.get<std::string>("AllocTag.call_no");
+            std::string call_no_str = allocation.second.get<std::string>("AllocationInfo.AllocationTag.call_no");
             unsigned long call_no = std::stoul(call_no_str);
 
             std::string transfer_count_str = allocation.second.get<std::string>("transfer_count");

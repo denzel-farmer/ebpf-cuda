@@ -97,7 +97,7 @@ inline const char *GetSymbolNameFromProbeTarget(ProbeTarget target)
 	case ProbeTarget::PIN_PAGES:
 		return "os_lock_user_pages";
 	case ProbeTarget::CUDA_HOST_FREE:
-		return "cudaHostFree";
+		return "cudaFreeHost";
 	case ProbeTarget::CUDA_FREE:
 		return "cudaFree";
 	default:

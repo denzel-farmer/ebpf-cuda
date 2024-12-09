@@ -3,6 +3,9 @@ TestTracerAgent
 log.txt
 cuda_benchmark_application
 simple_cuda_memcpy
+matrix_mult_pinned
+matrix_mult_smart
+matrix_mult_unpinned
 *.csv
 *.json
 *.txt

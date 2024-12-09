@@ -34,6 +34,10 @@ private:
         auto now_time_t = chrono::system_clock::to_time_t(now);
         ostringstream oss;
         oss << put_time(localtime(&now_time_t), "%H:%M:%S");
+        auto now_ms = chrono::time_point_cast<chrono::milliseconds>(now);
+        auto value = now_ms.time_since_epoch();
+        long duration = value.count() % 1000;
+        oss << '.' << setfill('0') << setw(3) << duration;
         return oss.str();
     }
 
@@ -165,7 +169,8 @@ public:
         //          << message;
         ostringstream logEntry;
         logEntry << "[" << getCurrentTime() << "] "
-                 << message;
+             << "[" << logLevelToString(level) << "] "
+             << message;
 
 
         {

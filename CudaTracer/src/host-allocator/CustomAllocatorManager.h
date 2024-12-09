@@ -16,7 +16,7 @@ public:
         std::cout << "reached here" << std::endl;
         //tracer_agent->DumpHistory("tracer_history.json", true);
     };
-    void initialize(const std::string& mode);
+    void initialize(const std::string& mode, bool verbose_log = false);
     void* allocate_memory(size_t size);
     void deallocate_memory(void* ptr, size_t size);
     void load_tracer_history(const std::string& filename);

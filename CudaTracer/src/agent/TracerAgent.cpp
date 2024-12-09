@@ -21,7 +21,7 @@
 
 // TracerAgent class
 // TODO add a lock to avoid the race between start and stop
-bool TracerAgent::StartAgentAsync()
+bool TracerAgent::StartAgentAsync(bool transfer_only)
 {
 	if (m_running.exchange(true)) {
 		globalLogger.log_error("Agent already running");
@@ -31,6 +31,11 @@ bool TracerAgent::StartAgentAsync()
 	bool success = m_probe_manager->AttachProbe(ProbeTarget::CUDA_MEMCPY, m_target_pid);
 	if (!success) {
 		globalLogger.log_error("Failed to attach probe");
+	}
+
+	if (transfer_only) {
+		m_proccessing_thread = thread(&TracerAgent::ProcessEvents, this);
+		return true;
 	}
 	success = m_probe_manager->AttachProbe(ProbeTarget::PIN_PAGES, m_target_pid);
 	if (!success) {

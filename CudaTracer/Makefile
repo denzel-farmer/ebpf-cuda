@@ -45,7 +45,7 @@ TEST_OBJ = $(patsubst $(TESTDIR)/%.cpp, $(OUTPUT)/test_%.o, $(TEST_SRC))
 TEST_DEPS = $(TEST_OBJ:.o=.d)
 
 # Hardcoded CUDA test executables from .cu files
-TESTS_CU := cuda_benchmark_application simple_cuda_memcpy
+TESTS_CU := cuda_benchmark_application simple_cuda_memcpy matrix_mult_smart matrix_mult_pinned matrix_mult_unpinned
 TEST_CU_SRC = $(addprefix $(TESTDIR)/,$(patsubst %,%.cu,$(TESTS_CU)))
 TEST_CU_OBJ = $(patsubst $(TESTDIR)/%.cu, $(OUTPUT)/test_%.o, $(TEST_CU_SRC))
 TEST_CU_DEPS = $(TEST_CU_OBJ:.o=.d)
